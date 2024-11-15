@@ -12,8 +12,8 @@ We then build each branch, push changes, and upload all versions.
 import argparse
 import dataclasses
 import enum
+import functools
 import http.client
-import itertools
 import json
 import os
 import os.path
@@ -23,6 +23,8 @@ import urllib
 import urllib.request
 import urllib.response
 from typing import Any, TypedDict, assert_never
+
+import yaml
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -124,20 +126,32 @@ class StorageUploadResult(TypedDict):
     id: int
 
 
+class _SkipErrorProcessor(urllib.request.HTTPErrorProcessor):
+    def http_response(self, request, response):
+        return response
+
+    https_response = http_response
+
+
+@functools.lru_cache
+def no_error_opener() -> urllib.request.OpenerDirector:
+    """Create an opener that doesn't throw an error on HTTP errors."""
+    return urllib.request.build_opener(_SkipErrorProcessor())
+
+
 def request_json(request: str | urllib.request.Request) -> Any:
     """Make a HTTP request, and then decode the response as JSON."""
     response: http.client.HTTPResponse
-    with urllib.request.urlopen(request) as response:
+    with no_error_opener().open(request) as response:
         if response.status not in (200, 201):
             url = request if isinstance(request, str) else request.full_url
+            print(response.read())
             raise ValueError(f"Bad response to {url}: {response.status} {response.reason}")
 
         return json.load(response)
 
 
-def request_crowdin[
-    T
-](
+def request_crowdin[T](
     path: str, ty: type[T], *, method: str = "GET", body: str | None = None, headers: dict[str, str] | None = None
 ) -> CrowdinResponse[T]:
     """Make a request to the Crowdin API"""
@@ -224,18 +238,24 @@ class TranslationLoader:
         return current
 
 
-def upload_translations() -> None:
-    """
-    Upload our en_us.json translations to Crowdin.
-    """
-    # Fetch the current translations from Crowdin.
+def get_translation_file() -> int:
+    """Get the translation file from Crowdin"""
     raw_files = request_crowdin(f"/projects/{CROWDIN_PROJECT}/files", list[CrowdinData[ProjectFile]])["data"]
     files = [file["data"] for file in raw_files if file["data"]["name"] == "en_us.json"]
     if len(files) != 1:
         log(f"Found {len(files)} matching translations")
         sys.exit(1)
 
-    remote_dl = request_crowdin(f"/projects/{CROWDIN_PROJECT}/files/{files[0]["id"]}/download", FileDownloadResult)
+    return files[0]["id"]
+
+
+def upload_translations() -> None:
+    """
+    Upload our en_us.json translations to Crowdin.
+    """
+    # Fetch the current translations from Crowdin.
+    file = get_translation_file()
+    remote_dl = request_crowdin(f"/projects/{CROWDIN_PROJECT}/files/{file}/download", FileDownloadResult)
     remote_strings: dict[str, str] = request_json(remote_dl["data"]["url"])
 
     # Compute our local translations across our branches.
@@ -280,7 +300,7 @@ def upload_translations() -> None:
     )["data"]["id"]
 
     request_crowdin(
-        f"/projects/{CROWDIN_PROJECT}/files/{files[0]["id"]}",
+        f"/projects/{CROWDIN_PROJECT}/files/{file}",
         object,
         method="PUT",
         body=json.dumps({"storageId": storage}),
@@ -288,6 +308,45 @@ def upload_translations() -> None:
     )
 
     log("Translations updated!")
+
+
+def download_translations() -> None:
+    """
+    Upload our en_us.json translations to Crowdin.
+    """
+    # Fetch the current translations from Crowdin.
+    file = get_translation_file()
+
+    branch = BRANCHES[0].name
+    with open(f"{branch}/crowdin.yml") as h:
+        crowdin_config = yaml.safe_load(h)["files"][0]
+        languages: dict[str, str] = crowdin_config["languages_mapping"]["locale_with_underscore"]
+
+    with open(f"{branch}/{crowdin_config["source"]}") as h:
+        local_strings: dict[str, str] = json.load(h)
+
+    for language, name in languages.items():
+        log(f"Fetching {language}")
+        remote_dl = request_crowdin(
+            f"/projects/{CROWDIN_PROJECT}/translations/exports",
+            FileDownloadResult,
+            method="POST",
+            headers={"Content-Type": "application/json"},
+            body=json.dumps(
+                {
+                    "targetLanguageId": language,
+                    "fileIds": [file],
+                }
+            ),
+        )
+        remote_strings: dict[str, str] = request_json(remote_dl["data"]["url"])
+
+        dest = crowdin_config["translation"].replace("%locale_with_underscore%", name)
+        with open(f"{branch}/{dest}", "w") as h:
+            json.dump(
+                {k: remote_strings[k] for k in local_strings if k in remote_strings}, h, indent=4, ensure_ascii=False
+            )
+            h.write("\n")
 
 
 ################################################################################
@@ -410,6 +469,9 @@ def main() -> None:
     )
     subparsers.add_parser("build", help="Merge and build all branches.").set_defaults(func=build)
     subparsers.add_parser("release", help="Publish a release.").set_defaults(func=release)
+    subparsers.add_parser("download-translations", help="Download crowdin translations.").set_defaults(
+        func=download_translations
+    )
     subparsers.add_parser("upload-translations", help="Upload crowdin translations.").set_defaults(
         func=upload_translations
     )

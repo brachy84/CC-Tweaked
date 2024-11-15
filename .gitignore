@@ -2,15 +2,5 @@
 /mc-*
 /license-tools
 
-# Build output
-/buildSrc
-/.idea
-/.gradle
-/logs
-/gradle*
-/*.gradle
-/*.gradle.kts
-/build
-
 # Misc
 /.mailmap
