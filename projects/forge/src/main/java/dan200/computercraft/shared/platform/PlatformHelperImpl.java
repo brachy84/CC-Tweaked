@@ -15,7 +15,6 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.PeripheralCapability;
 import dan200.computercraft.impl.Peripherals;
 import dan200.computercraft.shared.config.ConfigFile;
-import dan200.computercraft.shared.container.ListContainer;
 import dan200.computercraft.shared.network.container.ContainerData;
 import dan200.computercraft.shared.util.InventoryUtil;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
@@ -42,9 +41,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -190,19 +187,6 @@ public class PlatformHelperImpl implements PlatformHelper {
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
         return stack.getCraftingRemainingItem();
-    }
-
-    @Override
-    public List<ItemStack> getRecipeRemainingItems(ServerPlayer player, Recipe<CraftingInput> recipe, CraftingInput container) {
-        CommonHooks.setCraftingPlayer(player);
-        var result = recipe.getRemainingItems(container);
-        CommonHooks.setCraftingPlayer(null);
-        return result;
-    }
-
-    @Override
-    public void onItemCrafted(ServerPlayer player, CraftingInput container, ItemStack stack) {
-        EventHooks.firePlayerCraftingEvent(player, stack, new ListContainer(container.items()));
     }
 
     @Override

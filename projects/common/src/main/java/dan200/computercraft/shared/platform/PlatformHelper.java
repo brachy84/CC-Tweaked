@@ -33,8 +33,6 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -215,26 +213,6 @@ public interface PlatformHelper {
      * @return The "remainder" item. May be {@link ItemStack#EMPTY}.
      */
     ItemStack getCraftingRemainingItem(ItemStack stack);
-
-    /**
-     * A more general version of {@link #getCraftingRemainingItem(ItemStack)} which gets all remaining items for a
-     * recipe.
-     *
-     * @param player    The player performing the crafting.
-     * @param recipe    The recipe currently doing the crafting.
-     * @param container The crafting container.
-     * @return A list of items to return to the player after crafting.
-     */
-    List<ItemStack> getRecipeRemainingItems(ServerPlayer player, Recipe<CraftingInput> recipe, CraftingInput container);
-
-    /**
-     * Fire an event after crafting has occurred.
-     *
-     * @param player    The player performing the crafting.
-     * @param container The current crafting container.
-     * @param stack     The resulting stack from crafting.
-     */
-    void onItemCrafted(ServerPlayer player, CraftingInput container, ItemStack stack);
 
     /**
      * Check whether we should notify neighbours in a particular direction.

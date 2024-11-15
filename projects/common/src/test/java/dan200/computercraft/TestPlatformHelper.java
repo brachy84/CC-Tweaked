@@ -34,8 +34,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingInput;
-import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -157,16 +155,6 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Nullable
     @Override
     public ContainerTransfer getContainer(ServerLevel level, BlockPos pos, Direction side) {
-        throw new UnsupportedOperationException("Cannot interact with the world inside tests");
-    }
-
-    @Override
-    public List<ItemStack> getRecipeRemainingItems(ServerPlayer player, Recipe<CraftingInput> recipe, CraftingInput container) {
-        throw new UnsupportedOperationException("Cannot query recipes inside tests");
-    }
-
-    @Override
-    public void onItemCrafted(ServerPlayer player, CraftingInput container, ItemStack stack) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
     }
 

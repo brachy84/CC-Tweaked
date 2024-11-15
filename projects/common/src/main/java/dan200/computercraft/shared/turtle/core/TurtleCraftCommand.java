@@ -26,6 +26,7 @@ public class TurtleCraftCommand implements TurtleCommand {
 
         // Store or drop any remainders
         for (var stack : results) TurtleUtil.storeItemOrDrop(turtle, stack);
+        turtle.getInventory().setChanged();
 
         if (!results.isEmpty()) turtle.playAnimation(TurtleAnimation.WAIT);
         return TurtleCommandResult.success();
