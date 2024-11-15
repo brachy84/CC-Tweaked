@@ -21,16 +21,16 @@ import dan200.computercraft.api.peripheral.IPeripheral;
  * <p>
  * For example, the main CC: Tweaked mod defines a generic source for inventories, which works on {@code IItemHandler}s:
  *
- * <pre>{@code
+ * {@snippet lang="java" :
  * public class InventoryMethods implements GenericSource {
- *     \@LuaFunction( mainThread = true )
+ *     @LuaFunction(mainThread = true)
  *     public int size(IItemHandler inventory) {
  *         return inventory.getSlots();
  *     }
  *
  *     // ...
  * }
- * }</pre>
+ * }
  * <p>
  * New capabilities or block lookups (those not built into Forge/Fabric) must be explicitly registered using the
  * loader-specific API.

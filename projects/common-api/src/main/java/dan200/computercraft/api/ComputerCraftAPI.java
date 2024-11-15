@@ -173,14 +173,14 @@ public final class ComputerCraftAPI {
      * This may be used with {@link IComputerSystem#getComponent(ComputerComponent)} to only attach APIs to specific
      * computers. For example, one can add an additional API just to turtles with the following code:
      *
-     * <pre>{@code
+     * {@snippet lang="java":
      * ComputerCraftAPI.registerAPIFactory(computer -> {
      *   // Read the turtle component.
      *   var turtle = computer.getComponent(ComputerComponents.TURTLE);
      *   // If present then add our API.
      *   return turtle == null ? null : new MyCustomTurtleApi(turtle);
      * });
-     * }</pre>
+     * }
      *
      * @param factory The factory for your API subclass.
      * @see ILuaAPIFactory

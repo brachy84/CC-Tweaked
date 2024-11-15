@@ -4,11 +4,11 @@
 
 package dan200.computercraft.shared.peripheral.speaker;
 
-import com.google.errorprone.annotations.concurrent.GuardedBy;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.lua.LuaTable;
+import dan200.computercraft.api.peripheral.AttachedComputerSet;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.util.Nullability;
@@ -59,7 +59,7 @@ public abstract class SpeakerPeripheral implements IPeripheral {
     public static final int SAMPLE_RATE = 48000;
 
     private final UUID source = UUID.randomUUID();
-    private final @GuardedBy("computers") Set<IComputerAccess> computers = new HashSet<>();
+    private final AttachedComputerSet computers = new AttachedComputerSet();
 
     private long clock = 0;
     private long lastPositionTime;
@@ -139,11 +139,7 @@ public abstract class SpeakerPeripheral implements IPeripheral {
             syncedPosition(position);
 
             // And notify computers that we have space for more audio.
-            synchronized (computers) {
-                for (var computer : computers) {
-                    computer.queueEvent("speaker_audio_empty", computer.getAttachmentName());
-                }
-            }
+            computers.forEach(c -> c.queueEvent("speaker_audio_empty", c.getAttachmentName()));
         }
 
         // Push position updates to any speakers which have ever played a note,
@@ -356,16 +352,12 @@ public abstract class SpeakerPeripheral implements IPeripheral {
 
     @Override
     public void attach(IComputerAccess computer) {
-        synchronized (computers) {
-            computers.add(computer);
-        }
+        computers.add(computer);
     }
 
     @Override
     public void detach(IComputerAccess computer) {
-        synchronized (computers) {
-            computers.remove(computer);
-        }
+        computers.remove(computer);
     }
 
     static double clampVolume(double volume) {

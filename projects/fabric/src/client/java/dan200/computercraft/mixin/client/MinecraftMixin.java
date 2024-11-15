@@ -7,6 +7,7 @@ package dan200.computercraft.mixin.client;
 import dan200.computercraft.client.ClientHooks;
 import dan200.computercraft.client.ClientRegistry;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
@@ -27,6 +28,12 @@ class MinecraftMixin {
     @SuppressWarnings("unused")
     private void updateLevelInEngines(ClientLevel screen, CallbackInfo ci) {
         ClientHooks.onWorldUnload();
+    }
+
+    @Inject(method = "disconnect(Lnet/minecraft/client/gui/screens/Screen;Z)V", at = @At("HEAD"))
+    @SuppressWarnings("unused")
+    private void disconnect(Screen screen, boolean keepResourcePacks, CallbackInfo ci) {
+        ClientHooks.onDisconnect();
     }
 
     @Inject(

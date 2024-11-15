@@ -11,12 +11,12 @@ package dan200.computercraft.api.lua;
  * the given type, rather than requiring an exact type.
  *
  * <h2>Example:</h2>
- * <pre>{@code
+ * {@snippet lang="java" :
  * @LuaFunction
  * public final void doSomething(Coerced<String> myString) {
  *   var value = myString.value();
  * }
- * }</pre>
+ * }
  *
  * @param value The argument value.
  * @param <T>   The type of the underlying value.

@@ -30,8 +30,16 @@ jobs:
     - name: ⚒️ Build
       run: ./gradlew assemble || ./gradlew assemble
 
+    - name: Cache pre-commit
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-3|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
+
     - name: 💡 Lint
-      uses: pre-commit/action@v3.0.0
+      run: |
+        pipx install pre-commit
+        pre-commit run --show-diff-on-failure --color=always
 
     - name: 🧪 Run tests
       run: ./gradlew test validateMixinNames checkChangelog
@@ -41,11 +49,6 @@ jobs:
 
     - name: 🧪 Run integration tests
       run: ./gradlew runGametest
-
-    - name: 🧪 Run client tests
-      run: ./gradlew runGametestClient # Not checkClient, as no point running rendering tests.
-      # These are a little flaky on GH actions: its useful to run them, but don't break the build.
-      continue-on-error: true
 
     - name: 🧪 Parse test reports
       run: ./tools/parse-reports.py
@@ -62,9 +65,6 @@ jobs:
       with:
         name: CC-Tweaked
         path: ./jars
-
-    - name: 📤 Upload coverage
-      uses: codecov/codecov-action@v4
 
   build-core:
     strategy:

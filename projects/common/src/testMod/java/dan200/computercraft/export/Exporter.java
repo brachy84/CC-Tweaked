@@ -9,7 +9,6 @@ import com.google.common.io.RecursiveDeleteOption;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
@@ -20,8 +19,8 @@ import dan200.computercraft.gametest.core.TestHooks;
 import dan200.computercraft.shared.util.RegistryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.item.crafting.ShapedRecipe;
@@ -33,9 +32,8 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Provides a {@literal /ccexport <path>} command which exports icons and recipes for all ComputerCraft items.
@@ -73,14 +71,10 @@ public class Exporter {
     private static void export(Path root, ImageRenderer renderer) throws IOException {
         var dump = new JsonDump();
 
-        Set<Item> items = new HashSet<>();
-
         // First find all CC items
-        for (var item : BuiltInRegistries.ITEM) {
-            if (RegistryHelper.getKeyOrThrow(BuiltInRegistries.ITEM, item).getNamespace().equals(ComputerCraftAPI.MOD_ID)) {
-                items.add(item);
-            }
-        }
+        var items = BuiltInRegistries.ITEM.stream()
+            .filter(x -> BuiltInRegistries.ITEM.getKey(x).getNamespace().equals(ComputerCraftAPI.MOD_ID))
+            .collect(Collectors.toSet());
 
         // Now find all CC recipes.
         var level = Objects.requireNonNull(Minecraft.getInstance().level);
@@ -124,10 +118,6 @@ public class Exporter {
         var itemDir = root.resolve("items");
         if (Files.exists(itemDir)) MoreFiles.deleteRecursively(itemDir, RecursiveDeleteOption.ALLOW_INSECURE);
 
-        renderer.setupState();
-        var transform = new PoseStack();
-        transform.setIdentity();
-
         for (var item : items) {
             var stack = new ItemStack(item);
             var location = RegistryHelper.getKeyOrThrow(BuiltInRegistries.ITEM, item);
@@ -135,11 +125,13 @@ public class Exporter {
             dump.itemNames.put(location.toString(), stack.getHoverName().getString());
             renderer.captureRender(itemDir.resolve(location.getNamespace()).resolve(location.getPath() + ".png"),
                 () -> {
-                    // TODO: Minecraft.getInstance().getItemRenderer().ren(transform, stack, 0, 0)
+
+                    var graphics = new GuiGraphics(Minecraft.getInstance(), Minecraft.getInstance().renderBuffers().bufferSource());
+                    graphics.renderItem(stack, 0, 0);
+                    graphics.flush();
                 }
             );
         }
-        renderer.clearState();
 
         try (Writer writer = Files.newBufferedWriter(root.resolve("index.json")); var jsonWriter = new PrettyJsonWriter(writer)) {
             GSON.toJson(dump, JsonDump.class, jsonWriter);

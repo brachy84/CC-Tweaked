@@ -21,6 +21,7 @@ import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Holds additional state for a pocket computer. This includes pocket computer upgrade,
@@ -169,6 +170,8 @@ public final class PocketBrain implements IPocketAccess {
      */
     @Override
     public void setUpgrade(@Nullable UpgradeData<IPocketUpgrade> upgrade) {
+        if (Objects.equals(this.upgrade, upgrade)) return;
+
         this.upgrade = upgrade;
         dirty = true;
         invalidatePeripheral();
