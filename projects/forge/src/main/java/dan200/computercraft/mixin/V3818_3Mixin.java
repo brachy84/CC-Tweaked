@@ -7,7 +7,7 @@ package dan200.computercraft.mixin;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.TypeTemplate;
-import dan200.computercraft.shared.util.ComponentizationFixers;
+import dan200.computercraft.shared.datafix.ComponentizationFixers;
 import net.minecraft.util.datafix.schemas.V3818_3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-package dan200.computercraft.shared.util;
+package dan200.computercraft.shared.datafix;
 
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.Typed;
