@@ -217,9 +217,9 @@ public class MonitorBlockEntityRenderer implements BlockEntityRenderer<MonitorBl
                 foregroundBuffer.drawWithShader(
                     modelView, RenderSystem.getProjectionMatrix(), RenderTypes.getTerminalShader(),
                     // Skip the cursor quad if it is not visible this frame.
-                    FixedWidthFontRenderer.isCursorVisible(terminal) && FrameInfo.getGlobalCursorBlink()
-                        ? foregroundBuffer.getIndexCount()
-                        : foregroundBuffer.getIndexCount() - RenderTypes.TERMINAL.mode().indexCount(4)
+                    FixedWidthFontRenderer.isCursorVisible(terminal) && !FrameInfo.getGlobalCursorBlink()
+                        ? foregroundBuffer.getIndexCount() - RenderTypes.TERMINAL.mode().indexCount(4)
+                        : foregroundBuffer.getIndexCount()
                 );
 
                 // Clear state
