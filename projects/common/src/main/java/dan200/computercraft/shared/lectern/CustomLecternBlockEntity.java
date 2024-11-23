@@ -121,7 +121,7 @@ public final class CustomLecternBlockEntity extends BlockEntity implements MenuP
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         var tag = super.getUpdateTag(registries);
-        tag.put(NBT_ITEM, item.save(registries));
+        if (!item.isEmpty()) tag.put(NBT_ITEM, item.save(registries));
         return tag;
     }
 

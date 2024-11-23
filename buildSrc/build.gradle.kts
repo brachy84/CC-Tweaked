@@ -45,7 +45,6 @@ dependencies {
     implementation(libs.kotlin.plugin)
     implementation(libs.spotless)
 
-    implementation(libs.curseForgeGradle)
     implementation(libs.fabric.loom)
     implementation(libs.ideaExt)
     implementation(libs.minotaur)
