@@ -156,6 +156,7 @@ public final class ComputerCraft {
         event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRELESS_MODEM_ADVANCED.get(), WirelessModemBlockEntity::getPeripheral);
         event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), WiredModemFullBlockEntity::getPeripheral);
         event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getPeripheral);
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.REDSTONE_RELAY.get(), (b, d) -> b.peripheral());
 
         event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), (b, d) -> b.getElement());
         event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getWiredElement);
