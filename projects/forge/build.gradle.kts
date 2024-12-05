@@ -7,7 +7,7 @@ import net.neoforged.gradle.dsl.common.runs.run.Run
 
 plugins {
     id("cc-tweaked.forge")
-    id("cc-tweaked.gametest")
+    id("cc-tweaked.mod")
     id("cc-tweaked.mod-publishing")
 }
 
@@ -65,6 +65,8 @@ runs {
             "--existing", project(":common").file("src/main/resources/").absolutePath,
             "--existing", file("src/main/resources/").absolutePath,
         )
+
+        modSources.add("computercraft", sourceSets.datagen.get())
     }
 
     fun Run.configureForGameTest() {

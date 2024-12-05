@@ -19,11 +19,11 @@ import java.util.stream.Stream;
 /**
  * A data provider to generate {@link ExtraModels}.
  */
-abstract class ExtraModelsProvider implements DataProvider {
+public abstract class ExtraModelsProvider implements DataProvider {
     private final Path path;
     private final CompletableFuture<HolderLookup.Provider> registries;
 
-    ExtraModelsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+    public ExtraModelsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
         path = output.getOutputFolder(PackOutput.Target.RESOURCE_PACK).resolve(ExtraModels.PATH.getNamespace()).resolve(ExtraModels.PATH.getPath());
         this.registries = registries;
     }

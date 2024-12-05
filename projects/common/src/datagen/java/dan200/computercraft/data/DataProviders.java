@@ -7,8 +7,15 @@ package dan200.computercraft.data;
 import com.mojang.serialization.Codec;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
+import dan200.computercraft.client.gui.GuiSprites;
+import dan200.computercraft.client.model.LecternPrintoutModel;
+import dan200.computercraft.data.client.ExtraModelsProvider;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
+import dan200.computercraft.shared.turtle.inventory.UpgradeSlot;
 import net.minecraft.Util;
+import net.minecraft.client.renderer.texture.atlas.SpriteSource;
+import net.minecraft.client.renderer.texture.atlas.SpriteSources;
+import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.data.DataProvider;
@@ -20,10 +27,15 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 /**
  * All data providers for ComputerCraft. We require a mod-loader abstraction {@link GeneratorSink} (instead of
@@ -55,15 +67,37 @@ public final class DataProviders {
 
         generator.add(out -> new LanguageProvider(out, fullRegistries));
 
-        // Unfortunately we rely on some client-side classes in this code. We just load in the client side data provider
-        // and invoke that.
-        try {
-            Class.forName("dan200.computercraft.data.client.ClientDataProviders")
-                .getMethod("add", GeneratorSink.class, CompletableFuture.class)
-                .invoke(null, generator, fullRegistries);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
+        generator.addFromCodec("Block atlases", PackType.CLIENT_RESOURCES, "atlases", SpriteSources.FILE_CODEC, out -> {
+            out.accept(ResourceLocation.withDefaultNamespace("blocks"), makeSprites(Stream.of(
+                UpgradeSlot.LEFT_UPGRADE,
+                UpgradeSlot.RIGHT_UPGRADE,
+                LecternPrintoutModel.TEXTURE
+            )));
+            out.accept(GuiSprites.SPRITE_SHEET, makeSprites(
+                // Buttons
+                GuiSprites.TURNED_OFF.textures(),
+                GuiSprites.TURNED_ON.textures(),
+                GuiSprites.TERMINATE.textures(),
+                // Computers
+                GuiSprites.COMPUTER_NORMAL.textures(),
+                GuiSprites.COMPUTER_ADVANCED.textures(),
+                GuiSprites.COMPUTER_COMMAND.textures(),
+                GuiSprites.COMPUTER_COLOUR.textures()
+            ));
+        });
+
+        generator.add(pack -> new ExtraModelsProvider(pack, fullRegistries) {
+            @Override
+            public Stream<ResourceLocation> getModels(HolderLookup.Provider registries) {
+                return registries.lookupOrThrow(TurtleOverlay.REGISTRY).listElements().map(x -> x.value().model());
+            }
+        });
+    }
+
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    private static List<SpriteSource> makeSprites(final Stream<ResourceLocation>... files) {
+        return Arrays.stream(files).flatMap(Function.identity()).<SpriteSource>map(x -> new SingleFile(x, Optional.empty())).toList();
     }
 
     public interface GeneratorSink {
