@@ -61,14 +61,13 @@ checkstyle = "10.14.1"
 errorProne-core = "2.27.0"
 errorProne-plugin = "3.1.0"
 fabric-loom = "1.7.1"
-forgeGradle = "6.0.21"
 githubRelease = "2.5.2"
 gradleVersions = "0.50.0"
 ideaExt = "1.1.7"
 illuaminate = "0.1.0-74-gf1551d5"
-librarian = "1.+"
 lwjgl = "3.3.3"
-minotaur = "2.+"
+minotaur = "2.8.7"
+modDevGradle = "2.0.74"
 nullAway = "0.10.25"
 shadow = "8.3.1"
 spotless = "6.23.3"
@@ -150,12 +149,11 @@ errorProne-core = { module = "com.google.errorprone:error_prone_core", version.r
 errorProne-plugin = { module = "net.ltgt.gradle:gradle-errorprone-plugin", version.ref = "errorProne-plugin" }
 errorProne-testHelpers = { module = "com.google.errorprone:error_prone_test_helpers", version.ref = "errorProne-core" }
 fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "fabric-loom" }
-forgeGradle = { module = "net.minecraftforge.gradle:ForgeGradle", version.ref = "forgeGradle" }
 ideaExt = { module = "gradle.plugin.org.jetbrains.gradle.plugin.idea-ext:gradle-idea-ext", version.ref = "ideaExt" }
 kotlin-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-librarian = { module = "org.parchmentmc:librarian", version.ref = "librarian" }
 minotaur = { module = "com.modrinth.minotaur:Minotaur", version.ref = "minotaur" }
 nullAway = { module = "com.uber.nullaway:nullaway", version.ref = "nullAway" }
+modDevGradle = { module = "net.neoforged:moddev-gradle", version.ref = "modDevGradle" }
 spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 teavm-classlib = { module = "org.teavm:teavm-classlib", version.ref = "teavm" }
 teavm-core = { module = "org.teavm:teavm-core", version.ref = "teavm" }
@@ -170,11 +168,9 @@ vanillaExtract = { module = "cc.tweaked.vanilla-extract:plugin", version.ref = "
 yarn = { module = "net.fabricmc:yarn", version.ref = "yarn" }
 
 [plugins]
-forgeGradle = { id = "net.minecraftforge.gradle", version.ref = "forgeGradle" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version.ref = "githubRelease" }
 gradleVersions = { id = "com.github.ben-manes.versions", version.ref = "gradleVersions" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-librarian = { id = "org.parchmentmc.librarian.forgegradle", version.ref = "librarian" }
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
 taskTree = { id = "com.dorongold.task-tree", version.ref = "taskTree" }
 versionCatalogUpdate = { id = "nl.littlerobots.version-catalog-update", version.ref = "versionCatalogUpdate" }

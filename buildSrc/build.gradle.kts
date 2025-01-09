@@ -14,18 +14,10 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 
-    maven("https://maven.minecraftforge.net") {
-        name = "Forge"
+    maven("https://maven.neoforged.net") {
+        name = "NeoForge"
         content {
-            includeGroup("net.minecraftforge")
-            includeGroup("net.minecraftforge.gradle")
-        }
-    }
-
-    maven("https://maven.parchmentmc.org") {
-        name = "Librarian"
-        content {
-            includeGroupByRegex("^org\\.parchmentmc.*")
+            includeGroup("net.neoforged")
         }
     }
 
@@ -50,10 +42,9 @@ dependencies {
     implementation(libs.spotless)
 
     implementation(libs.fabric.loom)
-    implementation(libs.forgeGradle)
     implementation(libs.ideaExt)
-    implementation(libs.librarian)
     implementation(libs.minotaur)
+    implementation(libs.modDevGradle)
     implementation(libs.vanillaExtract)
 }
 

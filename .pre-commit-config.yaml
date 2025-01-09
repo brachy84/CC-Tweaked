@@ -58,6 +58,7 @@ repos:
 exclude: |
   (?x)^(
     projects/[a-z]+/src/generated|
+    projects/[a-z]+/src/examples/generatedResources|
     projects/core/src/test/resources/test-rom/data/json-parsing/|
     .*\.dfpwm
   )

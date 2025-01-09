@@ -11,12 +11,6 @@ plugins {
     id("cc-tweaked.publishing")
 }
 
-sourceSets {
-    main {
-        resources.srcDir("src/generated/resources")
-    }
-}
-
 minecraft {
     accessWideners(
         "src/main/resources/computercraft.accesswidener",
@@ -113,20 +107,28 @@ val lintLua by tasks.registering(IlluaminateExec::class) {
     doLast { if (System.getenv("GITHUB_ACTIONS") != null) println("::remove-matcher owner=illuaminate::") }
 }
 
-val runData by tasks.registering(MergeTrees::class) {
-    output = layout.projectDirectory.dir("src/generated/resources")
+fun MergeTrees.configureForDatagen(source: SourceSet, outputFolder: String) {
+    output = layout.projectDirectory.dir(outputFolder)
 
     for (loader in listOf("forge", "fabric")) {
-        mustRunAfter(":$loader:runData")
+        mustRunAfter(":$loader:$name")
         source {
             input {
-                from(project(":$loader").layout.buildDirectory.dir("generatedResources"))
+                from(project(":$loader").layout.buildDirectory.dir(source.getTaskName("generateResources", null)))
                 exclude(".cache")
             }
 
-            output = project(":$loader").layout.projectDirectory.dir("src/generated/resources")
+            output = project(":$loader").layout.projectDirectory.dir(outputFolder)
         }
     }
+}
+
+val runData by tasks.registering(MergeTrees::class) {
+    configureForDatagen(sourceSets.main.get(), "src/generated/resources")
+}
+
+val runExampleData by tasks.registering(MergeTrees::class) {
+    configureForDatagen(sourceSets.examples.get(), "src/examples/generatedResources")
 }
 
 tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }

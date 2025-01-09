@@ -106,8 +106,6 @@ dependencies {
     testFixturesImplementation(testFixtures(project(":core")))
 }
 
-sourceSets.main { resources.srcDir("src/generated/resources") }
-
 loom {
     accessWidenerPath.set(project(":common").file("src/main/resources/computercraft.accesswidener"))
     mixin.defaultRefmapName.set("computercraft.refmap.json")
@@ -126,6 +124,10 @@ loom {
             sourceSet(sourceSets.testMod.get())
             sourceSet(project(":common").sourceSets.testMod.get())
         }
+
+        register("examplemod") {
+            sourceSet(sourceSets.examples.get())
+        }
     }
 
     runs {
@@ -142,19 +144,24 @@ loom {
             runDir("run/server")
         }
 
-        register("data") {
-            configName = "Datagen"
+        fun RunConfigSettings.configureForData(sourceSet: SourceSet) {
             client()
-
-            source(sourceSets.datagen.get())
-
-            runDir("run/dataGen")
+            runDir("run/run${name.capitalise()}")
             property("fabric-api.datagen")
-            property("fabric-api.datagen.output-dir", layout.buildDirectory.dir("generatedResources").getAbsolutePath())
+            property(
+                "fabric-api.datagen.output-dir",
+                layout.buildDirectory.dir(sourceSet.getTaskName("generateResources", null)).getAbsolutePath(),
+            )
             property("fabric-api.datagen.strict-validation")
         }
 
-        fun configureForGameTest(config: RunConfigSettings) = config.run {
+        register("data") {
+            configName = "Datagen"
+            configureForData(sourceSets.main.get())
+            source(sourceSets.datagen.get())
+        }
+
+        fun RunConfigSettings.configureForGameTest() {
             source(sourceSets.testMod.get())
 
             val testSources = project(":common").file("src/testMod/resources/data/cctest").absolutePath
@@ -169,7 +176,7 @@ loom {
         val testClient by registering {
             configName = "Test Client"
             client()
-            configureForGameTest(this)
+            configureForGameTest()
 
             runDir("run/testClient")
             property("cctest.tags", "client,common")
@@ -178,15 +185,26 @@ loom {
         register("gametest") {
             configName = "Game Test"
             server()
-            configureForGameTest(this)
+            configureForGameTest()
 
             property("fabric-api.gametest")
             property(
                 "fabric-api.gametest.report-file",
-                layout.buildDirectory.dir("test-results/runGametest.xml")
-                    .getAbsolutePath(),
+                layout.buildDirectory.dir("test-results/runGametest.xml").getAbsolutePath(),
             )
             runDir("run/gametest")
+        }
+
+        register("exampleClient") {
+            client()
+            configName = "Example Mod Client"
+            source(sourceSets.examples.get())
+        }
+
+        register("exampleData") {
+            configName = "Example Mod Datagen"
+            configureForData(sourceSets.examples.get())
+            source(sourceSets.examples.get())
         }
     }
 }

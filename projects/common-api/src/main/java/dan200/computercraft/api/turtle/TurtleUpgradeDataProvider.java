@@ -29,6 +29,9 @@ import java.util.function.Consumer;
  * {@link #addUpgrades(Consumer)} function, construct each upgrade, and pass them off to the provided consumer to
  * generate them.
  *
+ * <h2>Example</h2>
+ * {@snippet class=com.example.examplemod.data.TurtleDataProvider region=body}
+ *
  * @see TurtleUpgradeSerialiser
  */
 public abstract class TurtleUpgradeDataProvider extends UpgradeDataProvider<ITurtleUpgrade, TurtleUpgradeSerialiser<?>> {
