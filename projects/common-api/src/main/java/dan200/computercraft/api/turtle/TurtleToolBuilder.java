@@ -25,19 +25,11 @@ import java.util.Optional;
 /**
  * A builder for custom turtle tool upgrades.
  * <p>
- * This can be used from your <a href="../upgrades/UpgradeType.html#datagen">data generator</a> code in order to
+ * This can be used from your <a href="./ITurtleUpgrade.html#datagen">data generator</a> code in order to
  * register turtle tools for your mod's tools.
  *
- * <h2>Example:</h2>
- * {@snippet lang = "java":
- * import net.minecraft.data.worldgen.BootstrapContext;
- * import net.minecraft.resources.ResourceLocation;
- * import net.minecraft.world.item.Items;
- *
- * public void registerTool(BootstrapContext<ITurtleUpgrade> upgrades) {
- *   TurtleToolBuilder.tool(ResourceLocation.fromNamespaceAndPath("my_mod", "wooden_pickaxe"), Items.WOODEN_PICKAXE).register(upgrades);
- * }
- *}
+ * <h2>Example</h2>
+ * {@snippet class=com.example.examplemod.data.TurtleToolProvider region=body}
  */
 public final class TurtleToolBuilder {
     private final ResourceKey<ITurtleUpgrade> id;

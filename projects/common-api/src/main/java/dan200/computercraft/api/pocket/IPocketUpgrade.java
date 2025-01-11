@@ -20,32 +20,10 @@ import javax.annotation.Nullable;
  * A peripheral which can be equipped to the back side of a pocket computer.
  * <p>
  * Pocket upgrades are defined in two stages. First, one creates a {@link IPocketUpgrade} subclass and corresponding
- * {@link UpgradeType} instance, which are then registered in a registry.
+ * {@link UpgradeType} instance, which are then registered in a Minecraft registry.
  * <p>
  * You then write a JSON file in your mod's {@literal data/} folder. This is then parsed when the world is loaded, and
- * the upgrade automatically registered. It is recommended this is done via
- * <a href="../upgrades/UpgradeType.html#datagen">data generators</a>.
- *
- * <h2>Example</h2>
- * {@snippet lang="java" :
- * // We use Forge's DeferredRegister to register our upgrade type. Fabric mods may register their type directly.
- * static final DeferredRegister<UpgradeType<? extends IPocketUpgrade>> POCKET_UPGRADES = DeferredRegister.create(IPocketUpgrade.typeRegistry(), "my_mod");
- *
- * // Register a new upgrade upgrade type called "my_upgrade".
- * public static final RegistryObject<UpgradeType<MyUpgrade>> MY_UPGRADE =
- *     POCKET_UPGRADES.register("my_upgrade", () -> UpgradeType.simple(new MyUpgrade()));
- *
- * // Then in your constructor
- * POCKET_UPGRADES.register(bus);
- * }
- * <p>
- * We can then define a new upgrade using JSON by placing the following in
- * {@code data/<my_mod>/computercraft/pocket_upgrade/<my_upgrade_id>.json}.
- * {@snippet lang="json" :
- * {
- *     "type": "my_mod:my_upgrade"
- * }
- * }
+ * the upgrade registered internally.
  */
 public interface IPocketUpgrade extends UpgradeBase {
     ResourceKey<Registry<IPocketUpgrade>> REGISTRY = ResourceKey.createRegistryKey(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "pocket_upgrade"));

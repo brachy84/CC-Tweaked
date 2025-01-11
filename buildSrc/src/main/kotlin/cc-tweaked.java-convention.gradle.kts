@@ -99,6 +99,7 @@ sourceSets.all {
             check("OperatorPrecedence", CheckSeverity.OFF) // For now.
             check("NonOverridingEquals", CheckSeverity.OFF) // Peripheral.equals makes this hard to avoid
             check("FutureReturnValueIgnored", CheckSeverity.OFF) // Too many false positives with Netty
+            check("InvalidInlineTag", CheckSeverity.OFF) // Triggered by @snippet. Can be removed on Java 21.
 
             check("NullAway", CheckSeverity.ERROR)
             option(

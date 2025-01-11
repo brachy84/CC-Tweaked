@@ -11,20 +11,18 @@ import cc.tweaked.gradle.MinecraftConfigurations
 
 plugins {
     id("cc-tweaked.java-convention")
-    id("net.neoforged.gradle.userdev")
+    id("net.neoforged.moddev")
 }
 
 plugins.apply(CCTweakedPlugin::class.java)
 
 val mcVersion: String by extra
 
-minecraft {
-    modIdentifier("computercraft")
-}
+neoForge {
+    val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
+    version = libs.findVersion("neoForge").get().toString()
 
-subsystems {
     parchment {
-        val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
         minecraftVersion = libs.findVersion("parchmentMc").get().toString()
         mappingsVersion = libs.findVersion("parchment").get().toString()
     }

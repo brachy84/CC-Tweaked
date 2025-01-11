@@ -8,14 +8,10 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
 
-        maven("https://maven.neoforged.net/releases") {
+        maven("https://maven.neoforged.net") {
             name = "NeoForge"
             content {
-                includeGroup("net.minecraftforge")
                 includeGroup("net.neoforged")
-                includeGroup("net.neoforged.gradle")
-                includeModule("codechicken", "DiffPatch")
-                includeModule("net.covers1624", "Quack")
             }
         }
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 import cc.tweaked.gradle.*
-import net.neoforged.gradle.dsl.common.runs.run.Run
+import net.neoforged.moddevgradle.dsl.RunModel
 
 plugins {
     id("cc-tweaked.forge")
@@ -19,106 +19,122 @@ cct {
     allProjects.forEach { externalSources(it) }
 }
 
-sourceSets {
-    main {
-        resources.srcDir("src/generated/resources")
-    }
-
-    testMod { runs { modIdentifier = "cctest" } }
-    testFixtures { runs { modIdentifier = "cctest" } }
-}
-
-minecraft {
-    accessTransformers {
-        file("src/main/resources/META-INF/accesstransformer.cfg")
-    }
-}
-
-runs {
-    configureEach {
-        systemProperty("forge.logging.markers", "REGISTRIES")
-        systemProperty("forge.logging.console.level", "debug")
-
+neoForge {
+    val computercraft by mods.registering {
         cct.sourceDirectories.get().forEach {
-            if (it.classes) modSources.add("computercraft", it.sourceSet)
-        }
-
-        dependencies {
-            runtime(configurations["minecraftLibrary"])
+            if (it.classes) sourceSet(it.sourceSet)
         }
     }
 
-    val client by registering {
-        workingDirectory(file("run"))
-    }
-
-    val server by registering {
-        workingDirectory(file("run/server"))
-        argument("--nogui")
-    }
-
-    val data by registering {
-        workingDirectory(file("run"))
-        arguments.addAll(
-            "--mod", "computercraft", "--all",
-            "--output", layout.buildDirectory.dir("generatedResources").getAbsolutePath(),
-            "--existing", project(":common").file("src/main/resources/").absolutePath,
-            "--existing", file("src/main/resources/").absolutePath,
-        )
-
-        modSources.add("computercraft", sourceSets.datagen.get())
-    }
-
-    fun Run.configureForGameTest() {
-        gameTest()
-
-        systemProperty("cctest.sources", project(":common").file("src/testMod/resources/data/cctest").absolutePath)
-
-        modSource(sourceSets.testMod.get())
-        modSource(sourceSets.testFixtures.get())
-        modSources.add("cctest", project(":core").sourceSets.testFixtures.get())
-
-        jvmArgument("-ea")
-
-        dependencies {
-            runtime(configurations["testMinecraftLibrary"])
+    val computercraftDatagen by mods.registering {
+        cct.sourceDirectories.get().forEach {
+            if (it.classes) sourceSet(it.sourceSet)
         }
+        sourceSet(sourceSets.datagen.get())
     }
 
-    val gameTestServer by registering {
-        workingDirectory(file("run/testServer"))
-        configureForGameTest()
+    val testMod by mods.registering {
+        sourceSet(sourceSets.testMod.get())
+        sourceSet(sourceSets.testFixtures.get())
+        sourceSet(project(":core").sourceSets["testFixtures"])
     }
 
-    val gameTestClient by registering {
-        configure(runTypes.named("client"))
+    val exampleMod by mods.registering {
+        sourceSet(sourceSets.examples.get())
+    }
 
-        workingDirectory(file("run/testClient"))
-        configureForGameTest()
+    runs {
+        configureEach {
+            ideName = "Forge - ${name.capitalise()}"
+            systemProperty("forge.logging.markers", "REGISTRIES")
+            systemProperty("forge.logging.console.level", "debug")
+            loadedMods.add(computercraft)
+        }
 
-        systemProperties("cctest.tags", "client,common")
+        register("client") {
+            client()
+        }
+
+        register("server") {
+            server()
+            gameDirectory = file("run/server")
+            programArgument("--nogui")
+        }
+
+        fun RunModel.configureForData(mod: String, sourceSet: SourceSet) {
+            data()
+            gameDirectory = file("run/run${name.capitalise()}")
+            programArguments.addAll(
+                "--mod", mod, "--all",
+                "--output",
+                layout.buildDirectory.dir(sourceSet.getTaskName("generateResources", null))
+                    .getAbsolutePath(),
+                "--existing", project.project(":common").file("src/${sourceSet.name}/resources/").absolutePath,
+                "--existing", project.file("src/${sourceSet.name}/resources/").absolutePath,
+            )
+        }
+
+        register("data") {
+            configureForData("computercraft", sourceSets.main.get())
+            loadedMods = listOf(computercraftDatagen.get())
+        }
+
+        fun RunModel.configureForGameTest() {
+            systemProperty(
+                "cctest.sources",
+                project.project(":common").file("src/testMod/resources/data/cctest").absolutePath,
+            )
+
+            programArgument("--mixin.config=computercraft-gametest.mixins.json")
+            loadedMods.add(testMod)
+
+            jvmArgument("-ea")
+        }
+
+        register("testClient") {
+            client()
+            gameDirectory = file("run/testClient")
+            configureForGameTest()
+
+            systemProperty("cctest.tags", "client,common")
+        }
+
+        register("gametest") {
+            type = "gameTestServer"
+            configureForGameTest()
+
+            systemProperty("forge.logging.console.level", "info")
+            systemProperty(
+                "cctest.gametest-report",
+                layout.buildDirectory.dir("test-results/runGametest.xml").getAbsolutePath(),
+            )
+            gameDirectory = file("run/gametest")
+        }
+
+        register("exampleClient") {
+            client()
+            loadedMods.add(exampleMod.get())
+        }
+
+        register("exampleData") {
+            configureForData("examplemod", sourceSets.examples.get())
+            loadedMods.add(exampleMod.get())
+        }
     }
 }
 
 configurations {
-    val minecraftEmbed by registering {
-        isCanBeResolved = false
-        isCanBeConsumed = false
-    }
-    named("jarJar") { extendsFrom(minecraftEmbed.get()) }
+    additionalRuntimeClasspath { extendsFrom(jarJar.get()) }
 
-    val minecraftLibrary by registering {
-        isCanBeResolved = true
-        isCanBeConsumed = false
-        extendsFrom(minecraftEmbed.get())
-    }
-    runtimeOnly { extendsFrom(minecraftLibrary.get()) }
-
-    val testMinecraftLibrary by registering {
+    val testAdditionalRuntimeClasspath by registering {
         isCanBeResolved = true
         isCanBeConsumed = false
         // Prevent ending up with multiple versions of libraries on the classpath.
-        shouldResolveConsistentlyWith(minecraftLibrary.get())
+        shouldResolveConsistentlyWith(additionalRuntimeClasspath.get())
+    }
+
+    for (testConfig in listOf("testClientAdditionalRuntimeClasspath", "gametestAdditionalRuntimeClasspath")) {
+        named(testConfig) { extendsFrom(testAdditionalRuntimeClasspath.get()) }
     }
 
     register("testWithIris") {
@@ -136,21 +152,18 @@ dependencies {
     runtimeOnly(libs.bundles.externalMods.forge.runtime) { cct.exclude(this) }
     compileOnly(variantOf(libs.create.forge) { classifier("slim") }) { isTransitive = false }
 
-    implementation("net.neoforged:neoforge:${libs.versions.neoForge.get()}")
-
     // Depend on our other projects.
     api(commonClasses(project(":forge-api"))) { cct.exclude(this) }
     clientApi(clientClasses(project(":forge-api"))) { cct.exclude(this) }
     implementation(project(":core")) { cct.exclude(this) }
 
-    "minecraftEmbed"(libs.cobalt)
-    "minecraftEmbed"(libs.jzlib)
-
+    jarJar(libs.cobalt)
+    jarJar(libs.jzlib)
     // We don't jar-in-jar our additional netty dependencies (see the tasks.jarJar configuration), but still want them
     // on the legacy classpath.
-    "minecraftLibrary"(libs.netty.http)
-    "minecraftLibrary"(libs.netty.socks)
-    "minecraftLibrary"(libs.netty.proxy)
+    additionalRuntimeClasspath(libs.netty.http) { isTransitive = false }
+    additionalRuntimeClasspath(libs.netty.socks) { isTransitive = false }
+    additionalRuntimeClasspath(libs.netty.proxy) { isTransitive = false }
 
     testFixturesApi(libs.bundles.test)
     testFixturesApi(libs.bundles.kotlin)
@@ -163,8 +176,8 @@ dependencies {
     testModImplementation(testFixtures(project(":forge")))
 
     // Ensure our test fixture dependencies are on the classpath
-    "testMinecraftLibrary"(libs.bundles.kotlin)
-    "testMinecraftLibrary"(libs.bundles.test)
+    "testAdditionalRuntimeClasspath"(libs.bundles.kotlin)
+    "testAdditionalRuntimeClasspath"(libs.bundles.test)
 
     testFixturesImplementation(testFixtures(project(":core")))
 
@@ -178,15 +191,12 @@ tasks.processResources {
     inputs.property("modVersion", modVersion)
     inputs.property("neoVersion", libs.versions.neoForge.get())
 
-    filesMatching("META-INF/neoforge.mods.toml") {
+    filesMatching("META-INF/mods.toml") {
         expand(mapOf("neoVersion" to libs.versions.neoForge.get(), "file" to mapOf("jarVersion" to modVersion)))
     }
 }
 
 tasks.jar {
-    archiveClassifier.set("slim")
-    duplicatesStrategy = DuplicatesStrategy.FAIL
-
     // Include all classes from other projects except core.
     val coreSources = project(":core").sourceSets["main"]
     for (source in cct.sourceDirectories.get()) {
@@ -203,42 +213,28 @@ tasks.sourcesJar {
     for (source in cct.sourceDirectories.get()) from(source.sourceSet.allSource)
 }
 
-tasks.jarJar {
-    archiveClassifier.set("")
-}
-
-tasks.assemble { dependsOn("jarJar") }
-
 // Check tasks
 
 tasks.test {
     systemProperty("cct.test-files", layout.buildDirectory.dir("tmp/testFiles").getAbsolutePath())
 }
 
-val runGametest by tasks.registering(JavaExec::class) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    description = "Runs tests on a temporary Minecraft instance."
-    dependsOn("cleanRunGametest")
+val runGametest = tasks.named<JavaExec>("runGametest") {
     usesService(MinecraftRunnerService.get(gradle))
-
-    copyFromTask("runGameTestServer")
-
-    systemProperty("forge.logging.console.level", "info")
-    systemProperty("cctest.gametest-report", layout.buildDirectory.dir("test-results/$name.xml").getAbsolutePath())
 }
 cct.jacoco(runGametest)
 tasks.check { dependsOn(runGametest) }
 
 val runGametestClient by tasks.registering(ClientJavaExec::class) {
     description = "Runs client-side gametests with no mods"
-    copyFrom("runGameTestClient")
+    copyFromForge("runTestClient")
     tags("client")
 }
 cct.jacoco(runGametestClient)
 
 val runGametestClientWithIris by tasks.registering(ClientJavaExec::class) {
     description = "Runs client-side gametests with Iris"
-    copyFrom("runGameTestClient")
+    copyFromForge("runGameTestClient")
 
     tags("iris")
     classpath += configurations["testWithIris"]
@@ -256,20 +252,15 @@ tasks.register("checkClient") {
 // Upload tasks
 
 modPublishing {
-    output.set(tasks.jarJar)
+    output.set(tasks.jar)
 }
 
-// Don't publish the slim jar
-for (cfg in listOf(configurations.apiElements, configurations.runtimeElements)) {
-    cfg.configure { artifacts.removeIf { it.classifier == "slim" } }
-}
-
-tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }
 publishing {
     publications {
         named("maven", MavenPublication::class) {
             mavenDependencies {
                 cct.configureExcludes(this)
+                exclude(libs.jei.forge.get())
             }
         }
     }

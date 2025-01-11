@@ -14,14 +14,10 @@ repositories {
     mavenCentral()
     gradlePluginPortal()
 
-    maven("https://maven.neoforged.net/releases") {
+    maven("https://maven.neoforged.net") {
         name = "NeoForge"
         content {
-            includeGroup("net.minecraftforge")
             includeGroup("net.neoforged")
-            includeGroup("net.neoforged.gradle")
-            includeModule("codechicken", "DiffPatch")
-            includeModule("net.covers1624", "Quack")
         }
     }
 
@@ -48,7 +44,7 @@ dependencies {
     implementation(libs.fabric.loom)
     implementation(libs.ideaExt)
     implementation(libs.minotaur)
-    implementation(libs.neoGradle.userdev)
+    implementation(libs.modDevGradle)
     implementation(libs.vanillaExtract)
 }
 

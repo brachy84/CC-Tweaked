@@ -11,47 +11,79 @@ import dan200.computercraft.api.upgrades.UpgradeType;
 import dan200.computercraft.impl.ComputerCraftAPIService;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
+import net.minecraft.core.RegistrySetBuilder.PatchedRegistries;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
 
 import javax.annotation.Nullable;
+import java.util.function.Function;
 
 /**
  * The primary interface for defining an update for Turtles. A turtle update can either be a new tool, or a new
  * peripheral.
  * <p>
  * Turtle upgrades are defined in two stages. First, one creates a {@link ITurtleUpgrade} subclass and corresponding
- * {@link UpgradeType} instance, which are then registered in a registry.
+ * {@link UpgradeType} instance, which are then registered in a Minecraft registry.
  * <p>
  * You then write a JSON file in your mod's {@literal data/} folder. This is then parsed when the world is loaded, and
- * the upgrade automatically registered. It is recommended this is done via
- * <a href="../upgrades/UpgradeType.html#datagen">data generators</a>.
+ * the upgrade automatically registered.
  *
  * <h2>Example</h2>
- * {@snippet lang="java" :
- * // We use Forge's DeferredRegister to register our upgrade type. Fabric mods may register their type directly.
- * static final DeferredRegister<UpgradeType<? extends ITurtleUpgrade>> TURTLE_UPGRADES = DeferredRegister.create(ITurtleUpgrade.typeRegistry(), "my_mod");
+ * <h3>Registering the upgrade type</h3>
+ * First, let's create a new class that implements {@link ITurtleUpgrade}. It is recommended to subclass
+ * {@link AbstractTurtleUpgrade}, as that provides a default implementation of most methods.
  *
- * // Register a new upgrade type called "my_upgrade".
- * public static final RegistryObject<UpgradeType<MyUpgrade>> MY_UPGRADE =
- *     TURTLE_UPGRADES.register("my_upgrade", () -> UpgradeType.simple(MyUpgrade::new));
+ * {@snippet class=com.example.examplemod.ExampleTurtleUpgrade region=body}
  *
- * // Then in your constructor
- * TURTLE_UPGRADES.register(bus);
- * }
+ * Now we must construct a new upgrade type. In most cases, you can use one of the helper methods (e.g.
+ * {@link UpgradeType#simpleWithCustomItem(Function)}), rather than defining your own implementation.
+ *
+ * {@snippet class=com.example.examplemod.ExampleMod region=turtle_upgrades}
+ *
+ * We now must register this upgrade type. This is done the same way as you'd register blocks, items, or other
+ * Minecraft objects. The approach to do this will depend on mod-loader.
+ *
+ * <h4>Fabric</h4>
+ * {@snippet class=com.example.examplemod.FabricExampleMod region=turtle_upgrades}
+ *
+ * <h4>Forge</h4>
+ * {@snippet class=com.example.examplemod.ForgeExampleMod region=turtle_upgrades}
+ *
+ * <h3>Rendering the upgrade</h3>
+ * Next, we need to register a model for our upgrade. This is done by registering a
+ * {@link dan200.computercraft.api.client.turtle.TurtleUpgradeModeller} for your upgrade type.
+ *
+ * <h4>Fabric</h4>
+ * {@snippet class=com.example.examplemod.FabricExampleModClient region=turtle_modellers}
+ *
+ * <h4>Forge</h4>
+ * {@snippet class=com.example.examplemod.FabricExampleModClient region=turtle_modellers}
+ *
+ * <h3 id="datagen">Registering the upgrade itself</h3>
+ * Upgrades themselves are loaded from datapacks when a level is loaded. In order to register our new upgrade, we must
+ * create a new JSON file at {@code data/<my_mod>/computercraft/turtle_upgrade/<my_upgrade_id>.json}.
+ *
+ * {@snippet file=data/examplemod/computercraft/turtle_upgrade/example_turtle_upgrade.json}
+ *
+ * The {@code "type"} field points to the ID of the upgrade type we've just registered, while the other fields are read
+ * by the type itself. As our upgrade was defined with {@link UpgradeType#simpleWithCustomItem(Function)}, the
+ * {@code "item"} field will construct our upgrade with {@link Items#COMPASS}.
  * <p>
- * We can then define a new upgrade using JSON by placing the following in
- * {@code data/<my_mod>/computercraft/turtle_upgrade/<my_upgrade_id>.json}.
- * <p>
- * {@snippet lang="json" :
- * {
- *     "type": "my_mod:my_upgrade"
- * }
- * }
- * <p>
- * Finally, we need to register a model for our upgrade, see
- * {@link dan200.computercraft.api.client.turtle.TurtleUpgradeModeller} for more information.
+ * Rather than manually creating the file, it is recommended to use data-generators to generate this file. First, we
+ * register our new upgrades into a {@linkplain PatchedRegistries patched registry}.
+ *
+ * {@snippet class=com.example.examplemod.data.TurtleUpgradeProvider region=body}
+ *
+ * Next, we must write these upgrades to disk. Vanilla does not have complete support for this yet, so this must be done
+ * with mod-loader-specific APIs.
+ *
+ * <h4>Fabric</h4>
+ * {@snippet class=com.example.examplemod.FabricExampleModDataGenerator region=turtle_upgrades}
+ *
+ * <h4>Forge</h4>
+ * {@snippet class=com.example.examplemod.ForgeExampleModDataGenerator region=turtle_upgrades}
  */
 public interface ITurtleUpgrade extends UpgradeBase {
     /**

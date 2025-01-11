@@ -27,21 +27,7 @@ import java.util.function.Consumer;
  *
  * <h2>Example</h2>
  *
- * {@snippet lang="java" :
- * public class MyPeripheral implements IPeripheral {
- *     private final AttachedComputerSet computers = new ComputerCollection();
- *
- *     @Override
- *     public void attach(IComputerAccess computer) {
- *         computers.add(computer);
- *     }
- *
- *     @Override
- *     public void detach(IComputerAccess computer) {
- *         computers.remove(computer);
- *     }
- * }
- * }
+ * {@snippet class=com.example.examplemod.peripheral.ComputerTrackingPeripheral region=body}
  *
  * @see IComputerAccess
  * @see IPeripheral#attach(IComputerAccess)

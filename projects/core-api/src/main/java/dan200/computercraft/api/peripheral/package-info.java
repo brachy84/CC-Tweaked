@@ -47,36 +47,12 @@
  * Then, we can start adding methods to your block entity. Each method should take its target type as the first
  * argument, which in this case is a {@code AbstractFurnaceBlockEntity}. We then annotate this method with
  * {@link dan200.computercraft.api.lua.LuaFunction} to expose it to computers.
- * <p>
- * {@snippet lang="java" :
- * import dan200.computercraft.api.lua.LuaFunction;
- * import dan200.computercraft.api.peripheral.GenericPeripheral;
- * import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
  *
- * public final class FurnacePeripheral implements GenericPeripheral {
- *     @Override
- *     public String id() {
- *         return "mymod:furnace";
- *     }
+ * {@snippet class=com.example.examplemod.peripheral.FurnacePeripheral region=body}
  *
- *     @LuaFunction(mainThread = true)
- *     public int getBurnTime(AbstractFurnaceBlockEntity furnace) {
- *         return furnace.litTime;
- *     }
- * }
- * }
- * <p>
  * Finally, we need to register our peripheral, so that ComputerCraft is aware of it:
- * <p>
- * {@snippet lang="java" :
- * import dan200.computercraft.api.ComputerCraftAPI;
  *
- * public class ComputerCraftCompat {
- *     public static void register() {
- *         ComputerCraftAPI.registerGenericSource(new FurnacePeripheral());
- *     }
- * }
- * }
+ * {@snippet class=com.example.examplemod.ExampleMod region=generic_source}
  *
  * <h3>Creating a {@code IPeripheral}</h3>
  * First, we'll need to create a new class that implements {@link dan200.computercraft.api.peripheral.IPeripheral}. This
@@ -84,72 +60,20 @@
  * <p>
  * We can then start adding peripheral methods to our class. Each method should be {@code final}, and annotated with
  * {@link dan200.computercraft.api.lua.LuaFunction}.
- * <p>
- * {@snippet lang="java" :
- * import dan200.computercraft.api.lua.LuaFunction;
- * import dan200.computercraft.api.peripheral.IPeripheral;
- * import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
- * import org.jetbrains.annotations.Nullable;
  *
- * public class FurnacePeripheral implements IPeripheral {
- *     private final AbstractFurnaceBlockEntity furnace;
+ * {@snippet class=com.example.examplemod.peripheral.BrewingStandPeripheral region=body}
  *
- *     public FurnacePeripheral(AbstractFurnaceBlockEntity furnace) {
- *         this.furnace = furnace;
- *     }
- *
- *     @Override
- *     public String getType() {
- *         return "furnace";
- *     }
- *
- *     @LuaFunction(mainThread = true)
- *     public final int getBurnTime() {
- *         return furnace.litTime;
- *     }
- *
- *     @Override
- *     public boolean equals(@Nullable IPeripheral other) {
- *         return this == other || other instanceof FurnacePeripheral p && furnace == p.furnace;
- *     }
- * }
- * }
- * <p>
  * Finally, we'll need to register our peripheral. This is done with capabilities on Forge, or the block lookup API on
  * Fabric.
  *
  * <h4>Registering {@code IPeripheral} on Forge</h4>
  * Registering a peripheral on Forge can be done by using the capability API, via {@code PeripheralCapability}.
  *
- * {@snippet lang="java" :
- * import dan200.computercraft.api.peripheral.PeripheralCapability;
- * import net.minecraft.world.level.block.entity.BlockEntityType;
- * import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
- *
- * public class ComputerCraftCompat {
- *     public static void register(RegisterCapabilitiesEvent event) {
- *         event.registerBlockEntity(PeripheralCapability.get(), BlockEntityType.FURNACE, (f, s) -> new FurnacePeripheral(f));
- *         event.registerBlockEntity(PeripheralCapability.get(), BlockEntityType.BLAST_FURNACE, (f, s) -> new FurnacePeripheral(f));
- *         event.registerBlockEntity(PeripheralCapability.get(), BlockEntityType.SMOKER, (f, s) -> new FurnacePeripheral(f));
- *     }
- * }
- * }
+ * {@snippet class=com.example.examplemod.ForgeExampleMod region=peripherals}
  *
  * <h4>Registering {@code IPeripheral} on Fabric</h4>
  * Registering a peripheral on Fabric can be done using the block lookup API, via {@code PeripheralLookup}.
  *
- * {@snippet lang="java" :
- * import dan200.computercraft.api.peripheral.PeripheralLookup;
- * import dan200.computercraft.example.FurnacePeripheral;
- * import net.minecraft.world.level.block.entity.BlockEntityType;
- *
- * public class ComputerCraftCompat {
- *     public static void register() {
- *         PeripheralLookup.get().registerForBlockEntity((f, s) -> new FurnacePeripheral(f), BlockEntityType.FURNACE);
- *         PeripheralLookup.get().registerForBlockEntity((f, s) -> new FurnacePeripheral(f), BlockEntityType.BLAST_FURNACE);
- *         PeripheralLookup.get().registerForBlockEntity((f, s) -> new FurnacePeripheral(f), BlockEntityType.SMOKER);
- *     }
- * }
- * }
+ * {@snippet class=com.example.examplemod.FabricExampleMod region=peripherals}
  */
 package dan200.computercraft.api.peripheral;

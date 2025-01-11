@@ -113,7 +113,7 @@ abstract class CCTweakedExtension(
         // Pull in sources from the other project.
         extendSourceSet(otherProject, main)
         extendSourceSet(otherProject, client)
-        for (sourceSet in listOf("datagen", "testMod", "testFixtures")) {
+        for (sourceSet in listOf(MinecraftConfigurations.DATAGEN, MinecraftConfigurations.EXAMPLES, MinecraftConfigurations.TEST_MOD, "testFixtures")) {
             otherJava.sourceSets.findByName(sourceSet)?.let { extendSourceSet(otherProject, it) }
         }
 

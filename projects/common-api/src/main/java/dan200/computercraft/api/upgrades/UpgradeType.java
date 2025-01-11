@@ -7,9 +7,7 @@ package dan200.computercraft.api.upgrades;
 import com.mojang.serialization.MapCodec;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
-import dan200.computercraft.impl.upgrades.UpgradeTypeImpl;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
@@ -23,13 +21,10 @@ import java.util.function.Function;
  * follow a similar design to other dynamic content, such as {@linkplain Recipe recipes} or {@link LootItemFunction
  * loot functions}.
  * <p>
- * First, one adds a new class implementing {@link ITurtleUpgrade} or {@link IPocketUpgrade}). This is responsible for
- * handling all the logic of your upgrade.
- * <p>
- * However, the upgrades are not registered directly. Instead, each upgrade class should have a corresponding
- * {@link UpgradeType}, which is responsible for loading the upgrade from a datapack. The upgrade type should then be
- * registered in its appropriate registry ({@link ITurtleUpgrade#typeRegistry()},
- * {@link IPocketUpgrade#typeRegistry()}).
+ * While the {@link ITurtleUpgrade}/{@link IPocketUpgrade} class should contain the core logic of the upgrade, they are
+ * not registered directly. Instead, each upgrade class has a corresponding {@link UpgradeType}, which is responsible
+ * for loading the upgrade from a datapack. The upgrade type should then be registered in its appropriate registry
+ * ({@link ITurtleUpgrade#typeRegistry()}, {@link IPocketUpgrade#typeRegistry()}).
  * <p>
  * In order to register the actual upgrade, a JSON file referencing your upgrade type should be added to a datapack. It
  * is recommended to do this via the data generators.
@@ -38,29 +33,7 @@ import java.util.function.Function;
  * As turtle and pocket upgrades are just loaded using vanilla's dynamic loaders, one may use the same data generation
  * tools as you would for any other dynamic registry.
  * <p>
- * This can typically be done by extending vanilla's built-in registries using {@link RegistryPatchGenerator}, and then
- * writing out the new registries using {@code net.fabricmc.fabric.api.datagen.v1.provider.FabricDynamicRegistryProvider}
- * on Fabric or {@code net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider} on Forge.
- * <p>
- * {@snippet lang="java" :
- * import dan200.computercraft.api.turtle.ITurtleUpgrade;
- * import net.minecraft.Util;
- * import net.minecraft.core.HolderLookup;
- * import net.minecraft.core.RegistrySetBuilder;
- * import net.minecraft.data.DataGenerator;
- * import net.neoforged.neoforge.common.data.DatapackBuiltinEntriesProvider;
- *
- * import java.util.concurrent.CompletableFuture;
- *
- * public void generate(DataGenerator.PackGenerator output, CompletableFuture<HolderLookup.Provider> registries) {
- *     var newRegistries = RegistryPatchGenerator.createLookup(registries, Util.make(new RegistrySetBuilder(), builder -> {
- *         builder.add(ITurtleUpgrade.REGISTRY, upgrades -> {
- *             upgrades.register(ITurtleUpgrade.createKey(ResourceLocation.fromNamespaceAndPath("my_mod", "my_upgrade")), new MyUpgrade());
- *         });
- *     }));
- *     output.addProvider(o -> new DatapackBuiltinEntriesProvider(o, newRegistries, Set.of("my_mod")));
- * }
- * }
+ * See <a href="../turtle/ITurtleUpgrade.html#datagen">the turtle upgrade docs</a> for a concrete example.
  *
  * @param <T> The upgrade subclass that this upgrade type represents.
  * @see ITurtleUpgrade

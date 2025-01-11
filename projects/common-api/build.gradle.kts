@@ -18,12 +18,27 @@ dependencies {
     api(project(":core-api"))
 }
 
+val javadocOverview by tasks.registering(Copy::class) {
+    from("src/overview.html")
+    into(layout.buildDirectory.dir(name))
+
+    expand(
+        mapOf(
+            "mcVersion" to mcVersion,
+            "modVersion" to version,
+        ),
+    )
+}
+
 tasks.javadoc {
-    title = "CC: Tweaked $version Minecraft $mcVersion"
+    title = "CC: Tweaked $version for Minecraft $mcVersion"
     include("dan200/computercraft/api/**/*.java")
 
     options {
         (this as StandardJavadocDocletOptions)
+
+        inputs.files(javadocOverview)
+        overview(javadocOverview.get().destinationDir.resolve("overview.html").absolutePath)
 
         groups = mapOf(
             "Common" to listOf(
@@ -47,6 +62,12 @@ tasks.javadoc {
             <link href=" https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css " rel="stylesheet">
             """.trimIndent(),
         )
+
+        val snippetSources = listOf(":common", ":fabric", ":forge").flatMap {
+            project(it).sourceSets["examples"].allSource.sourceDirectories
+        }
+        inputs.files(snippetSources)
+        addPathOption("-snippet-path").value = snippetSources
     }
 
     // Include the core-api in our javadoc export. This is wrong, but it means we can export a single javadoc dump.

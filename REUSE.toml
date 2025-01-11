@@ -8,10 +8,10 @@ SPDX-PackageSupplier = "Jonathan Coates <git@squiddev.cc>"
 SPDX-PackageDownloadLocation = "https://github.com/cc-tweaked/cc-tweaked"
 
 [[annotations]]
-# Generated/data files are CC0.
 SPDX-FileCopyrightText = "The CC: Tweaked Developers"
 SPDX-License-Identifier = "CC0-1.0"
 path = [
+    # Generated/data files are CC0.
     "gradle/gradle-daemon-jvm.properties",
     "projects/common/src/main/resources/assets/computercraft/sounds.json",
     "projects/common/src/main/resources/assets/computercraft/sounds/empty.ogg",
@@ -20,6 +20,11 @@ path = [
     "projects/**/src/generated/**",
     "projects/web/src/htmlTransform/export/index.json",
     "projects/web/src/htmlTransform/export/items/minecraft/**",
+    # GitHub build scripts are CC0. While we could add a header to each file,
+    # it's unclear if it will break actions or issue templates in some way.
+    ".github/**",
+    # Example mod is CC0.
+    "projects/**/src/examples/**"
 ]
 
 [[annotations]]
@@ -74,7 +79,7 @@ path = [
 ]
 
 [[annotations]]
-# Community-contributed license files
+# Community-contributed language files
 SPDX-FileCopyrightText = "2017 The CC: Tweaked Developers"
 SPDX-License-Identifier = "LicenseRef-CCPL"
 path = [
@@ -88,17 +93,10 @@ path = [
 ]
 
 [[annotations]]
-# Community-contributed license files
+# Community-contributed language files
 SPDX-FileCopyrightText = "2017 The CC: Tweaked Developers"
 SPDX-License-Identifier = "MPL-2.0"
 path = "projects/common/src/main/resources/assets/computercraft/lang/**"
-
-[[annotations]]
-# GitHub build scripts are CC0. While we could add a header to each file,
-# it's unclear if it will break actions or issue templates in some way.
-SPDX-FileCopyrightText = "Jonathan Coates <git@squiddev.cc>"
-SPDX-License-Identifier = "CC0-1.0"
-path = ".github/**"
 
 [[annotations]]
 path = ["gradle/wrapper/**"]
