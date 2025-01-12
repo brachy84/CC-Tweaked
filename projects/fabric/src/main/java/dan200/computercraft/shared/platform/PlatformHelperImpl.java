@@ -67,7 +67,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
@@ -84,7 +83,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @AutoService(dan200.computercraft.impl.PlatformHelper.class)
 public class PlatformHelperImpl implements PlatformHelper {
@@ -309,17 +311,10 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock) {
+    public UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit) {
         var result = UseBlockCallback.EVENT.invoker().interact(player, player.level(), InteractionHand.MAIN_HAND, hit);
-        if (result != InteractionResult.PASS) return result;
-
-        var block = player.level().getBlockState(hit.getBlockPos());
-        if (!block.isAir() && canUseBlock.test(block)) {
-            var useResult = block.use(player.level(), player, InteractionHand.MAIN_HAND, hit);
-            if (useResult.consumesAction()) return useResult;
-        }
-
-        return stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+        if (result != InteractionResult.PASS) return new UseOnResult.Handled(result);
+        return new UseOnResult.Continue(true, true);
     }
 
     private record RegistryWrapperImpl<T>(

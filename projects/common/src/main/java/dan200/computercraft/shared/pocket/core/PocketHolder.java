@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 /**
  * An object that holds a pocket computer item.
  */
-public sealed interface PocketHolder permits PocketHolder.EntityHolder {
+public sealed interface PocketHolder {
     /**
      * The level this holder is in.
      *
@@ -54,7 +54,7 @@ public sealed interface PocketHolder permits PocketHolder.EntityHolder {
     /**
      * An {@link Entity} holding a pocket computer.
      */
-    sealed interface EntityHolder extends PocketHolder permits PocketHolder.PlayerHolder, PocketHolder.ItemEntityHolder {
+    sealed interface EntityHolder extends PocketHolder {
         /**
          * Get the entity holding this pocket computer.
          *

@@ -78,7 +78,10 @@ import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 @AutoService(dan200.computercraft.impl.PlatformHelper.class)
 public class PlatformHelperImpl implements PlatformHelper {
@@ -324,25 +327,18 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock) {
-        var level = player.level();
+    public UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit) {
         var pos = hit.getBlockPos();
         var event = ForgeHooks.onRightClickBlock(player, InteractionHand.MAIN_HAND, pos, hit);
-        if (event.isCanceled()) return event.getCancellationResult();
+        if (event.isCanceled()) return new UseOnResult.Handled(event.getCancellationResult());
 
         var context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
         if (event.getUseItem() != Event.Result.DENY) {
             var result = stack.onItemUseFirst(context);
-            if (result != InteractionResult.PASS) return result;
+            if (result != InteractionResult.PASS) return new UseOnResult.Handled(event.getCancellationResult());
         }
 
-        var block = level.getBlockState(hit.getBlockPos());
-        if (event.getUseBlock() != Event.Result.DENY && !block.isAir() && canUseBlock.test(block)) {
-            var useResult = block.use(level, player, InteractionHand.MAIN_HAND, hit);
-            if (useResult.consumesAction()) return useResult;
-        }
-
-        return event.getUseItem() == Event.Result.DENY ? InteractionResult.PASS : stack.useOn(context);
+        return new UseOnResult.Continue(event.getUseBlock() != Event.Result.DENY, event.getUseItem() != Event.Result.DENY);
     }
 
     @Override

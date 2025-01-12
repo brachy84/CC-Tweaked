@@ -29,6 +29,7 @@ import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -343,8 +344,12 @@ public class TurtleTool extends AbstractTurtleUpgrade {
         }
 
         var hit = TurtlePlaceCommand.getHitResult(position, direction.getOpposite());
-        var result = PlatformHelper.get().useOn(turtlePlayer.player(), stack, hit, x -> false);
-        return result.consumesAction();
+        var result = PlatformHelper.get().useOn(turtlePlayer.player(), stack, hit);
+        if (result instanceof PlatformHelper.UseOnResult.Handled handled) {
+            return handled.result().consumesAction();
+        } else {
+            return ((PlatformHelper.UseOnResult.Continue) result).item() && item.useOn(new UseOnContext(turtlePlayer.player(), InteractionHand.MAIN_HAND, hit)).consumesAction();
+        }
     }
 
     private static boolean isTriviallyBreakable(BlockGetter reader, BlockPos pos, BlockState state) {

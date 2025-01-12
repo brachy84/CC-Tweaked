@@ -143,6 +143,22 @@ class Turtle_Test {
     }
 
     /**
+     * Checks that turtles cannot place items into non-adjacent blocks.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_into_composter_non_adjacent(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await()
+                .assertArrayEquals(false, "Cannot place item here", message = "Failed to place item")
+        }
+        thenExecute {
+            helper.assertBlockIs(BlockPos(2, 2, 3)) { it.block == Blocks.COMPOSTER && it.getValue(ComposterBlock.LEVEL) == 0 }
+        }
+    }
+
+    /**
      * Checks that turtles can place bottles into beehives.
      *
      * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].

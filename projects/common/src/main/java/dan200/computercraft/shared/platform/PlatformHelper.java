@@ -39,6 +39,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -53,7 +54,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 /**
  * This extends {@linkplain dan200.computercraft.impl.PlatformHelper the API's loader abstraction layer}, adding
@@ -375,20 +375,40 @@ public interface PlatformHelper extends dan200.computercraft.impl.PlatformHelper
     boolean interactWithEntity(ServerPlayer player, Entity entity, Vec3 hitPos);
 
     /**
-     * Place an item against a block.
-     * <p>
-     * Implementations should largely mirror {@link ServerPlayerGameMode#useItemOn(ServerPlayer, Level, ItemStack, InteractionHand, BlockHitResult)}
-     * (including any loader-specific modifications), except the call to {@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)}
-     * should only be evaluated when {@code canUseBlock} evaluates to true.
-     *
-     * @param player      The player which is placing this item.
-     * @param stack       The item to place.
-     * @param hit         The collision with the block we're placing against.
-     * @param canUseBlock Test whether the block should be interacted with first.
-     * @return Whether any interaction occurred.
-     * @see ServerPlayerGameMode#useItemOn(ServerPlayer, Level, ItemStack, InteractionHand, BlockHitResult)
+     * The result of attempting to use an item on a block.
      */
-    InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock);
+    sealed interface UseOnResult {
+        /**
+         * This interaction was intercepted by an event, and handled.
+         *
+         * @param result The result of using an item on a block.
+         */
+        record Handled(InteractionResult result) implements UseOnResult {
+        }
+
+        /**
+         * This result was not handled, and should be handled by the caller.
+         *
+         * @param block Whether the block may be used ({@link BlockState#use(Level, Player, InteractionHand, BlockHitResult)}).
+         * @param item  Whether the item may be used on the block ({@link ItemStack#useOn(UseOnContext)}).
+         * @see ServerPlayerGameMode#useItemOn(ServerPlayer, Level, ItemStack, InteractionHand, BlockHitResult)
+         */
+        record Continue(boolean block, boolean item) implements UseOnResult {
+        }
+    }
+
+    /**
+     * Run mod-loader specific code before placing an item against a block.
+     * <p>
+     * This should dispatch any mod-loader specific events that are fired when clicking a block. It does necessarily
+     * handle the actual clicking of the block — see {@link UseOnResult.Handled} and {@link UseOnResult.Continue}.
+     *
+     * @param player The player which is placing this item.
+     * @param stack  The item to place.
+     * @param hit    The collision with the block we're placing against.
+     * @return Whether any interaction occurred.
+     */
+    UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit);
 
     /**
      * Whether {@link net.minecraft.network.chat.ClickEvent.Action#RUN_COMMAND} can be used to run client commands.
