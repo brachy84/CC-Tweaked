@@ -7,12 +7,7 @@
         "defaultRequire": 1
     },
     "mixins": [
-        "ArgumentTypeInfosAccessor",
-        "ChunkMapMixin",
-        "EntityMixin",
-        "ExplosionDamageCalculatorMixin",
-        "ItemEntityMixin",
-        "ItemMixin",
-        "ServerLevelMixin"
+        "TagEntryAccessor",
+        "TagsProviderMixin"
     ]
 }
