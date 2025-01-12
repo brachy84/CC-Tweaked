@@ -24,6 +24,7 @@ import dan200.computercraft.shared.peripheral.modem.wired.CableModemVariant
 import dan200.computercraft.shared.peripheral.monitor.MonitorBlock
 import dan200.computercraft.shared.peripheral.monitor.MonitorEdgeState
 import dan200.computercraft.shared.turtle.apis.TurtleAPI
+import dan200.computercraft.shared.turtle.core.TurtleCraftCommand
 import dan200.computercraft.shared.util.WaterloggableHelpers
 import dan200.computercraft.test.core.assertArrayEquals
 import dan200.computercraft.test.core.computer.LuaTaskContext
@@ -46,8 +47,7 @@ import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.milliseconds
@@ -160,6 +160,19 @@ class Turtle_Test {
         }
         thenExecute {
             helper.assertBlockIs(BlockPos(2, 2, 2)) { it.block == Blocks.BEEHIVE && it.getValue(BeehiveBlock.HONEY_LEVEL) == 0 }
+        }
+    }
+
+    /**
+     * Checks that turtles cannot use arbitrary blocks with `place()`.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_does_not_use(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await()
+                .assertArrayEquals(false, "Cannot place block here", message = "Failed to place item")
         }
     }
 
@@ -776,6 +789,43 @@ class Turtle_Test {
                     isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
                 ),
             )
+        }
+    }
+
+    /**
+     * Test that turtles attempt crafts in all four corners.
+     *
+     * @see [#1918](https://github.com/cc-tweaked/CC-Tweaked/issues/1918)
+     */
+    @GameTest
+    fun Craft_offset(helper: GameTestHelper) = helper.sequence {
+        for (offset in listOf(0, 1, 4, 5)) {
+            thenExecute {
+                val turtle = helper.getBlockEntity(BlockPos(2, 2, 2), ModRegistry.BlockEntities.TURTLE_NORMAL.get())
+
+                // Set up turtle inventory
+                turtle.clearContent()
+                turtle.setItem(offset + 0, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 1, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 2, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 5, ItemStack(Items.STICK))
+                turtle.setItem(offset + 9, ItemStack(Items.STICK))
+
+                // Try to craft
+                assertTrue(TurtleCraftCommand(1).execute(turtle.access).isSuccess, "Crafting succeeded")
+
+                // And check item was crafted
+                assertThat(
+                    "Inventory is as expected.",
+                    turtle.contents,
+                    contains(
+                        isStack(Items.STONE_PICKAXE, 1), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                    ),
+                )
+            }
         }
     }
 
