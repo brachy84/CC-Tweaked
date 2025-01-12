@@ -13,7 +13,7 @@ import cc.tweaked.gradle.clientClasses
 import cc.tweaked.gradle.commonClasses
 
 plugins {
-    id("cc-tweaked.kotlin-convention")
+    kotlin("jvm")
     id("cc-tweaked.java-convention")
 }
 

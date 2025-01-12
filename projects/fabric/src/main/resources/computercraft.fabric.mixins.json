@@ -13,8 +13,6 @@
         "ItemEntityMixin",
         "PlayerChunkSenderMixin",
         "ServerLevelMixin",
-        "TagEntryAccessor",
-        "TagsProviderMixin",
         "V3818_3Mixin"
     ]
 }

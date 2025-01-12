@@ -116,7 +116,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
     }
 
     public TerminalState getTerminalState() {
-        return new TerminalState(terminal);
+        return TerminalState.create(terminal);
     }
 
     public void keepAlive() {

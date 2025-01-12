@@ -68,7 +68,7 @@ gradlePlugin {
 }
 
 versionCatalogUpdate {
-    sortByKey.set(false)
-    keep { keepUnusedLibraries.set(true) }
-    catalogFile.set(file("../gradle/libs.versions.toml"))
+    sortByKey = false
+    keep { keepUnusedLibraries = true }
+    catalogFile = file("../gradle/libs.versions.toml")
 }

@@ -5,6 +5,7 @@
 package dan200.computercraft.gametest
 
 import dan200.computercraft.api.ComputerCraftAPI
+import dan200.computercraft.api.ComputerCraftTags
 import dan200.computercraft.api.detail.BasicItemDetailProvider
 import dan200.computercraft.api.detail.VanillaDetailRegistries
 import dan200.computercraft.api.lua.ObjectArguments
@@ -24,6 +25,7 @@ import dan200.computercraft.shared.peripheral.monitor.MonitorBlock
 import dan200.computercraft.shared.peripheral.monitor.MonitorEdgeState
 import dan200.computercraft.shared.turtle.TurtleOverlay
 import dan200.computercraft.shared.turtle.apis.TurtleAPI
+import dan200.computercraft.shared.turtle.core.TurtleCraftCommand
 import dan200.computercraft.shared.turtle.items.TurtleItem
 import dan200.computercraft.shared.util.WaterloggableHelpers
 import dan200.computercraft.test.core.assertArrayEquals
@@ -37,17 +39,19 @@ import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.PrimedTnt
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.enchantment.Enchantments
+import net.minecraft.world.level.block.BeehiveBlock
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.ComposterBlock
 import net.minecraft.world.level.block.FenceBlock
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.*
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.time.Duration.Companion.milliseconds
@@ -108,6 +112,71 @@ class Turtle_Test {
             for ((i, line) in lines.withIndex()) {
                 assertEquals(line, sign.frontText.getMessage(i, false).string, "Line $i")
             }
+        }
+    }
+
+    /**
+     * Checks that turtles can place boats. These are not a [BlockItem], and so behave slightly differently.
+     *
+     * See [ComputerCraftTags.Items.TURTLE_CAN_PLACE].
+     */
+    @GameTest
+    fun Place_boat(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.placeDown(ObjectArguments()).await().assertArrayEquals(true, message = "Placed boat")
+        }
+        thenExecute { helper.assertEntityPresent(EntityType.BOAT) }
+    }
+
+    /**
+     * Checks that turtles can place items into composters.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_into_composter(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await().assertArrayEquals(true, message = "Placed pumpkin pie")
+            turtle.getItemDetail(context, Optional.empty(), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:pumpkin_pie", "count" to 1),
+            )
+        }
+        thenExecute {
+            helper.assertBlockIs(BlockPos(2, 2, 2)) { it.block == Blocks.COMPOSTER && it.getValue(ComposterBlock.LEVEL) == 2 }
+        }
+    }
+
+    /**
+     * Checks that turtles can place bottles into beehives.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_into_beehive(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await().assertArrayEquals(true, message = "Placed pumpkin pie")
+            turtle.getItemDetail(context, Optional.of(1), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:glass_bottle", "count" to 63),
+            )
+            turtle.getItemDetail(context, Optional.of(2), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:honey_bottle", "count" to 1),
+            )
+        }
+        thenExecute {
+            helper.assertBlockIs(BlockPos(2, 2, 2)) { it.block == Blocks.BEEHIVE && it.getValue(BeehiveBlock.HONEY_LEVEL) == 0 }
+        }
+    }
+
+    /**
+     * Checks that turtles cannot use arbitrary blocks with `place()`.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_does_not_use(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await()
+                .assertArrayEquals(false, "Cannot place block here", message = "Failed to place item")
         }
     }
 
@@ -331,11 +400,11 @@ class Turtle_Test {
     }
 
     /**
-     * Checks turtles can place into compostors. These are non-typical inventories, so
+     * Checks turtles can place into composters. These are non-typical inventories, so
      * worth testing.
      */
     @GameTest
-    fun Use_compostors(helper: GameTestHelper) = helper.sequence {
+    fun Use_composters(helper: GameTestHelper) = helper.sequence {
         thenOnComputer {
             turtle.dropDown(Optional.empty()).await()
                 .assertArrayEquals(true, message = "Item was dropped")
@@ -694,6 +763,21 @@ class Turtle_Test {
     }
 
     /**
+     * `turtle.drop` only inserts for the current side.
+     */
+    @GameTest
+    fun Sided_drop(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.dropDown(Optional.empty()).await().assertArrayEquals(true)
+            turtle.getItemDetail(context, Optional.empty(), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:coal", "count" to 8),
+            )
+
+            turtle.dropDown(Optional.empty()).await().assertArrayEquals(false, "No space for items")
+        }
+    }
+
+    /**
      * `turtle.craft` works as expected
      */
     @GameTest
@@ -741,6 +825,43 @@ class Turtle_Test {
                     isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
                 ),
             )
+        }
+    }
+
+    /**
+     * Test that turtles attempt crafts in all four corners.
+     *
+     * @see [#1918](https://github.com/cc-tweaked/CC-Tweaked/issues/1918)
+     */
+    @GameTest
+    fun Craft_offset(helper: GameTestHelper) = helper.sequence {
+        for (offset in listOf(0, 1, 4, 5)) {
+            thenExecute {
+                val turtle = helper.getBlockEntity(BlockPos(2, 2, 2), ModRegistry.BlockEntities.TURTLE_NORMAL.get())
+
+                // Set up turtle inventory
+                turtle.clearContent()
+                turtle.setItem(offset + 0, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 1, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 2, ItemStack(Items.COBBLESTONE))
+                turtle.setItem(offset + 5, ItemStack(Items.STICK))
+                turtle.setItem(offset + 9, ItemStack(Items.STICK))
+
+                // Try to craft
+                assertTrue(TurtleCraftCommand(1).execute(turtle.access).isSuccess, "Crafting succeeded")
+
+                // And check item was crafted
+                assertThat(
+                    "Inventory is as expected.",
+                    turtle.items,
+                    contains(
+                        isStack(Items.STONE_PICKAXE, 1), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                        isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY), isStack(ItemStack.EMPTY),
+                    ),
+                )
+            }
         }
     }
 

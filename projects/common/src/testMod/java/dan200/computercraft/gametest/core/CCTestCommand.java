@@ -10,8 +10,11 @@ import dan200.computercraft.mixin.gametest.TestCommandAccessor;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.util.NonNegativeId;
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandBuildContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.commands.arguments.item.ItemArgument;
+import net.minecraft.commands.arguments.item.ItemInput;
 import net.minecraft.gametest.framework.GameTestRegistry;
 import net.minecraft.gametest.framework.StructureUtils;
 import net.minecraft.nbt.CompoundTag;
@@ -19,7 +22,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.StructureBlockEntity;
 import net.minecraft.world.level.storage.LevelResource;
 
@@ -28,6 +30,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 import static dan200.computercraft.core.util.Nullability.assertNonNull;
+import static dan200.computercraft.shared.command.builder.CommandBuilder.command;
 import static dan200.computercraft.shared.command.builder.HelpingArgumentBuilder.choice;
 import static net.minecraft.commands.Commands.literal;
 
@@ -37,7 +40,7 @@ import static net.minecraft.commands.Commands.literal;
 class CCTestCommand {
     public static final LevelResource LOCATION = new LevelResource(ComputerCraftAPI.MOD_ID);
 
-    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher, CommandBuildContext buildContext) {
         dispatcher.register(choice("cctest")
             .then(literal("import").executes(context -> {
                 importFiles(context.getSource().getServer());
@@ -85,7 +88,9 @@ class CCTestCommand {
                 return 0;
             }))
 
-            .then(literal("give-computer").executes(context -> {
+            .then(command("give-computer").arg("item", ItemArgument.item(buildContext)).executes(context -> {
+                var item = context.getArgument("item", ItemInput.class);
+
                 var player = context.getSource().getPlayerOrException();
                 var pos = StructureUtils.findNearestStructureBlock(player.blockPosition(), 15, player.serverLevel()).orElse(null);
                 if (pos == null) return error(context.getSource(), "No nearby test");
@@ -94,11 +99,11 @@ class CCTestCommand {
                 if (structureBlock == null) return error(context.getSource(), "No nearby structure block");
                 var info = GameTestRegistry.getTestFunction(structureBlock.getMetaData());
 
-                var item = new ItemStack(ModRegistry.Items.COMPUTER_ADVANCED.get());
-                item.set(ModRegistry.DataComponents.COMPUTER_ID.get(), new NonNegativeId(1));
-                item.set(DataComponents.CUSTOM_NAME, Component.literal(info.testName()));
-                if (!player.getInventory().add(item)) {
-                    var itemEntity = player.drop(item, false);
+                var stack = item.createItemStack(1, false);
+                stack.set(ModRegistry.DataComponents.COMPUTER_ID.get(), new NonNegativeId(1));
+                stack.set(DataComponents.CUSTOM_NAME, Component.literal(info.testName()));
+                if (!player.getInventory().add(stack)) {
+                    var itemEntity = player.drop(stack, false);
                     if (itemEntity != null) {
                         itemEntity.setNoPickUpDelay();
                         itemEntity.setThrower(player);

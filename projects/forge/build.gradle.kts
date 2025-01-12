@@ -252,7 +252,7 @@ tasks.register("checkClient") {
 // Upload tasks
 
 modPublishing {
-    output.set(tasks.jar)
+    output = tasks.jar
 }
 
 publishing {

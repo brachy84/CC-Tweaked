@@ -63,7 +63,7 @@ dependencies {
 }
 
 illuaminate {
-    version.set(libs.versions.illuaminate)
+    version = libs.versions.illuaminate
 }
 
 val luaJavadoc by tasks.registering(Javadoc::class) {
@@ -84,11 +84,7 @@ val luaJavadoc by tasks.registering(Javadoc::class) {
     options.addStringOption("project-root", rootProject.file(".").absolutePath)
     options.noTimestamp(false)
 
-    javadocTool.set(
-        javaToolchains.javadocToolFor {
-            languageVersion.set(CCTweakedPlugin.JAVA_VERSION)
-        },
-    )
+    javadocTool = javaToolchains.javadocToolFor { languageVersion = CCTweakedPlugin.JAVA_VERSION }
 }
 
 val lintLua by tasks.registering(IlluaminateExec::class) {
