@@ -233,7 +233,7 @@ tasks.register("checkClient") {
 // Upload tasks
 
 modPublishing {
-    output.set(tasks.reobfJar)
+    output = tasks.reobfJar
 }
 
 publishing {

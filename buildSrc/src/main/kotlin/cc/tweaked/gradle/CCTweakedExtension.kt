@@ -40,33 +40,24 @@ abstract class CCTweakedExtension(
     private val project: Project,
     private val fs: FileSystemOperations,
 ) {
-    /** Get the hash of the latest git commit. */
-    val gitHash: Provider<String> = gitProvider(project, "<no git hash>") {
-        ProcessHelpers.captureOut("git", "-C", project.rootProject.projectDir.absolutePath, "rev-parse", "HEAD").trim()
-    }
-
     /** Get the current git branch. */
-    val gitBranch: Provider<String> = gitProvider(project, "<no git branch>") {
-        ProcessHelpers.captureOut("git", "-C", project.rootProject.projectDir.absolutePath, "rev-parse", "--abbrev-ref", "HEAD")
-            .trim()
-    }
+    val gitBranch: Provider<String> =
+        gitProvider("<no git branch>", listOf("rev-parse", "--abbrev-ref", "HEAD")) { it.trim() }
 
     /** Get a list of all contributors to the project. */
-    val gitContributors: Provider<List<String>> = gitProvider(project, listOf()) {
-        ProcessHelpers.captureLines(
-            "git", "-C", project.rootProject.projectDir.absolutePath, "shortlog", "-ns",
-            "--group=author", "--group=trailer:co-authored-by", "HEAD",
-        )
-            .asSequence()
-            .map {
-                val matcher = COMMIT_COUNTS.matcher(it)
-                matcher.find()
-                matcher.group(1)
-            }
-            .filter { !IGNORED_USERS.contains(it) }
-            .toList()
-            .sortedWith(String.CASE_INSENSITIVE_ORDER)
-    }
+    val gitContributors: Provider<List<String>> =
+        gitProvider(listOf(), listOf("shortlog", "-ns", "--group=author", "--group=trailer:co-authored-by", "HEAD")) { input ->
+            input.lineSequence()
+                .filter { it.isNotEmpty() }
+                .map {
+                    val matcher = COMMIT_COUNTS.matcher(it)
+                    matcher.find()
+                    matcher.group(1)
+                }
+                .filter { !IGNORED_USERS.contains(it) }
+                .toList()
+                .sortedWith(String.CASE_INSENSITIVE_ORDER)
+        }
 
     /**
      * References to other sources
@@ -265,25 +256,30 @@ abstract class CCTweakedExtension(
         for (dep in excludedDeps.get()) spec.exclude(dep)
     }
 
+    private fun <T> gitProvider(default: T, command: List<String>, process: (String) -> T): Provider<T> {
+        val baseResult = project.providers.exec {
+            commandLine = listOf("git", "-C", project.rootDir.absolutePath) + command
+        }
+
+        return project.provider {
+            val res = try {
+                baseResult.standardOutput.asText.get()
+            } catch (e: IOException) {
+                project.logger.error("Cannot read Git repository: ${e.message}", e)
+                return@provider default
+            } catch (e: GradleException) {
+                project.logger.error("Cannot read Git repository: ${e.message}", e)
+                return@provider default
+            }
+            process(res)
+        }
+    }
+
     companion object {
         private val COMMIT_COUNTS = Pattern.compile("""^\s*[0-9]+\s+(.*)$""")
         private val IGNORED_USERS = setOf(
             "GitHub", "Daniel Ratcliffe", "NotSquidDev", "Weblate",
         )
-
-        private fun <T> gitProvider(project: Project, default: T, supplier: () -> T): Provider<T> {
-            return project.provider {
-                try {
-                    supplier()
-                } catch (e: IOException) {
-                    project.logger.error("Cannot read Git repository: ${e.message}")
-                    default
-                } catch (e: GradleException) {
-                    project.logger.error("Cannot read Git repository: ${e.message}")
-                    default
-                }
-            }
-        }
 
         private val isIdeSync: Boolean
             get() = java.lang.Boolean.parseBoolean(System.getProperty("idea.sync.active", "false"))

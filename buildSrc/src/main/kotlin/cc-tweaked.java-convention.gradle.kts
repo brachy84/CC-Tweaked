@@ -29,7 +29,7 @@ base.archivesName.convention("cc-tweaked-$mcVersion-${project.name}")
 
 java {
     toolchain {
-        languageVersion.set(CCTweakedPlugin.JAVA_VERSION)
+        languageVersion= CCTweakedPlugin.JAVA_VERSION
     }
 
     withSourcesJar()
@@ -163,8 +163,8 @@ tasks.test {
 }
 
 tasks.withType(JacocoReport::class.java).configureEach {
-    reports.xml.required.set(true)
-    reports.html.required.set(true)
+    reports.xml.required = true
+    reports.html.required =true
 }
 
 project.plugins.withType(CCTweakedPlugin::class.java) {

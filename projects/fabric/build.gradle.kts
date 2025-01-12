@@ -31,10 +31,10 @@ fun addRemappedConfiguration(name: String) {
     }
     val capitalName = name.replaceFirstChar { it.titlecase(Locale.ROOT) }
     loom.addRemapConfiguration("mod$capitalName") {
-        onCompileClasspath.set(false)
-        onRuntimeClasspath.set(true)
-        sourceSet.set(ourSourceSet)
-        targetConfigurationName.set(name)
+        onCompileClasspath = false
+        onRuntimeClasspath = true
+        sourceSet = ourSourceSet
+        targetConfigurationName = name
     }
     configurations.create(name) {
         isCanBeConsumed = false
@@ -107,8 +107,8 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath.set(project(":common").file("src/main/resources/computercraft.accesswidener"))
-    mixin.defaultRefmapName.set("computercraft.refmap.json")
+    accessWidenerPath = project(":common").file("src/main/resources/computercraft.accesswidener")
+    mixin.defaultRefmapName = "computercraft.refmap.json"
 
     mods {
         register("computercraft") {
@@ -285,7 +285,7 @@ tasks.register("checkClient") {
 }
 
 modPublishing {
-    output.set(tasks.remapJar)
+    output = tasks.remapJar
 }
 
 tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }

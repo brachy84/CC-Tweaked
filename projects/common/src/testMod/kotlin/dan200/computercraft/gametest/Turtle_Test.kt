@@ -4,6 +4,7 @@
 
 package dan200.computercraft.gametest
 
+import dan200.computercraft.api.ComputerCraftTags
 import dan200.computercraft.api.detail.BasicItemDetailProvider
 import dan200.computercraft.api.detail.VanillaDetailRegistries
 import dan200.computercraft.api.lua.ObjectArguments
@@ -33,10 +34,13 @@ import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.item.PrimedTnt
+import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import net.minecraft.world.item.enchantment.Enchantments
+import net.minecraft.world.level.block.BeehiveBlock
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.ComposterBlock
 import net.minecraft.world.level.block.FenceBlock
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.properties.BlockStateProperties
@@ -104,6 +108,58 @@ class Turtle_Test {
             for ((i, line) in lines.withIndex()) {
                 assertEquals(line, sign.frontText.getMessage(i, false).string, "Line $i")
             }
+        }
+    }
+
+    /**
+     * Checks that turtles can place boats. These are not a [BlockItem], and so behave slightly differently.
+     *
+     * See [ComputerCraftTags.Items.TURTLE_CAN_PLACE].
+     */
+    @GameTest
+    fun Place_boat(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.placeDown(ObjectArguments()).await().assertArrayEquals(true, message = "Placed boat")
+        }
+        thenExecute { helper.assertEntityPresent(EntityType.BOAT) }
+    }
+
+    /**
+     * Checks that turtles can place items into composters.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_into_composter(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await().assertArrayEquals(true, message = "Placed pumpkin pie")
+            turtle.getItemDetail(context, Optional.empty(), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:pumpkin_pie", "count" to 1),
+            )
+        }
+        thenExecute {
+            helper.assertBlockIs(BlockPos(2, 2, 2)) { it.block == Blocks.COMPOSTER && it.getValue(ComposterBlock.LEVEL) == 2 }
+        }
+    }
+
+    /**
+     * Checks that turtles can place bottles into beehives.
+     *
+     * See [ComputerCraftTags.Blocks.TURTLE_CAN_USE].
+     */
+    @GameTest
+    fun Place_into_beehive(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.place(ObjectArguments()).await().assertArrayEquals(true, message = "Placed pumpkin pie")
+            turtle.getItemDetail(context, Optional.of(1), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:glass_bottle", "count" to 63),
+            )
+            turtle.getItemDetail(context, Optional.of(2), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:honey_bottle", "count" to 1),
+            )
+        }
+        thenExecute {
+            helper.assertBlockIs(BlockPos(2, 2, 2)) { it.block == Blocks.BEEHIVE && it.getValue(BeehiveBlock.HONEY_LEVEL) == 0 }
         }
     }
 
@@ -315,11 +371,11 @@ class Turtle_Test {
     }
 
     /**
-     * Checks turtles can place into compostors. These are non-typical inventories, so
+     * Checks turtles can place into composters. These are non-typical inventories, so
      * worth testing.
      */
     @GameTest
-    fun Use_compostors(helper: GameTestHelper) = helper.sequence {
+    fun Use_composters(helper: GameTestHelper) = helper.sequence {
         thenOnComputer {
             turtle.dropDown(Optional.empty()).await()
                 .assertArrayEquals(true, message = "Item was dropped")
@@ -653,6 +709,21 @@ class Turtle_Test {
             )
 
             turtle.suckUp(Optional.empty()).await().assertArrayEquals(false, "No items to take")
+        }
+    }
+
+    /**
+     * `turtle.drop` only inserts for the current side.
+     */
+    @GameTest
+    fun Sided_drop(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer {
+            turtle.dropDown(Optional.empty()).await().assertArrayEquals(true)
+            turtle.getItemDetail(context, Optional.empty(), Optional.empty()).await().assertArrayEquals(
+                mapOf("name" to "minecraft:coal", "count" to 8),
+            )
+
+            turtle.dropDown(Optional.empty()).await().assertArrayEquals(false, "No space for items")
         }
     }
 
