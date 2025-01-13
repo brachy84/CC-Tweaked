@@ -95,14 +95,14 @@ val illuaminateDocs by tasks.registering(cc.tweaked.gradle.IlluaminateExecToDir:
     // Sources
     inputs.files(rootProject.fileTree("doc")).withPropertyName("docs")
     inputs.files(project(":core").fileTree("src/main/resources/data/computercraft/lua")).withPropertyName("lua rom")
-    inputs.files(project(":common").tasks.named("luaJavadoc"))
+    inputs.dir(project(":common").tasks.named<Javadoc>("luaJavadoc").map { it.destinationDir!! }).withPropertyName("luaJavadoc")
     // Assets
     inputs.files(rollup)
 
     // Output directory. Also defined in illuaminate.sexp.
     output = layout.buildDirectory.dir("illuaminate")
 
-    args = listOf("doc-gen")
+    args("doc-gen")
     workingDir = rootProject.projectDir
 }
 

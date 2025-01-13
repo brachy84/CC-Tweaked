@@ -11,13 +11,10 @@ import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Dependency
-import org.gradle.api.attributes.TestSuiteType
-import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
-import org.gradle.api.reporting.ReportingExtension
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
@@ -25,7 +22,6 @@ import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.language.jvm.tasks.ProcessResources
 import org.gradle.process.JavaForkOptions
-import org.gradle.testing.jacoco.plugins.JacocoCoverageReport
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
 import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
@@ -36,10 +32,7 @@ import java.io.IOException
 import java.net.URI
 import java.util.regex.Pattern
 
-abstract class CCTweakedExtension(
-    private val project: Project,
-    private val fs: FileSystemOperations,
-) {
+abstract class CCTweakedExtension(private val project: Project) {
     /** Get the current git branch. */
     val gitBranch: Provider<String> =
         gitProvider("<no git branch>", listOf("rev-parse", "--abbrev-ref", "HEAD")) { it.trim() }
@@ -64,17 +57,11 @@ abstract class CCTweakedExtension(
      */
     val sourceDirectories: SetProperty<SourceSetReference> = project.objects.setProperty(SourceSetReference::class.java)
 
-    /**
-     * Dependencies excluded from published artifacts.
-     */
-    internal val excludedDeps: ListProperty<Dependency> = project.objects.listProperty(Dependency::class.java)
-
     /** All source sets referenced by this project. */
     val sourceSets = sourceDirectories.map { x -> x.map { it.sourceSet } }
 
     init {
         sourceDirectories.finalizeValueOnRead()
-        excludedDeps.finalizeValueOnRead()
         project.afterEvaluate { sourceDirectories.disallowChanges() }
     }
 
@@ -169,23 +156,18 @@ abstract class CCTweakedExtension(
     }
 
     fun <T> jacoco(task: NamedDomainObjectProvider<T>) where T : Task, T : JavaForkOptions {
-        val classDump = project.layout.buildDirectory.dir("jacocoClassDump/${task.name}")
         val reportTaskName = "jacoco${task.name.capitalise()}Report"
 
         val jacoco = project.extensions.getByType(JacocoPluginExtension::class.java)
         task.configure {
             finalizedBy(reportTaskName)
-
-            doFirst("Clean class dump directory") { fs.delete { delete(classDump) } }
-
             jacoco.applyTo(this)
-            extensions.configure(JacocoTaskExtension::class.java) {
-                includes = listOf("dan200.computercraft.*")
-                classDumpDir = classDump.get().asFile
 
-                // Older versions of modlauncher don't include a protection domain (and thus no code
-                // source). Jacoco skips such classes by default, so we need to explicitly include them.
-                isIncludeNoLocationClasses = true
+            extensions.configure(JacocoTaskExtension::class.java) {
+                excludes = listOf(
+                    "dan200.computercraft.mixin.*", // Exclude mixins, as they're not executed at runtime.
+                    "dan200.computercraft.shared.Capabilities$*", // Exclude capability tokens, as Forge rewrites them.
+                )
             }
         }
 
@@ -194,15 +176,11 @@ abstract class CCTweakedExtension(
             description = "Generates code coverage report for the ${task.name} task."
 
             executionData(task.get())
-            classDirectories.from(classDump)
 
-            // Don't want to use sourceSets(...) here as we have a custom class directory.
-            for (ref in sourceSets.get()) sourceDirectories.from(ref.allSource.sourceDirectories)
-        }
-
-        project.extensions.configure(ReportingExtension::class.java) {
-            reports.register("${task.name}CodeCoverageReport", JacocoCoverageReport::class.java) {
-                testType.set(TestSuiteType.INTEGRATION_TEST)
+            // Don't want to use sourceSets(...) here as we don't use all class directories.
+            for (ref in this@CCTweakedExtension.sourceDirectories.get()) {
+                sourceDirectories.from(ref.sourceSet.allSource.sourceDirectories)
+                if (ref.classes) classDirectories.from(ref.sourceSet.output)
             }
         }
     }
@@ -240,13 +218,6 @@ abstract class CCTweakedExtension(
                 ),
             ),
         ).resolve().single()
-    }
-
-    /**
-     * Exclude a dependency from being published in Maven.
-     */
-    fun exclude(dep: Dependency) {
-        excludedDeps.add(dep)
     }
 
     private fun <T> gitProvider(default: T, command: List<String>, process: (String) -> T): Provider<T> {

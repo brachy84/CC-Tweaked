@@ -136,6 +136,16 @@ configurations {
     for (testConfig in listOf("testClientAdditionalRuntimeClasspath", "gametestAdditionalRuntimeClasspath")) {
         named(testConfig) { extendsFrom(testAdditionalRuntimeClasspath.get()) }
     }
+
+    // Declare a configuration for projects which are on the compile and runtime classpath, but not treated as
+    // dependencies. This is used for our local projects.
+    val localImplementation by registering {
+        isCanBeResolved = false
+        isCanBeConsumed = false
+        isVisible = false
+    }
+    compileClasspath { extendsFrom(localImplementation.get()) }
+    runtimeClasspath { extendsFrom(localImplementation.get()) }
 }
 
 dependencies {
@@ -148,9 +158,9 @@ dependencies {
     modCompileOnly(variantOf(libs.create.forge) { classifier("slim") })
 
     // Depend on our other projects.
-    api(commonClasses(project(":forge-api"))) { cct.exclude(this) }
-    clientApi(clientClasses(project(":forge-api"))) { cct.exclude(this) }
-    implementation(project(":core")) { cct.exclude(this) }
+    "localImplementation"(project(":core"))
+    "localImplementation"(commonClasses(project(":forge-api")))
+    clientImplementation(clientClasses(project(":forge-api")))
 
     jarJar(libs.cobalt)
     jarJar(libs.jzlib)
@@ -180,12 +190,12 @@ dependencies {
 // Compile tasks
 
 tasks.processResources {
-    inputs.property("modVersion", modVersion)
-    inputs.property("forgeVersion", libs.versions.forge.get())
+    var props = mapOf(
+        "forgeVersion" to libs.versions.forge.get(),
+        "file" to mapOf("jarVersion" to modVersion),
+    )
 
-    filesMatching("META-INF/mods.toml") {
-        expand(mapOf("forgeVersion" to libs.versions.forge.get(), "file" to mapOf("jarVersion" to modVersion)))
-    }
+    filesMatching("META-INF/mods.toml") { expand(props) }
 }
 
 tasks.jar {

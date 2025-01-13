@@ -40,9 +40,8 @@ dependencies {
 }
 
 tasks.processResources {
-    filesMatching("data/computercraft/lua/rom/help/credits.md") {
-        expand(mapOf("gitContributors" to cct.gitContributors.map { it.joinToString("\n") }.get()))
-    }
+    var props = mapOf("gitContributors" to cct.gitContributors.get().joinToString("\n"))
+    filesMatching("data/computercraft/lua/rom/help/credits.md") { expand(props) }
 }
 
 tasks.test {

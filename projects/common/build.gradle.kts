@@ -126,3 +126,8 @@ val runData by tasks.registering(MergeTrees::class) {
 val runExampleData by tasks.registering(MergeTrees::class) {
     configureForDatagen(sourceSets.examples.get(), "src/examples/generatedResources")
 }
+
+// We can't create accurate module metadata for our additional capabilities, so disable it.
+project.tasks.withType(GenerateModuleMetadata::class.java).configureEach {
+    isEnabled = false
+}

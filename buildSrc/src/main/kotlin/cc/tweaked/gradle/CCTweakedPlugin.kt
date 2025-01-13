@@ -8,9 +8,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.gradle.ext.IdeaExtPlugin
@@ -27,13 +24,6 @@ class CCTweakedPlugin : Plugin<Project> {
         project.plugins.withType(JavaPlugin::class.java) {
             val sourceSets = project.extensions.getByType(JavaPluginExtension::class.java).sourceSets
             cct.sourceDirectories.add(SourceSetReference.internal(sourceSets.getByName("main")))
-        }
-
-        project.plugins.withType(PublishingPlugin::class.java) {
-            val publishing = project.extensions.getByType(PublishingExtension::class.java)
-            publishing.publications.withType(MavenPublication::class.java) {
-                excludeMavenDependencies(project, this, cct.excludedDeps)
-            }
         }
 
         project.plugins.withType(IdeaExtPlugin::class.java) { extendIdea(project) }
