@@ -11,10 +11,12 @@ import org.gradle.api.artifacts.ModuleDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.publish.tasks.GenerateModuleMetadata
 import org.gradle.api.tasks.SourceSet
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.withType
 
 /**
  * This sets up a separate client-only source set, and extends that and the main/common source set with additional
@@ -93,6 +95,12 @@ class MinecraftConfigurations private constructor(private val project: Project) 
 
         project.extensions.configure(CCTweakedExtension::class.java) {
             sourceDirectories.add(SourceSetReference.internal(client))
+        }
+
+        // We can't create accurate module metadata for our additional capabilities,
+        // so disable module metadata.
+        project.tasks.withType(GenerateModuleMetadata::class.java).configureEach {
+            isEnabled = false
         }
 
         // Register a task to check there are no conflicts with the core project.

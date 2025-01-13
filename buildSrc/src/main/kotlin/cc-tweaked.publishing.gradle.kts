@@ -12,6 +12,7 @@ publishing {
         register<MavenPublication>("maven") {
             artifactId = base.archivesName.get()
             from(components["java"])
+            suppressAllPomMetadataWarnings()
 
             pom {
                 name = "CC: Tweaked"

@@ -126,5 +126,3 @@ val runData by tasks.registering(MergeTrees::class) {
 val runExampleData by tasks.registering(MergeTrees::class) {
     configureForDatagen(sourceSets.examples.get(), "src/examples/generatedResources")
 }
-
-tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }

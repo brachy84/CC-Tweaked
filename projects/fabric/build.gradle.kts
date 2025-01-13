@@ -288,17 +288,6 @@ modPublishing {
     output = tasks.remapJar
 }
 
-tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }
-publishing {
-    publications {
-        named("maven", MavenPublication::class) {
-            mavenDependencies {
-                cct.configureExcludes(this)
-            }
-        }
-    }
-}
-
 modrinth {
     required.project("fabric-api")
 }

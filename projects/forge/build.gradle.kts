@@ -230,19 +230,6 @@ tasks.register("checkClient") {
     dependsOn(runGametestClient)
 }
 
-// Upload tasks
-
 modPublishing {
     output = tasks.reobfJar
-}
-
-publishing {
-    publications {
-        named("maven", MavenPublication::class) {
-            mavenDependencies {
-                cct.configureExcludes(this)
-                exclude(libs.jei.forge.get())
-            }
-        }
-    }
 }

@@ -67,7 +67,7 @@ abstract class CCTweakedExtension(
     /**
      * Dependencies excluded from published artifacts.
      */
-    private val excludedDeps: ListProperty<Dependency> = project.objects.listProperty(Dependency::class.java)
+    internal val excludedDeps: ListProperty<Dependency> = project.objects.listProperty(Dependency::class.java)
 
     /** All source sets referenced by this project. */
     val sourceSets = sourceDirectories.map { x -> x.map { it.sourceSet } }
@@ -247,13 +247,6 @@ abstract class CCTweakedExtension(
      */
     fun exclude(dep: Dependency) {
         excludedDeps.add(dep)
-    }
-
-    /**
-     * Configure a [MavenDependencySpec].
-     */
-    fun configureExcludes(spec: MavenDependencySpec) {
-        for (dep in excludedDeps.get()) spec.exclude(dep)
     }
 
     private fun <T> gitProvider(default: T, command: List<String>, process: (String) -> T): Provider<T> {
