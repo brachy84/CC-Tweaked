@@ -65,7 +65,6 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @AutoService(PlatformHelper.class)
@@ -222,25 +221,18 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock) {
-        var level = player.level();
+    public UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit) {
         var pos = hit.getBlockPos();
         var event = CommonHooks.onRightClickBlock(player, InteractionHand.MAIN_HAND, pos, hit);
-        if (event.isCanceled()) return event.getCancellationResult();
+        if (event.isCanceled()) return new UseOnResult.Handled(event.getCancellationResult());
 
         var context = new UseOnContext(player, InteractionHand.MAIN_HAND, hit);
         if (!event.getUseItem().isFalse()) {
             var result = stack.onItemUseFirst(context);
-            if (result != InteractionResult.PASS) return result;
+            if (result != InteractionResult.PASS) return new UseOnResult.Handled(event.getCancellationResult());
         }
 
-        var block = level.getBlockState(hit.getBlockPos());
-        if (!event.getUseBlock().isFalse() && !block.isAir() && canUseBlock.test(block)) {
-            var useResult = block.useItemOn(stack, level, player, InteractionHand.MAIN_HAND, hit);
-            if (useResult.consumesAction()) return useResult.result();
-        }
-
-        return event.getUseItem().isFalse() ? InteractionResult.PASS : stack.useOn(context);
+        return new UseOnResult.Continue(!event.getUseBlock().isFalse(), !event.getUseItem().isFalse());
     }
 
     private record RegistrationHelperImpl<R>(DeferredRegister<R> registry) implements RegistrationHelper<R> {

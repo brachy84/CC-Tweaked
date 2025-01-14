@@ -36,6 +36,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileDeflection;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -303,7 +304,7 @@ public class TurtleTool extends AbstractTurtleUpgrade {
      * @return Whether the tool was successfully used.
      * @see PlatformHelper#hasToolUsage(ItemStack)
      */
-    private boolean useTool(ServerLevel level, ITurtleAccess turtle, TurtlePlayer turtlePlayer, ItemStack stack, Direction direction) {
+    private static boolean useTool(ServerLevel level, ITurtleAccess turtle, TurtlePlayer turtlePlayer, ItemStack stack, Direction direction) {
         var position = turtle.getPosition().relative(direction);
         // Allow digging one extra block below the turtle, as you can't till dirt/flatten grass if there's a block
         // above.
@@ -314,8 +315,12 @@ public class TurtleTool extends AbstractTurtleUpgrade {
         }
 
         var hit = TurtlePlaceCommand.getHitResult(position, direction.getOpposite());
-        var result = PlatformHelper.get().useOn(turtlePlayer.player(), stack, hit, x -> false);
-        return result.consumesAction();
+        var result = PlatformHelper.get().useOn(turtlePlayer.player(), stack, hit);
+        return switch (result) {
+            case PlatformHelper.UseOnResult.Handled handled -> handled.result().consumesAction();
+            case PlatformHelper.UseOnResult.Continue canUse ->
+                canUse.item() && stack.useOn(new UseOnContext(turtlePlayer.player(), InteractionHand.MAIN_HAND, hit)).consumesAction();
+        };
     }
 
     private static boolean isTriviallyBreakable(BlockGetter reader, BlockPos pos, BlockState state) {

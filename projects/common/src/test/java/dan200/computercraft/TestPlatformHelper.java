@@ -43,7 +43,6 @@ import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 @AutoService({ PlatformHelper.class, ComputerCraftAPIService.class })
 public class TestPlatformHelper extends AbstractComputerCraftAPI implements PlatformHelper {
@@ -143,7 +142,7 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     }
 
     @Override
-    public InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock) {
+    public UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
     }
 

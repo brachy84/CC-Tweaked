@@ -53,7 +53,8 @@ create-fabric = "0.5.1-f-build.1467+mc1.20.1"
 # Testing
 hamcrest = "2.2"
 jqwik = "1.8.2"
-junit = "5.10.1"
+junit = "5.11.4"
+junitPlatform = "1.11.4"
 jmh = "1.37"
 
 # Build tools
@@ -132,6 +133,7 @@ jqwik-engine = { module = "net.jqwik:jqwik-engine", version.ref = "jqwik" }
 junit-jupiter-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-jupiter-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junitPlatform" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 jmh = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-processor = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
@@ -190,7 +192,7 @@ externalMods-fabric-runtime = ["jei-fabric", "modmenu"]
 
 # Testing
 test = ["junit-jupiter-api", "junit-jupiter-params", "hamcrest", "jqwik-api"]
-testRuntime = ["junit-jupiter-engine", "jqwik-engine"]
+testRuntime = ["junit-jupiter-engine", "junit-platform-launcher", "jqwik-engine"]
 
 # Build tools
 teavm-api = ["teavm-jso", "teavm-jso-apis", "teavm-platform", "teavm-classlib", "teavm-metaprogramming-api"]

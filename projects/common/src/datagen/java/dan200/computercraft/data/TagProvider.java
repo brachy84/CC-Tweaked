@@ -60,10 +60,7 @@ class TagProvider {
 
         tags.tag(ComputerCraftTags.Blocks.TURTLE_SWORD_BREAKABLE).addTag(BlockTags.WOOL).add(Blocks.COBWEB);
 
-        tags.tag(ComputerCraftTags.Blocks.TURTLE_CAN_USE)
-            .addTag(BlockTags.BEEHIVES)
-            .addTag(BlockTags.CAULDRONS)
-            .add(Blocks.COMPOSTER);
+        tags.tag(ComputerCraftTags.Blocks.TURTLE_CAN_USE);
 
         // Make all blocks aside from command computer mineable.
         tags.tag(BlockTags.MINEABLE_WITH_PICKAXE).add(

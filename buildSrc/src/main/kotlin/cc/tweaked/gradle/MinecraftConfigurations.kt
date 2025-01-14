@@ -99,8 +99,8 @@ class MinecraftConfigurations private constructor(private val project: Project) 
         val checkDependencyConsistency =
             project.tasks.register("checkDependencyConsistency", DependencyCheck::class.java) {
                 // We need to check both the main and client classpath *configurations*, as the actual configuration
-                configuration.add(configurations.named(main.runtimeClasspathConfigurationName))
-                configuration.add(configurations.named(client.runtimeClasspathConfigurationName))
+                configuration(configurations.named(main.runtimeClasspathConfigurationName))
+                configuration(configurations.named(client.runtimeClasspathConfigurationName))
             }
         project.tasks.named("check") { dependsOn(checkDependencyConsistency) }
     }

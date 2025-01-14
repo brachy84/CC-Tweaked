@@ -141,6 +141,16 @@ configurations {
         isCanBeConsumed = false
         isCanBeResolved = true
     }
+
+    // Declare a configuration for projects which are on the compile and runtime classpath, but not treated as
+    // dependencies. This is used for our local projects.
+    val localImplementation by registering {
+        isCanBeResolved = false
+        isCanBeConsumed = false
+        isVisible = false
+    }
+    compileClasspath { extendsFrom(localImplementation.get()) }
+    runtimeClasspath { extendsFrom(localImplementation.get()) }
 }
 
 dependencies {
@@ -149,13 +159,13 @@ dependencies {
 
     clientCompileOnly(variantOf(libs.emi) { classifier("api") })
     compileOnly(libs.bundles.externalMods.forge.compile)
-    runtimeOnly(libs.bundles.externalMods.forge.runtime) { cct.exclude(this) }
+    clientRuntimeOnly(libs.bundles.externalMods.forge.runtime)
     compileOnly(variantOf(libs.create.forge) { classifier("slim") }) { isTransitive = false }
 
     // Depend on our other projects.
-    api(commonClasses(project(":forge-api"))) { cct.exclude(this) }
-    clientApi(clientClasses(project(":forge-api"))) { cct.exclude(this) }
-    implementation(project(":core")) { cct.exclude(this) }
+    "localImplementation"(project(":core"))
+    "localImplementation"(commonClasses(project(":forge-api")))
+    clientImplementation(clientClasses(project(":forge-api")))
 
     jarJar(libs.cobalt)
     jarJar(libs.jzlib)
@@ -188,12 +198,12 @@ dependencies {
 // Compile tasks
 
 tasks.processResources {
-    inputs.property("modVersion", modVersion)
-    inputs.property("neoVersion", libs.versions.neoForge.get())
+    var props = mapOf(
+        "neoVersion" to libs.versions.neoForge.get(),
+        "file" to mapOf("jarVersion" to modVersion),
+    )
 
-    filesMatching("META-INF/mods.toml") {
-        expand(mapOf("neoVersion" to libs.versions.neoForge.get(), "file" to mapOf("jarVersion" to modVersion)))
-    }
+    filesMatching("META-INF/neoforge.mods.toml") { expand(props) }
 }
 
 tasks.jar {
@@ -249,19 +259,6 @@ tasks.register("checkClient") {
     dependsOn(runGametestClient, runGametestClientWithIris)
 }
 
-// Upload tasks
-
 modPublishing {
     output = tasks.jar
-}
-
-publishing {
-    publications {
-        named("maven", MavenPublication::class) {
-            mavenDependencies {
-                cct.configureExcludes(this)
-                exclude(libs.jei.forge.get())
-            }
-        }
-    }
 }

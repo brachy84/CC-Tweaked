@@ -61,6 +61,16 @@ configurations {
     include { extendsFrom(includeRuntimeOnly.get(), includeImplementation.get()) }
     runtimeOnly { extendsFrom(includeRuntimeOnly.get()) }
     implementation { extendsFrom(includeImplementation.get()) }
+
+    // Declare a configuration for projects which are on the compile and runtime classpath, but not treated as
+    // dependencies. This is used for our local projects.
+    val localImplementation by registering {
+        isCanBeResolved = false
+        isCanBeConsumed = false
+        isVisible = false
+    }
+    compileClasspath { extendsFrom(localImplementation.get()) }
+    runtimeClasspath { extendsFrom(localImplementation.get()) }
 }
 
 dependencies {
@@ -90,9 +100,9 @@ dependencies {
     "includeImplementation"(libs.nightConfig.toml)
 
     // Pull in our other projects. See comments in MinecraftConfigurations on this nastiness.
-    api(commonClasses(project(":fabric-api"))) { cct.exclude(this) }
-    clientApi(clientClasses(project(":fabric-api"))) { cct.exclude(this) }
-    implementation(project(":core")) { cct.exclude(this) }
+    "localImplementation"(project(":core"))
+    "localImplementation"(commonClasses(project(":fabric-api")))
+    clientImplementation(clientClasses(project(":fabric-api")))
 
     annotationProcessorEverywhere(libs.autoService)
 
@@ -211,11 +221,9 @@ loom {
 }
 
 tasks.processResources {
-    inputs.property("version", modVersion)
+    var props = mapOf("version" to modVersion)
 
-    filesMatching("fabric.mod.json") {
-        expand(mapOf("version" to modVersion))
-    }
+    filesMatching("fabric.mod.json") { expand(props) }
 }
 
 tasks.jar {
@@ -279,17 +287,6 @@ tasks.register("checkClient") {
 
 modPublishing {
     output = tasks.remapJar
-}
-
-tasks.withType(GenerateModuleMetadata::class).configureEach { isEnabled = false }
-publishing {
-    publications {
-        named("maven", MavenPublication::class) {
-            mavenDependencies {
-                cct.configureExcludes(this)
-            }
-        }
-    }
 }
 
 modrinth {

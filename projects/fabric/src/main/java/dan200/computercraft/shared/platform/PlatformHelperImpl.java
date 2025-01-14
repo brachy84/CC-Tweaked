@@ -54,7 +54,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -68,7 +67,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 @AutoService(PlatformHelper.class)
@@ -225,20 +223,10 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public InteractionResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit, Predicate<BlockState> canUseBlock) {
+    public UseOnResult useOn(ServerPlayer player, ItemStack stack, BlockHitResult hit) {
         var result = UseBlockCallback.EVENT.invoker().interact(player, player.level(), InteractionHand.MAIN_HAND, hit);
-        if (result != InteractionResult.PASS) return result;
-
-        var block = player.level().getBlockState(hit.getBlockPos());
-        if (!block.isAir() && canUseBlock.test(block)) {
-            var useResult = block.useItemOn(stack, player.level(), player, InteractionHand.MAIN_HAND, hit);
-            if (useResult.consumesAction()) return useResult.result();
-
-            // TODO(1.20.5): Should we do this unconditionally now? Or at least a better way of configuring it.
-            // TODO(1.20.5:  What to do with useWithoutItem
-        }
-
-        return stack.useOn(new UseOnContext(player, InteractionHand.MAIN_HAND, hit));
+        if (result != InteractionResult.PASS) return new UseOnResult.Handled(result);
+        return new UseOnResult.Continue(true, true);
     }
 
     private static final class RegistrationHelperImpl<T> implements RegistrationHelper<T> {
