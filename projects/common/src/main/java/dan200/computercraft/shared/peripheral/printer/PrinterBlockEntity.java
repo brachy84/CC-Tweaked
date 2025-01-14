@@ -166,8 +166,7 @@ public final class PrinterBlockEntity extends AbstractContainerBlockEntity imple
     }
 
     private boolean canInputPage() {
-        var inkStack = inventory.get(0);
-        return !inkStack.isEmpty() && isInk(inkStack) && getPaperLevel() > 0;
+        return getInkLevel() > 0 && getPaperLevel() > 0;
     }
 
     private boolean inputPage() {
