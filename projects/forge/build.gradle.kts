@@ -190,6 +190,9 @@ dependencies {
 // Compile tasks
 
 tasks.processResources {
+    inputs.property("modVersion", modVersion)
+    inputs.property("forgeVersion", libs.versions.forge)
+
     var props = mapOf(
         "forgeVersion" to libs.versions.forge.get(),
         "file" to mapOf("jarVersion" to modVersion),

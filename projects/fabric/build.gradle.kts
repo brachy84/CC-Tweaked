@@ -220,6 +220,8 @@ loom {
 }
 
 tasks.processResources {
+    inputs.property("modVersion", modVersion)
+
     var props = mapOf("version" to modVersion)
 
     filesMatching("fabric.mod.json") { expand(props) }
