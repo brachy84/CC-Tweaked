@@ -333,7 +333,7 @@ public class TurtleTool extends AbstractTurtleUpgrade {
      * @return Whether the tool was successfully used.
      * @see PlatformHelper#hasToolUsage(ItemStack)
      */
-    private boolean useTool(ServerLevel level, ITurtleAccess turtle, TurtlePlayer turtlePlayer, ItemStack stack, Direction direction) {
+    private static boolean useTool(ServerLevel level, ITurtleAccess turtle, TurtlePlayer turtlePlayer, ItemStack stack, Direction direction) {
         var position = turtle.getPosition().relative(direction);
         // Allow digging one extra block below the turtle, as you can't till dirt/flatten grass if there's a block
         // above.
@@ -348,7 +348,7 @@ public class TurtleTool extends AbstractTurtleUpgrade {
         if (result instanceof PlatformHelper.UseOnResult.Handled handled) {
             return handled.result().consumesAction();
         } else {
-            return ((PlatformHelper.UseOnResult.Continue) result).item() && item.useOn(new UseOnContext(turtlePlayer.player(), InteractionHand.MAIN_HAND, hit)).consumesAction();
+            return ((PlatformHelper.UseOnResult.Continue) result).item() && stack.useOn(new UseOnContext(turtlePlayer.player(), InteractionHand.MAIN_HAND, hit)).consumesAction();
         }
     }
 
