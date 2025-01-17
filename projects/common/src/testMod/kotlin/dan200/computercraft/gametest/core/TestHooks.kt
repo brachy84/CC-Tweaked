@@ -5,6 +5,8 @@
 package dan200.computercraft.gametest.core
 
 import dan200.computercraft.api.ComputerCraftAPI
+import dan200.computercraft.core.ComputerContext
+import dan200.computercraft.core.computer.computerthread.ComputerThread
 import dan200.computercraft.gametest.*
 import dan200.computercraft.gametest.api.ClientGameTest
 import dan200.computercraft.gametest.api.TestTags
@@ -23,6 +25,8 @@ import net.minecraft.world.phys.Vec3
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
+import java.lang.invoke.MethodHandle
+import java.lang.invoke.MethodHandles
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.lang.reflect.Modifier
@@ -80,6 +84,9 @@ object TestHooks {
         CCTestCommand.importFiles(server)
     }
 
+    @JvmStatic
+    fun areComputersIdle(server: MinecraftServer) = ComputerThreadReflection.isFullyIdle(ServerContext.get(server))
+
     private val testClasses = listOf(
         Computer_Test::class.java,
         CraftOs_Test::class.java,
@@ -116,14 +123,6 @@ object TestHooks {
         }
     }
 
-    private val isCi = System.getenv("CI") != null
-
-    /**
-     * Adjust the timeout of a test. This makes it 1.5 times longer when run under CI, as CI servers are less powerful
-     * than our own.
-     */
-    private fun adjustTimeout(timeout: Int): Int = if (isCi) timeout + (timeout / 2) else timeout
-
     private fun registerTest(testClass: Class<*>, method: Method, fallbackRegister: Consumer<Method>) {
         val className = testClass.simpleName.lowercase()
         val testName = className + "." + method.name.lowercase()
@@ -135,7 +134,7 @@ object TestHooks {
                 TestFunction(
                     testInfo.batch, testName, testInfo.template.ifEmpty { testName },
                     StructureUtils.getRotationForRotationSteps(testInfo.rotationSteps),
-                    adjustTimeout(testInfo.timeoutTicks),
+                    testInfo.timeoutTicks,
                     testInfo.setupTicks,
                     testInfo.required, testInfo.requiredSuccesses, testInfo.attempts,
                 ) { value -> safeInvoke(method, value) },
@@ -149,10 +148,8 @@ object TestHooks {
 
             GameTestRegistry.getAllTestFunctions().add(
                 TestFunction(
-                    testName,
-                    testName,
-                    testInfo.template.ifEmpty { testName },
-                    adjustTimeout(testInfo.timeoutTicks),
+                    testName, testName, testInfo.template.ifEmpty { testName },
+                    testInfo.timeoutTicks,
                     0,
                     true,
                 ) { value -> safeInvoke(method, value) },
@@ -198,5 +195,33 @@ object TestHooks {
         }
 
         return false
+    }
+}
+
+/**
+ * Nasty reflection to determine if computers are fully idle.
+ *
+ * This is horribly nasty, and should not be used as a model for any production code!
+ *
+ * @see [ComputerThread.isFullyIdle]
+ * @see [dan200.computercraft.mixin.gametest.GameTestServerMixin]
+ */
+private object ComputerThreadReflection {
+    private val lookup = MethodHandles.lookup()
+
+    @JvmField
+    val computerContext: MethodHandle = lookup.unreflectGetter(
+        ServerContext::class.java.getDeclaredField("context").also { it.isAccessible = true },
+    )
+
+    @JvmField
+    val isFullyIdle: MethodHandle = lookup.unreflect(
+        ComputerThread::class.java.getDeclaredMethod("isFullyIdle").also { it.isAccessible = true },
+    )
+
+    fun isFullyIdle(context: ServerContext): Boolean {
+        val computerContext = computerContext.invokeExact(context) as ComputerContext
+        val computerThread = computerContext.computerScheduler() as ComputerThread
+        return isFullyIdle.invokeExact(computerThread) as Boolean
     }
 }

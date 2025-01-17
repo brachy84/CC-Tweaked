@@ -10,9 +10,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
@@ -168,7 +166,7 @@ abstract class CCTweakedExtension(private val project: Project) {
             jacoco.applyTo(this)
 
             extensions.configure(JacocoTaskExtension::class.java) {
-	        includes = listOf("dan200.computercraft.*")
+                includes = listOf("dan200.computercraft.*")
                 excludes = listOf(
                     "dan200.computercraft.mixin.*", // Exclude mixins, as they're not executed at runtime.
                     "dan200.computercraft.shared.Capabilities$*", // Exclude capability tokens, as Forge rewrites them.
