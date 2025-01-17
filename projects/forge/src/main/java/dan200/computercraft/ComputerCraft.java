@@ -57,6 +57,7 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
 
 import javax.annotation.Nullable;
+import java.nio.file.Path;
 
 @Mod(ComputerCraftAPI.MOD_ID)
 @EventBusSubscriber(modid = ComputerCraftAPI.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
@@ -175,7 +176,13 @@ public final class ComputerCraft {
     private static void syncConfig(ModConfig config) {
         if (!config.getModId().equals(ComputerCraftAPI.MOD_ID)) return;
 
-        var path = config.getFullPath();
+        Path path;
+        try {
+            path = config.getFullPath();
+        } catch (IllegalStateException ignored) {
+            path = null; // getFullPath throws if loading a non-valid file.
+        }
+
         if (config.getType() == ModConfig.Type.SERVER && ((ForgeConfigFile) ConfigSpec.serverSpec).spec().isLoaded()) {
             ConfigSpec.syncServer(path);
         } else if (config.getType() == ModConfig.Type.CLIENT) {
