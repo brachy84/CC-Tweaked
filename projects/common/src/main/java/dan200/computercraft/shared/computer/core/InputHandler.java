@@ -9,7 +9,8 @@ import dan200.computercraft.shared.computer.menu.ServerInputHandler;
 import javax.annotation.Nullable;
 
 /**
- * Handles user-provided input, forwarding it to a computer. This is used
+ * Handles user-provided input, forwarding it to a computer. This describes the "shape" of both the client-and
+ * server-side input handlers.
  *
  * @see ServerInputHandler
  * @see ServerComputer
@@ -21,29 +22,17 @@ public interface InputHandler {
         queueEvent(event, null);
     }
 
-    default void keyDown(int key, boolean repeat) {
-        queueEvent("key", new Object[]{ key, repeat });
-    }
+    void keyDown(int key, boolean repeat);
 
-    default void keyUp(int key) {
-        queueEvent("key_up", new Object[]{ key });
-    }
+    void keyUp(int key);
 
-    default void mouseClick(int button, int x, int y) {
-        queueEvent("mouse_click", new Object[]{ button, x, y });
-    }
+    void mouseClick(int button, int x, int y);
 
-    default void mouseUp(int button, int x, int y) {
-        queueEvent("mouse_up", new Object[]{ button, x, y });
-    }
+    void mouseUp(int button, int x, int y);
 
-    default void mouseDrag(int button, int x, int y) {
-        queueEvent("mouse_drag", new Object[]{ button, x, y });
-    }
+    void mouseDrag(int button, int x, int y);
 
-    default void mouseScroll(int direction, int x, int y) {
-        queueEvent("mouse_scroll", new Object[]{ direction, x, y });
-    }
+    void mouseScroll(int direction, int x, int y);
 
     void shutdown();
 

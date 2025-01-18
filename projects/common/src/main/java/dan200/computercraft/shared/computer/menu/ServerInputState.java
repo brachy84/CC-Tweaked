@@ -7,6 +7,7 @@ package dan200.computercraft.shared.computer.menu;
 import dan200.computercraft.core.apis.handles.ByteBufferChannel;
 import dan200.computercraft.core.apis.transfer.TransferredFile;
 import dan200.computercraft.core.apis.transfer.TransferredFiles;
+import dan200.computercraft.core.computer.ComputerEvents;
 import dan200.computercraft.shared.computer.upload.FileSlice;
 import dan200.computercraft.shared.computer.upload.FileUpload;
 import dan200.computercraft.shared.computer.upload.UploadResult;
@@ -56,13 +57,13 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
     @Override
     public void keyDown(int key, boolean repeat) {
         keysDown.add(key);
-        owner.getComputer().keyDown(key, repeat);
+        ComputerEvents.keyDown(owner.getComputer(), key, repeat);
     }
 
     @Override
     public void keyUp(int key) {
         keysDown.remove(key);
-        owner.getComputer().keyUp(key);
+        ComputerEvents.keyUp(owner.getComputer(), key);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
         lastMouseY = y;
         lastMouseDown = button;
 
-        owner.getComputer().mouseClick(button, x, y);
+        ComputerEvents.mouseClick(owner.getComputer(), button, x, y);
     }
 
     @Override
@@ -80,7 +81,7 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
         lastMouseY = y;
         lastMouseDown = -1;
 
-        owner.getComputer().mouseUp(button, x, y);
+        ComputerEvents.mouseUp(owner.getComputer(), button, x, y);
     }
 
     @Override
@@ -89,7 +90,7 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
         lastMouseY = y;
         lastMouseDown = button;
 
-        owner.getComputer().mouseDrag(button, x, y);
+        ComputerEvents.mouseDrag(owner.getComputer(), button, x, y);
     }
 
     @Override
@@ -97,7 +98,7 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
         lastMouseX = x;
         lastMouseY = y;
 
-        owner.getComputer().mouseScroll(direction, x, y);
+        ComputerEvents.mouseScroll(owner.getComputer(), direction, x, y);
     }
 
     @Override
@@ -169,9 +170,9 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
     public void close() {
         var computer = owner.getComputer();
         var keys = keysDown.iterator();
-        while (keys.hasNext()) computer.keyUp(keys.nextInt());
+        while (keys.hasNext()) ComputerEvents.keyUp(computer, keys.nextInt());
 
-        if (lastMouseDown != -1) computer.mouseUp(lastMouseDown, lastMouseX, lastMouseY);
+        if (lastMouseDown != -1) ComputerEvents.mouseUp(computer, lastMouseDown, lastMouseX, lastMouseY);
 
         keysDown.clear();
         lastMouseDown = -1;

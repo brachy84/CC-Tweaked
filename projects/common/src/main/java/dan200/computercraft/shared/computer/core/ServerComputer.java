@@ -12,6 +12,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.WorkMonitor;
 import dan200.computercraft.core.computer.Computer;
 import dan200.computercraft.core.computer.ComputerEnvironment;
+import dan200.computercraft.core.computer.ComputerEvents;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.core.metrics.MetricsObserver;
 import dan200.computercraft.impl.ApiFactories;
@@ -34,7 +35,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class ServerComputer implements InputHandler, ComputerEnvironment {
+public class ServerComputer implements ComputerEnvironment, ComputerEvents.Receiver {
     private final int instanceID;
     private final UUID instanceUUID = UUID.randomUUID();
 
@@ -86,24 +87,24 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         }
     }
 
-    public ComputerFamily getFamily() {
+    public final ComputerFamily getFamily() {
         return family;
     }
 
-    public ServerLevel getLevel() {
+    public final ServerLevel getLevel() {
         return level;
     }
 
-    public BlockPos getPosition() {
+    public final BlockPos getPosition() {
         return position;
     }
 
-    public void setPosition(ServerLevel level, BlockPos pos) {
+    public final void setPosition(ServerLevel level, BlockPos pos) {
         this.level = level;
         position = pos.immutable();
     }
 
-    protected void markTerminalChanged() {
+    protected final void markTerminalChanged() {
         terminalChanged.set(true);
     }
 
@@ -117,11 +118,11 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         sendToAllInteracting(c -> new ComputerTerminalClientMessage(c, getTerminalState()));
     }
 
-    public TerminalState getTerminalState() {
+    public final TerminalState getTerminalState() {
         return TerminalState.create(terminal);
     }
 
-    public void keepAlive() {
+    public final void keepAlive() {
         ticksSincePing = 0;
     }
 
@@ -134,7 +135,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
      *
      * @return What sides on the computer have changed.
      */
-    public int pollRedstoneChanges() {
+    public final int pollRedstoneChanges() {
         return computer.pollRedstoneChanges();
     }
 
@@ -147,7 +148,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         computer.unload();
     }
 
-    public void close() {
+    public final void close() {
         unload();
         ServerContext.get(level.getServer()).registry().remove(this);
     }
@@ -176,97 +177,98 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
     protected void onRemoved() {
     }
 
-    public int getInstanceID() {
+    public final int getInstanceID() {
         return instanceID;
     }
 
-    public UUID getInstanceUUID() {
+    public final UUID getInstanceUUID() {
         return instanceUUID;
     }
 
-    public int getID() {
+    public final int getID() {
         return computer.getID();
     }
 
-    public @Nullable String getLabel() {
+    public final @Nullable String getLabel() {
         return computer.getLabel();
     }
 
-    public boolean isOn() {
+    public final boolean isOn() {
         return computer.isOn();
     }
 
-    public ComputerState getState() {
+    public final ComputerState getState() {
         if (!computer.isOn()) return ComputerState.OFF;
         return computer.isBlinking() ? ComputerState.BLINKING : ComputerState.ON;
     }
 
-    @Override
-    public void turnOn() {
+    public final void turnOn() {
         computer.turnOn();
     }
 
-    @Override
-    public void shutdown() {
+    public final void shutdown() {
         computer.shutdown();
     }
 
-    @Override
-    public void reboot() {
+    public final void reboot() {
         computer.reboot();
     }
 
     @Override
-    public void queueEvent(String event, @Nullable Object[] arguments) {
+    public final void queueEvent(String event, @Nullable Object[] arguments) {
         computer.queueEvent(event, arguments);
     }
 
-    public int getRedstoneOutput(ComputerSide side) {
+    public final void queueEvent(String event) {
+        queueEvent(event, null);
+    }
+
+    public final int getRedstoneOutput(ComputerSide side) {
         return computer.isOn() ? computer.getRedstone().getExternalOutput(side) : 0;
     }
 
-    public void setRedstoneInput(ComputerSide side, int level, int bundledState) {
+    public final void setRedstoneInput(ComputerSide side, int level, int bundledState) {
         computer.getRedstone().setInput(side, level, bundledState);
     }
 
-    public int getBundledRedstoneOutput(ComputerSide side) {
+    public final int getBundledRedstoneOutput(ComputerSide side) {
         return computer.isOn() ? computer.getRedstone().getExternalBundledOutput(side) : 0;
     }
 
-    public void setPeripheral(ComputerSide side, @Nullable IPeripheral peripheral) {
+    public final void setPeripheral(ComputerSide side, @Nullable IPeripheral peripheral) {
         computer.getEnvironment().setPeripheral(side, peripheral);
     }
 
     @Nullable
-    public IPeripheral getPeripheral(ComputerSide side) {
+    public final IPeripheral getPeripheral(ComputerSide side) {
         return computer.getEnvironment().getPeripheral(side);
     }
 
-    public void setLabel(@Nullable String label) {
+    public final void setLabel(@Nullable String label) {
         computer.setLabel(label);
     }
 
     @Override
-    public double getTimeOfDay() {
+    public final double getTimeOfDay() {
         return (level.getDayTime() + 6000) % 24000 / 1000.0;
     }
 
     @Override
-    public int getDay() {
+    public final int getDay() {
         return (int) ((level.getDayTime() + 6000) / 24000) + 1;
     }
 
     @Override
-    public MetricsObserver getMetrics() {
+    public final MetricsObserver getMetrics() {
         return metrics;
     }
 
-    public WorkMonitor getMainThreadMonitor() {
+    public final WorkMonitor getMainThreadMonitor() {
         return computer.getMainThreadMonitor();
     }
 
     @Override
-    public @Nullable WritableMount createRootMount() {
+    public final WritableMount createRootMount() {
         return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + computer.getID(), Config.computerSpaceLimit);
     }
 }

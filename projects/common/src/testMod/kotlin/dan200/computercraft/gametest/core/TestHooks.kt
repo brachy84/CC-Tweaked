@@ -148,7 +148,9 @@ object TestHooks {
 
             GameTestRegistry.getAllTestFunctions().add(
                 TestFunction(
-                    testName, testName, testInfo.template.ifEmpty { testName },
+                    testName,
+                    testName,
+                    testInfo.template.ifEmpty { testName },
                     testInfo.timeoutTicks,
                     0,
                     true,
