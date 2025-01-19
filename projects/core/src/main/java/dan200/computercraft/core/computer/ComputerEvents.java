@@ -4,7 +4,10 @@
 
 package dan200.computercraft.core.computer;
 
+import dan200.computercraft.core.util.StringUtil;
+
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 
 /**
  * Built-in events that can be queued on a computer.
@@ -19,6 +22,28 @@ public final class ComputerEvents {
 
     public static void keyUp(Receiver receiver, int key) {
         receiver.queueEvent("key_up", new Object[]{ key });
+    }
+
+    /**
+     * Type a character on the computer.
+     *
+     * @param receiver The computer to queue the event on.
+     * @param chr      The character to type.
+     * @see StringUtil#isTypableChar(byte)
+     */
+    public static void charTyped(Receiver receiver, byte chr) {
+        receiver.queueEvent("char", new Object[]{ new byte[]{ chr } });
+    }
+
+    /**
+     * Paste a string.
+     *
+     * @param receiver The computer to queue the event on.
+     * @param contents The string to paste.
+     * @see StringUtil#getClipboardString(String)
+     */
+    public static void paste(Receiver receiver, ByteBuffer contents) {
+        receiver.queueEvent("paste", new Object[]{ contents });
     }
 
     public static void mouseClick(Receiver receiver, int button, int x, int y) {

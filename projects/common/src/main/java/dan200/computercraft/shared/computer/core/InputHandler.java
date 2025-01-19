@@ -6,7 +6,7 @@ package dan200.computercraft.shared.computer.core;
 
 import dan200.computercraft.shared.computer.menu.ServerInputHandler;
 
-import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 
 /**
  * Handles user-provided input, forwarding it to a computer. This describes the "shape" of both the client-and
@@ -16,15 +16,13 @@ import javax.annotation.Nullable;
  * @see ServerComputer
  */
 public interface InputHandler {
-    void queueEvent(String event, @Nullable Object[] arguments);
-
-    default void queueEvent(String event) {
-        queueEvent(event, null);
-    }
-
     void keyDown(int key, boolean repeat);
 
     void keyUp(int key);
+
+    void charTyped(byte chr);
+
+    void paste(ByteBuffer contents);
 
     void mouseClick(int button, int x, int y);
 
@@ -33,6 +31,8 @@ public interface InputHandler {
     void mouseDrag(int button, int x, int y);
 
     void mouseScroll(int direction, int x, int y);
+
+    void terminate();
 
     void shutdown();
 

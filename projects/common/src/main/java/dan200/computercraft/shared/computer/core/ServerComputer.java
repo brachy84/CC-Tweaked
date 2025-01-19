@@ -168,7 +168,7 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
         var server = level.getServer();
 
         for (var player : server.getPlayerList().getPlayers()) {
-            if (player.containerMenu instanceof ComputerMenu && ((ComputerMenu) player.containerMenu).getComputer() == this) {
+            if (player.containerMenu instanceof ComputerMenu menu && menu.getComputer() == this) {
                 ServerNetworking.sendToPlayer(createPacket.apply(player.containerMenu), player);
             }
         }

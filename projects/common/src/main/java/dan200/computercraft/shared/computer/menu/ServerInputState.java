@@ -8,6 +8,7 @@ import dan200.computercraft.core.apis.handles.ByteBufferChannel;
 import dan200.computercraft.core.apis.transfer.TransferredFile;
 import dan200.computercraft.core.apis.transfer.TransferredFiles;
 import dan200.computercraft.core.computer.ComputerEvents;
+import dan200.computercraft.core.util.StringUtil;
 import dan200.computercraft.shared.computer.upload.FileSlice;
 import dan200.computercraft.shared.computer.upload.FileUpload;
 import dan200.computercraft.shared.computer.upload.UploadResult;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,11 +52,6 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
     }
 
     @Override
-    public void queueEvent(String event, @Nullable Object[] arguments) {
-        owner.getComputer().queueEvent(event, arguments);
-    }
-
-    @Override
     public void keyDown(int key, boolean repeat) {
         keysDown.add(key);
         ComputerEvents.keyDown(owner.getComputer(), key, repeat);
@@ -64,6 +61,23 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
     public void keyUp(int key) {
         keysDown.remove(key);
         ComputerEvents.keyUp(owner.getComputer(), key);
+    }
+
+    @Override
+    public void charTyped(byte chr) {
+        if (StringUtil.isTypableChar(chr)) ComputerEvents.charTyped(owner.getComputer(), chr);
+    }
+
+    @Override
+    public void paste(ByteBuffer contents) {
+        if (contents.remaining() > 0 && isValidClipboard(contents)) ComputerEvents.paste(owner.getComputer(), contents);
+    }
+
+    private static boolean isValidClipboard(ByteBuffer buffer) {
+        for (int i = buffer.remaining(), max = buffer.limit(); i < max; i++) {
+            if (!StringUtil.isTypableChar(buffer.get(i))) return false;
+        }
+        return true;
     }
 
     @Override
@@ -99,6 +113,11 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
         lastMouseY = y;
 
         ComputerEvents.mouseScroll(owner.getComputer(), direction, x, y);
+    }
+
+    @Override
+    public void terminate() {
+        owner.getComputer().queueEvent("terminate");
     }
 
     @Override

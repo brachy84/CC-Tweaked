@@ -50,10 +50,8 @@ public class InputState {
     }
 
     public void onCharEvent(int codepoint) {
-        if (codepoint >= 32 && codepoint <= 126 || codepoint >= 160 && codepoint <= 255) {
-            // Queue the char event for any printable chars in byte range
-            computer.queueEvent("char", new Object[]{ Character.toString(codepoint) });
-        }
+        var terminalChar = StringUtil.unicodeToTerminal(codepoint);
+        if (StringUtil.isTypableChar(terminalChar)) ComputerEvents.charTyped(computer, terminalChar);
     }
 
     public void onKeyEvent(long window, int key, int action, int modifiers) {
@@ -69,8 +67,8 @@ public class InputState {
         if (key == GLFW.GLFW_KEY_V && modifiers == GLFW.GLFW_MOD_CONTROL) {
             var string = GLFW.glfwGetClipboardString(window);
             if (string != null) {
-                var clipboard = StringUtil.normaliseClipboardString(string);
-                if (!clipboard.isEmpty()) computer.queueEvent("paste", new Object[]{ clipboard });
+                var clipboard = StringUtil.getClipboardString(string);
+                if (clipboard.remaining() > 0) ComputerEvents.paste(computer, clipboard);
             }
             return;
         }

@@ -35,8 +35,8 @@ public abstract class ComputerServerMessage implements NetworkMessage<ServerNetw
     @Override
     public void handle(ServerNetworkContext context) {
         Player player = context.getSender();
-        if (player.containerMenu.containerId == containerId && player.containerMenu instanceof ComputerMenu) {
-            handle(context, (ComputerMenu) player.containerMenu);
+        if (player.containerMenu.containerId == containerId && player.containerMenu instanceof ComputerMenu menu) {
+            handle(context, menu);
         }
     }
 
