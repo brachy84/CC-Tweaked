@@ -74,10 +74,6 @@ public final class DataProviders {
                 LecternPrintoutModel.TEXTURE
             )));
             out.accept(GuiSprites.SPRITE_SHEET, makeSprites(
-                // Buttons
-                GuiSprites.TURNED_OFF.textures(),
-                GuiSprites.TURNED_ON.textures(),
-                GuiSprites.TERMINATE.textures(),
                 // Computers
                 GuiSprites.COMPUTER_NORMAL.textures(),
                 GuiSprites.COMPUTER_ADVANCED.textures(),

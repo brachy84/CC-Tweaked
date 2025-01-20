@@ -24,7 +24,6 @@ import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import dan200.computercraft.shared.turtle.core.TurtleBrain;
 import dan200.computercraft.shared.turtle.inventory.TurtleMenu;
-import dan200.computercraft.shared.util.ComponentMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -80,10 +79,10 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
 
     @Override
     protected ServerComputer createComputer(int id) {
-        var computer = new ServerComputer(
-            (ServerLevel) getLevel(), getBlockPos(), id, label,
-            getFamily(), Config.turtleTermWidth, Config.turtleTermHeight,
-            ComponentMap.builder().add(ComputerComponents.TURTLE, brain).build()
+        var computer = new ServerComputer((ServerLevel) getLevel(), getBlockPos(), ServerComputer.properties(id, getFamily())
+            .label(getLabel())
+            .terminalSize(Config.TURTLE_TERM_WIDTH, Config.TURTLE_TERM_HEIGHT)
+            .addComponent(ComputerComponents.TURTLE, brain)
         );
         brain.setupComputer(computer);
         return computer;

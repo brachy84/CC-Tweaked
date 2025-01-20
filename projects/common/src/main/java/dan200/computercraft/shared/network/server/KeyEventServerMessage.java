@@ -44,6 +44,7 @@ public final class KeyEventServerMessage extends ComputerServerMessage {
             case UP -> input.keyUp(key);
             case DOWN -> input.keyDown(key, false);
             case REPEAT -> input.keyDown(key, true);
+            case CHAR -> input.charTyped((byte) key);
         }
     }
 
@@ -53,6 +54,6 @@ public final class KeyEventServerMessage extends ComputerServerMessage {
     }
 
     public enum Action {
-        DOWN, REPEAT, UP
+        DOWN, REPEAT, UP, CHAR
     }
 }

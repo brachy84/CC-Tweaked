@@ -198,6 +198,9 @@ dependencies {
 // Compile tasks
 
 tasks.processResources {
+    inputs.property("modVersion", modVersion)
+    inputs.property("neoVersion", libs.versions.neoForge)
+
     var props = mapOf(
         "neoVersion" to libs.versions.neoForge.get(),
         "file" to mapOf("jarVersion" to modVersion),

@@ -433,6 +433,16 @@ public final class ComputerThread implements ComputerScheduler {
         return computerQueueSize() > idleWorkers.get();
     }
 
+    /**
+     * Determine if no work is queued, and all workers are idle.
+     *
+     * @return If the threads are fully idle.
+     */
+    @VisibleForTesting
+    boolean isFullyIdle() {
+        return computerQueueSize() == 0 && idleWorkers.get() >= workerCount();
+    }
+
     private void workerFinished(WorkerThread worker) {
         // We should only shut down a worker once! This should only happen if we fail to abort a worker and then the
         // worker finishes normally.

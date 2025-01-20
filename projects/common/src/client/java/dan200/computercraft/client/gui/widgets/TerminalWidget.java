@@ -69,11 +69,8 @@ public class TerminalWidget extends AbstractWidget {
 
     @Override
     public boolean charTyped(char ch, int modifiers) {
-        if (ch >= 32 && ch <= 126 || ch >= 160 && ch <= 255) {
-            // Queue the char event for any printable chars in byte range
-            computer.queueEvent("char", new Object[]{ Character.toString(ch) });
-        }
-
+        var terminalChar = StringUtil.unicodeToTerminal(ch);
+        if (StringUtil.isTypableChar(terminalChar)) computer.charTyped(terminalChar);
         return true;
     }
 
@@ -110,8 +107,8 @@ public class TerminalWidget extends AbstractWidget {
     }
 
     private void paste() {
-        var clipboard = StringUtil.normaliseClipboardString(Minecraft.getInstance().keyboardHandler.getClipboard());
-        if (!clipboard.isEmpty()) computer.queueEvent("paste", new Object[]{ clipboard });
+        var clipboard = StringUtil.getClipboardString(Minecraft.getInstance().keyboardHandler.getClipboard());
+        if (clipboard.remaining() > 0) computer.paste(clipboard);
     }
 
     @Override
@@ -220,7 +217,7 @@ public class TerminalWidget extends AbstractWidget {
 
     public void update() {
         if (terminateTimer >= 0 && terminateTimer < TERMINATE_TIME && (terminateTimer += 0.05f) > TERMINATE_TIME) {
-            computer.queueEvent("terminate");
+            computer.terminate();
         }
 
         if (shutdownTimer >= 0 && shutdownTimer < TERMINATE_TIME && (shutdownTimer += 0.05f) > TERMINATE_TIME) {

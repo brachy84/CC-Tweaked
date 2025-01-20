@@ -10,9 +10,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.NamedDomainObjectProvider
 import org.gradle.api.Project
 import org.gradle.api.Task
-import org.gradle.api.artifacts.Dependency
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.SourceSet
@@ -33,6 +31,10 @@ import java.net.URI
 import java.util.regex.Pattern
 
 abstract class CCTweakedExtension(private val project: Project) {
+    /** Get the hash of the latest git commit. */
+    val gitHash: Provider<String> =
+        gitProvider("<no git commit>", listOf("rev-parse", "HEAD")) { it.trim() }
+
     /** Get the current git branch. */
     val gitBranch: Provider<String> =
         gitProvider("<no git branch>", listOf("rev-parse", "--abbrev-ref", "HEAD")) { it.trim() }
@@ -164,6 +166,7 @@ abstract class CCTweakedExtension(private val project: Project) {
             jacoco.applyTo(this)
 
             extensions.configure(JacocoTaskExtension::class.java) {
+                includes = listOf("dan200.computercraft.*")
                 excludes = listOf(
                     "dan200.computercraft.mixin.*", // Exclude mixins, as they're not executed at runtime.
                     "dan200.computercraft.shared.Capabilities$*", // Exclude capability tokens, as Forge rewrites them.

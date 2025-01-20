@@ -196,7 +196,10 @@ public class PocketComputerItem extends Item implements IMedia {
         }
 
         var computerID = NonNegativeId.getOrCreate(level.getServer(), stack, ModRegistry.DataComponents.COMPUTER_ID.get(), IDAssigner.COMPUTER);
-        var brain = new PocketBrain(holder, computerID, getLabel(stack), getFamily(), getUpgradeWithData(stack));
+        var brain = new PocketBrain(
+            holder, getUpgradeWithData(stack),
+            ServerComputer.properties(computerID, getFamily()).label(getLabel(stack))
+        );
         var computer = brain.computer();
 
         stack.set(ModRegistry.DataComponents.COMPUTER.get(), new ServerComputerReference(registry.getSessionID(), computer.register()));

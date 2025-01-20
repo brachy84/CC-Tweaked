@@ -6,12 +6,14 @@ package dan200.computercraft.shared.computer.core;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.component.AdminComputer;
+import dan200.computercraft.api.component.ComputerComponent;
 import dan200.computercraft.api.component.ComputerComponents;
 import dan200.computercraft.api.filesystem.WritableMount;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.WorkMonitor;
 import dan200.computercraft.core.computer.Computer;
 import dan200.computercraft.core.computer.ComputerEnvironment;
+import dan200.computercraft.core.computer.ComputerEvents;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.core.metrics.MetricsObserver;
 import dan200.computercraft.impl.ApiFactories;
@@ -34,7 +36,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-public class ServerComputer implements InputHandler, ComputerEnvironment {
+public class ServerComputer implements ComputerEnvironment, ComputerEvents.Receiver {
     private final UUID instanceUUID = UUID.randomUUID();
 
     private ServerLevel level;
@@ -49,16 +51,21 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
 
     private int ticksSincePing;
 
+    @Deprecated
     public ServerComputer(
         ServerLevel level, BlockPos position, int computerID, @Nullable String label, ComputerFamily family, int terminalWidth, int terminalHeight,
         ComponentMap baseComponents
     ) {
+        this(level, position, properties(computerID, family).label(label).terminalSize(terminalWidth, terminalHeight).addComponents(baseComponents));
+    }
+
+    public ServerComputer(ServerLevel level, BlockPos position, Properties properties) {
         this.level = level;
         this.position = position;
-        this.family = family;
+        this.family = properties.family;
 
         var context = ServerContext.get(level.getServer());
-        terminal = new NetworkedTerminal(terminalWidth, terminalHeight, family != ComputerFamily.NORMAL, this::markTerminalChanged);
+        terminal = new NetworkedTerminal(properties.terminalWidth, properties.terminalHeight, family != ComputerFamily.NORMAL, this::markTerminalChanged);
         metrics = context.metrics().createMetricObserver(this);
 
         var componentBuilder = ComponentMap.builder();
@@ -67,11 +74,11 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
             componentBuilder.add(ComputerComponents.ADMIN_COMPUTER, new AdminComputer() {
             });
         }
-        componentBuilder.add(baseComponents);
+        componentBuilder.add(properties.components.build());
         var components = componentBuilder.build();
 
-        computer = new Computer(context.computerContext(), this, terminal, computerID);
-        computer.setLabel(label);
+        computer = new Computer(context.computerContext(), this, terminal, properties.computerID);
+        computer.setLabel(properties.label);
 
         // Load in the externally registered APIs.
         for (var factory : ApiFactories.getAll()) {
@@ -84,24 +91,24 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         }
     }
 
-    public ComputerFamily getFamily() {
+    public final ComputerFamily getFamily() {
         return family;
     }
 
-    public ServerLevel getLevel() {
+    public final ServerLevel getLevel() {
         return level;
     }
 
-    public BlockPos getPosition() {
+    public final BlockPos getPosition() {
         return position;
     }
 
-    public void setPosition(ServerLevel level, BlockPos pos) {
+    public final void setPosition(ServerLevel level, BlockPos pos) {
         this.level = level;
         position = pos.immutable();
     }
 
-    protected void markTerminalChanged() {
+    protected final void markTerminalChanged() {
         terminalChanged.set(true);
     }
 
@@ -115,11 +122,11 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         sendToAllInteracting(c -> new ComputerTerminalClientMessage(c, getTerminalState()));
     }
 
-    public TerminalState getTerminalState() {
+    public final TerminalState getTerminalState() {
         return TerminalState.create(terminal);
     }
 
-    public void keepAlive() {
+    public final void keepAlive() {
         ticksSincePing = 0;
     }
 
@@ -132,7 +139,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
      *
      * @return What sides on the computer have changed.
      */
-    public int pollRedstoneChanges() {
+    public final int pollRedstoneChanges() {
         return computer.pollRedstoneChanges();
     }
 
@@ -145,7 +152,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         computer.unload();
     }
 
-    public void close() {
+    public final void close() {
         unload();
         ServerContext.get(level.getServer()).registry().remove(this);
     }
@@ -165,7 +172,7 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
         var server = level.getServer();
 
         for (var player : server.getPlayerList().getPlayers()) {
-            if (player.containerMenu instanceof ComputerMenu && ((ComputerMenu) player.containerMenu).getComputer() == this) {
+            if (player.containerMenu instanceof ComputerMenu menu && menu.getComputer() == this) {
                 ServerNetworking.sendToPlayer(createPacket.apply(player.containerMenu), player);
             }
         }
@@ -174,93 +181,136 @@ public class ServerComputer implements InputHandler, ComputerEnvironment {
     protected void onRemoved() {
     }
 
-    public UUID getInstanceUUID() {
+    public final UUID getInstanceUUID() {
         return instanceUUID;
     }
 
-    public int getID() {
+    public final int getID() {
         return computer.getID();
     }
 
-    public @Nullable String getLabel() {
+    public final @Nullable String getLabel() {
         return computer.getLabel();
     }
 
-    public boolean isOn() {
+    public final boolean isOn() {
         return computer.isOn();
     }
 
-    public ComputerState getState() {
+    public final ComputerState getState() {
         if (!computer.isOn()) return ComputerState.OFF;
         return computer.isBlinking() ? ComputerState.BLINKING : ComputerState.ON;
     }
 
-    @Override
-    public void turnOn() {
+    public final void turnOn() {
         computer.turnOn();
     }
 
-    @Override
-    public void shutdown() {
+    public final void shutdown() {
         computer.shutdown();
     }
 
-    @Override
-    public void reboot() {
+    public final void reboot() {
         computer.reboot();
     }
 
     @Override
-    public void queueEvent(String event, @Nullable Object[] arguments) {
+    public final void queueEvent(String event, @Nullable Object[] arguments) {
         computer.queueEvent(event, arguments);
     }
 
-    public int getRedstoneOutput(ComputerSide side) {
+    public final void queueEvent(String event) {
+        queueEvent(event, null);
+    }
+
+    public final int getRedstoneOutput(ComputerSide side) {
         return computer.isOn() ? computer.getRedstone().getExternalOutput(side) : 0;
     }
 
-    public void setRedstoneInput(ComputerSide side, int level, int bundledState) {
+    public final void setRedstoneInput(ComputerSide side, int level, int bundledState) {
         computer.getRedstone().setInput(side, level, bundledState);
     }
 
-    public int getBundledRedstoneOutput(ComputerSide side) {
+    public final int getBundledRedstoneOutput(ComputerSide side) {
         return computer.isOn() ? computer.getRedstone().getExternalBundledOutput(side) : 0;
     }
 
-    public void setPeripheral(ComputerSide side, @Nullable IPeripheral peripheral) {
+    public final void setPeripheral(ComputerSide side, @Nullable IPeripheral peripheral) {
         computer.getEnvironment().setPeripheral(side, peripheral);
     }
 
     @Nullable
-    public IPeripheral getPeripheral(ComputerSide side) {
+    public final IPeripheral getPeripheral(ComputerSide side) {
         return computer.getEnvironment().getPeripheral(side);
     }
 
-    public void setLabel(@Nullable String label) {
+    public final void setLabel(@Nullable String label) {
         computer.setLabel(label);
     }
 
     @Override
-    public double getTimeOfDay() {
+    public final double getTimeOfDay() {
         return (level.getDayTime() + 6000) % 24000 / 1000.0;
     }
 
     @Override
-    public int getDay() {
+    public final int getDay() {
         return (int) ((level.getDayTime() + 6000) / 24000) + 1;
     }
 
     @Override
-    public MetricsObserver getMetrics() {
+    public final MetricsObserver getMetrics() {
         return metrics;
     }
 
-    public WorkMonitor getMainThreadMonitor() {
+    public final WorkMonitor getMainThreadMonitor() {
         return computer.getMainThreadMonitor();
     }
 
     @Override
-    public @Nullable WritableMount createRootMount() {
+    public final WritableMount createRootMount() {
         return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + computer.getID(), Config.computerSpaceLimit);
+    }
+
+    public static Properties properties(int computerID, ComputerFamily family) {
+        return new Properties(computerID, family);
+    }
+
+    public static final class Properties {
+
+        private final int computerID;
+        private @Nullable String label;
+        private final ComputerFamily family;
+
+        private int terminalWidth = Config.DEFAULT_COMPUTER_TERM_WIDTH;
+        private int terminalHeight = Config.DEFAULT_COMPUTER_TERM_HEIGHT;
+        private final ComponentMap.Builder components = ComponentMap.builder();
+
+        private Properties(int computerID, ComputerFamily family) {
+            this.computerID = computerID;
+            this.family = family;
+        }
+
+        public Properties label(@Nullable String label) {
+            this.label = label;
+            return this;
+        }
+
+        public Properties terminalSize(int width, int height) {
+            if (width <= 0 || height <= 0) throw new IllegalArgumentException("Terminal size must be positive");
+            this.terminalWidth = width;
+            this.terminalHeight = height;
+            return this;
+        }
+
+        public <T> Properties addComponent(ComputerComponent<T> component, T value) {
+            components.add(component, value);
+            return this;
+        }
+
+        private Properties addComponents(ComponentMap components) {
+            this.components.add(components);
+            return this;
+        }
     }
 }

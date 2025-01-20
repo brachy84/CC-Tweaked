@@ -83,25 +83,36 @@ public class MoreStreamCodecs {
     };
 
     /**
-     * Equivalent to {@link ByteBufCodecs#BYTE_ARRAY}, but into an immutable {@link ByteBuffer}.
+     * Read a {@link ByteBuffer}, with a limit of the number of bytes to read.
+     *
+     * @param limit The maximum length of the received buffer.
+     * @return A stream codec that reads {@link ByteBuffer}s.
+     * @see #BYTE_BUFFER
      */
-    public static final StreamCodec<ByteBuf, ByteBuffer> BYTE_BUFFER = new StreamCodec<>() {
-        @Override
-        public ByteBuffer decode(ByteBuf buf) {
-            var toRead = VarInt.read(buf);
-            if (toRead > buf.readableBytes()) {
-                throw new DecoderException("ByteArray with size " + toRead + " is bigger than allowed");
+    public static StreamCodec<ByteBuf, ByteBuffer> byteBuffer(int limit) {
+        return new StreamCodec<>() {
+            @Override
+            public ByteBuffer decode(ByteBuf buf) {
+                var toRead = VarInt.read(buf);
+                if (toRead > buf.readableBytes() || toRead >= limit) {
+                    throw new DecoderException("ByteArray with size " + toRead + " is bigger than allowed");
+                }
+
+                var bytes = new byte[toRead];
+                buf.readBytes(bytes);
+                return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
             }
 
-            var bytes = new byte[toRead];
-            buf.readBytes(bytes);
-            return ByteBuffer.wrap(bytes).asReadOnlyBuffer();
-        }
+            @Override
+            public void encode(ByteBuf buf, ByteBuffer buffer) {
+                VarInt.write(buf, buffer.remaining());
+                buf.writeBytes(buffer.duplicate());
+            }
+        };
+    }
 
-        @Override
-        public void encode(ByteBuf buf, ByteBuffer buffer) {
-            VarInt.write(buf, buffer.remaining());
-            buf.writeBytes(buffer.duplicate());
-        }
-    };
+    /**
+     * Equivalent to {@link ByteBufCodecs#BYTE_ARRAY}, but into an immutable {@link ByteBuffer}.
+     */
+    public static final StreamCodec<ByteBuf, ByteBuffer> BYTE_BUFFER = byteBuffer(Integer.MAX_VALUE);
 }

@@ -40,6 +40,8 @@ dependencies {
 }
 
 tasks.processResources {
+    inputs.property("gitHash", cct.gitHash)
+
     var props = mapOf("gitContributors" to cct.gitContributors.get().joinToString("\n"))
     filesMatching("data/computercraft/lua/rom/help/credits.md") { expand(props) }
 }

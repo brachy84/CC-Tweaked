@@ -26,6 +26,9 @@ public class TurtleScreen extends AbstractComputerScreen<TurtleMenu> {
     private static final ResourceLocation BACKGROUND_NORMAL = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "textures/gui/turtle_normal.png");
     private static final ResourceLocation BACKGROUND_ADVANCED = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "textures/gui/turtle_advanced.png");
 
+    private static final ResourceLocation SELECTED_NORMAL = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "turtle_normal_selected_slot");
+    private static final ResourceLocation SELECTED_ADVANCED = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "turtle_advanced_selected_slot");
+
     private static final int TEX_WIDTH = 278;
     private static final int TEX_HEIGHT = 217;
 
@@ -54,9 +57,9 @@ public class TurtleScreen extends AbstractComputerScreen<TurtleMenu> {
         if (slot >= 0) {
             var slotX = slot % 4;
             var slotY = slot / 4;
-            graphics.blit(texture,
-                leftPos + TURTLE_START_X - 2 + slotX * 18, topPos + PLAYER_START_Y - 2 + slotY * 18, 0,
-                0, 217, 24, 24, FULL_TEX_SIZE, FULL_TEX_SIZE
+            graphics.blitSprite(
+                advanced ? SELECTED_ADVANCED : SELECTED_NORMAL,
+                leftPos + TURTLE_START_X - 2 + slotX * 18, topPos + PLAYER_START_Y - 2 + slotY * 18, 0, 22, 22
             );
         }
 

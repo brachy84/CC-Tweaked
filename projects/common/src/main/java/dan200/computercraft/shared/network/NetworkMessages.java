@@ -26,9 +26,9 @@ public final class NetworkMessages {
     private static final List<CustomPacketPayload.TypeAndCodec<RegistryFriendlyByteBuf, ? extends NetworkMessage<ClientNetworkContext>>> clientMessages = new ArrayList<>();
 
     public static final CustomPacketPayload.Type<ComputerActionServerMessage> COMPUTER_ACTION = registerServerbound("computer_action", ComputerActionServerMessage.STREAM_CODEC);
-    public static final CustomPacketPayload.Type<QueueEventServerMessage> QUEUE_EVENT = register(serverMessages, "queue_event", QueueEventServerMessage.STREAM_CODEC);
     public static final CustomPacketPayload.Type<KeyEventServerMessage> KEY_EVENT = registerServerbound("key_event", KeyEventServerMessage.STREAM_CODEC);
     public static final CustomPacketPayload.Type<MouseEventServerMessage> MOUSE_EVENT = registerServerbound("mouse_event", MouseEventServerMessage.STREAM_CODEC);
+    public static final CustomPacketPayload.Type<PasteEventComputerMessage> PASTE_EVENT = registerServerbound("paste_event", PasteEventComputerMessage.STREAM_CODEC);
     public static final CustomPacketPayload.Type<UploadFileMessage> UPLOAD_FILE = register(serverMessages, "upload_file", UploadFileMessage.STREAM_CODEC);
 
     public static final CustomPacketPayload.Type<ChatTableClientMessage> CHAT_TABLE = registerClientbound("chat_table", ChatTableClientMessage.STREAM_CODEC);
