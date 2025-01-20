@@ -57,6 +57,7 @@ public final class DataProviders {
                 LecternPrintoutModel.TEXTURE
             )));
             out.accept(GuiSprites.SPRITE_SHEET, makeSprites(
+                Stream.of(GuiSprites.TURTLE_NORMAL_SELECTED_SLOT, GuiSprites.TURTLE_ADVANCED_SELECTED_SLOT),
                 // Buttons
                 GuiSprites.TURNED_OFF.textures(),
                 GuiSprites.TURNED_ON.textures(),
