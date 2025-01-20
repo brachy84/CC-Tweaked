@@ -11,8 +11,7 @@ import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ComputerState;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
-import dan200.computercraft.shared.config.Config;
-import dan200.computercraft.shared.util.ComponentMap;
+import dan200.computercraft.shared.config.ConfigSpec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -33,10 +32,9 @@ public class ComputerBlockEntity extends AbstractComputerBlockEntity {
 
     @Override
     protected ServerComputer createComputer(int id) {
-        return new ServerComputer(
-            (ServerLevel) getLevel(), getBlockPos(), id, label,
-            getFamily(), Config.computerTermWidth, Config.computerTermHeight,
-            ComponentMap.empty()
+        return new ServerComputer((ServerLevel) getLevel(), getBlockPos(), ServerComputer.properties(id, getFamily())
+            .label(getLabel())
+            .terminalSize(ConfigSpec.computerTermWidth.get(), ConfigSpec.computerTermHeight.get())
         );
     }
 

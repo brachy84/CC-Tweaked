@@ -6,6 +6,7 @@ package dan200.computercraft.shared.computer.core;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.component.AdminComputer;
+import dan200.computercraft.api.component.ComputerComponent;
 import dan200.computercraft.api.component.ComputerComponents;
 import dan200.computercraft.api.filesystem.WritableMount;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -51,17 +52,22 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
 
     private int ticksSincePing;
 
+    @Deprecated
     public ServerComputer(
         ServerLevel level, BlockPos position, int computerID, @Nullable String label, ComputerFamily family, int terminalWidth, int terminalHeight,
         ComponentMap baseComponents
     ) {
+        this(level, position, properties(computerID, family).label(label).terminalSize(terminalWidth, terminalHeight).addComponents(baseComponents));
+    }
+
+    public ServerComputer(ServerLevel level, BlockPos position, Properties properties) {
         this.level = level;
         this.position = position;
-        this.family = family;
+        this.family = properties.family;
 
         var context = ServerContext.get(level.getServer());
         instanceID = context.registry().getUnusedInstanceID();
-        terminal = new NetworkedTerminal(terminalWidth, terminalHeight, family != ComputerFamily.NORMAL, this::markTerminalChanged);
+        terminal = new NetworkedTerminal(properties.terminalWidth, properties.terminalHeight, family != ComputerFamily.NORMAL, this::markTerminalChanged);
         metrics = context.metrics().createMetricObserver(this);
 
         var componentBuilder = ComponentMap.builder();
@@ -70,11 +76,11 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
             componentBuilder.add(ComputerComponents.ADMIN_COMPUTER, new AdminComputer() {
             });
         }
-        componentBuilder.add(baseComponents);
+        componentBuilder.add(properties.components.build());
         var components = componentBuilder.build();
 
-        computer = new Computer(context.computerContext(), this, terminal, computerID);
-        computer.setLabel(label);
+        computer = new Computer(context.computerContext(), this, terminal, properties.computerID);
+        computer.setLabel(properties.label);
 
         // Load in the externally registered APIs.
         for (var factory : ApiFactories.getAll()) {
@@ -270,5 +276,47 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
     @Override
     public final WritableMount createRootMount() {
         return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + computer.getID(), Config.computerSpaceLimit);
+    }
+
+    public static Properties properties(int computerID, ComputerFamily family) {
+        return new Properties(computerID, family);
+    }
+
+    public static final class Properties {
+
+        private final int computerID;
+        private @Nullable String label;
+        private final ComputerFamily family;
+
+        private int terminalWidth = Config.DEFAULT_COMPUTER_TERM_WIDTH;
+        private int terminalHeight = Config.DEFAULT_COMPUTER_TERM_HEIGHT;
+        private final ComponentMap.Builder components = ComponentMap.builder();
+
+        private Properties(int computerID, ComputerFamily family) {
+            this.computerID = computerID;
+            this.family = family;
+        }
+
+        public Properties label(@Nullable String label) {
+            this.label = label;
+            return this;
+        }
+
+        public Properties terminalSize(int width, int height) {
+            if (width <= 0 || height <= 0) throw new IllegalArgumentException("Terminal size must be positive");
+            this.terminalWidth = width;
+            this.terminalHeight = height;
+            return this;
+        }
+
+        public <T> Properties addComponent(ComputerComponent<T> component, T value) {
+            components.add(component, value);
+            return this;
+        }
+
+        private Properties addComponents(ComponentMap components) {
+            this.components.add(components);
+            return this;
+        }
     }
 }

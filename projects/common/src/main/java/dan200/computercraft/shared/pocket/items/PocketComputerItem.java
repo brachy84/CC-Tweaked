@@ -235,7 +235,10 @@ public class PocketComputerItem extends Item implements IComputerItem, IMedia, I
             setComputerID(stack, computerID);
         }
 
-        var brain = new PocketBrain(holder, getComputerID(stack), getLabel(stack), getFamily(), getUpgradeWithData(stack));
+        var brain = new PocketBrain(
+            holder, getUpgradeWithData(stack),
+            ServerComputer.properties(getComputerID(stack), getFamily()).label(getLabel(stack))
+        );
         var computer = brain.computer();
 
         var tag = stack.getOrCreateTag();
