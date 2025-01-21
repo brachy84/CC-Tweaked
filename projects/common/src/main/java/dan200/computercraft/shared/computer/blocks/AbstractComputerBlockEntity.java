@@ -417,4 +417,9 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     public Component getDisplayName() {
         return Nameable.super.getDisplayName();
     }
+
+    @Override
+    public boolean onlyOpCanSetNbt() {
+        return getFamily() == ComputerFamily.COMMAND;
+    }
 }
