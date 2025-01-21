@@ -9,8 +9,9 @@ import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.computer.blocks.AbstractComputerBlock;
-import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.util.DataComponentUtil;
+import dan200.computercraft.shared.util.StorageCapacity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
@@ -53,6 +54,9 @@ public class AbstractComputerItem extends BlockItem implements IMedia {
     @Override
     public @Nullable Mount createDataMount(ItemStack stack, ServerLevel level) {
         var id = stack.get(ModRegistry.DataComponents.COMPUTER_ID.get());
-        return id != null ? ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id.id(), Config.computerSpaceLimit) : null;
+        if (id == null) return null;
+
+        var capacity = StorageCapacity.getOrDefault(stack.get(ModRegistry.DataComponents.STORAGE_CAPACITY.get()), ConfigSpec.computerSpaceLimit);
+        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id.id(), capacity);
     }
 }

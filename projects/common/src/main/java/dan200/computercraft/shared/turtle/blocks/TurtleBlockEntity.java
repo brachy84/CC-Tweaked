@@ -82,6 +82,7 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
         var computer = new ServerComputer((ServerLevel) getLevel(), getBlockPos(), ServerComputer.properties(id, getFamily())
             .label(getLabel())
             .terminalSize(Config.TURTLE_TERM_WIDTH, Config.TURTLE_TERM_HEIGHT)
+            .storageCapacity(storageCapacity)
             .addComponent(ComputerComponents.TURTLE, brain)
         );
         brain.setupComputer(computer);

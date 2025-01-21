@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
 public record NonNegativeId(int id) {
     public static final Codec<NonNegativeId> CODEC = ExtraCodecs.NON_NEGATIVE_INT.xmap(NonNegativeId::new, NonNegativeId::id);
 
-    public static final StreamCodec<ByteBuf, NonNegativeId> STREAM_CODEC = ByteBufCodecs.INT.map(NonNegativeId::new, NonNegativeId::id);
+    public static final StreamCodec<ByteBuf, NonNegativeId> STREAM_CODEC = ByteBufCodecs.VAR_INT.map(NonNegativeId::new, NonNegativeId::id);
 
     public NonNegativeId {
         if (id < 0) throw new IllegalArgumentException("ID must be >= 0");

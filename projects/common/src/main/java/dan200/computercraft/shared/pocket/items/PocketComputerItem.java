@@ -18,16 +18,13 @@ import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.items.ServerComputerReference;
-import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.pocket.core.PocketBrain;
 import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
 import dan200.computercraft.shared.pocket.inventory.PocketComputerMenuProvider;
-import dan200.computercraft.shared.util.DataComponentUtil;
-import dan200.computercraft.shared.util.IDAssigner;
-import dan200.computercraft.shared.util.InventoryUtil;
-import dan200.computercraft.shared.util.NonNegativeId;
+import dan200.computercraft.shared.util.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -198,7 +195,9 @@ public class PocketComputerItem extends Item implements IMedia {
         var computerID = NonNegativeId.getOrCreate(level.getServer(), stack, ModRegistry.DataComponents.COMPUTER_ID.get(), IDAssigner.COMPUTER);
         var brain = new PocketBrain(
             holder, getUpgradeWithData(stack),
-            ServerComputer.properties(computerID, getFamily()).label(getLabel(stack))
+            ServerComputer.properties(computerID, getFamily())
+                .label(getLabel(stack))
+                .storageCapacity(StorageCapacity.getOrDefault(stack.get(ModRegistry.DataComponents.STORAGE_CAPACITY.get()), -1))
         );
         var computer = brain.computer();
 
@@ -265,10 +264,10 @@ public class PocketComputerItem extends Item implements IMedia {
     @Override
     public @Nullable Mount createDataMount(ItemStack stack, ServerLevel level) {
         var id = stack.get(ModRegistry.DataComponents.COMPUTER_ID.get());
-        if (id != null) {
-            return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id.id(), Config.computerSpaceLimit);
-        }
-        return null;
+        if (id == null) return null;
+
+        var capacity = StorageCapacity.getOrDefault(stack.get(ModRegistry.DataComponents.STORAGE_CAPACITY.get()), ConfigSpec.computerSpaceLimit);
+        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id.id(), capacity);
     }
 
     private static boolean isMarkedOn(ItemStack stack) {

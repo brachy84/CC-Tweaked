@@ -93,6 +93,7 @@ import dan200.computercraft.shared.turtle.upgrades.TurtleTool;
 import dan200.computercraft.shared.util.ComponentMap;
 import dan200.computercraft.shared.util.DataComponentUtil;
 import dan200.computercraft.shared.util.NonNegativeId;
+import dan200.computercraft.shared.util.StorageCapacity;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
@@ -314,6 +315,17 @@ public final class ModRegistry {
          */
         public static final RegistryEntry<DataComponentType<NonNegativeId>> COMPUTER_ID = register("computer_id", b -> b
             .persistent(NonNegativeId.CODEC).networkSynchronized(NonNegativeId.STREAM_CODEC)
+        );
+
+        /**
+         * The storage capacity of a computer or disk.
+         *
+         * @see AbstractComputerItem
+         * @see PocketComputerItem
+         * @see DiskItem
+         */
+        public static final RegistryEntry<DataComponentType<StorageCapacity>> STORAGE_CAPACITY = register("storage_capacity", b -> b
+            .persistent(StorageCapacity.CODEC).networkSynchronized(StorageCapacity.STREAM_CODEC)
         );
 
         /**

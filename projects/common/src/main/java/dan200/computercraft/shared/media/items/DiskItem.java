@@ -10,8 +10,9 @@ import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.core.util.Colour;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.util.NonNegativeId;
+import dan200.computercraft.shared.util.StorageCapacity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -64,7 +65,8 @@ public class DiskItem extends Item implements IMedia {
     @Override
     public @Nullable Mount createDataMount(ItemStack stack, ServerLevel level) {
         var diskID = NonNegativeId.getOrCreate(level.getServer(), stack, ModRegistry.DataComponents.DISK_ID.get(), "disk");
-        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "disk/" + diskID, Config.floppySpaceLimit);
+        var capacity = StorageCapacity.getOrDefault(stack.get(ModRegistry.DataComponents.STORAGE_CAPACITY.get()), ConfigSpec.floppySpaceLimit);
+        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "disk/" + diskID, capacity);
     }
 
     public static int getDiskID(ItemStack stack) {

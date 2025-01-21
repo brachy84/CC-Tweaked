@@ -97,11 +97,11 @@ public final class ConfigSpec {
         { // General computers
             computerSpaceLimit = builder
                 .comment("The disk space limit for computers and turtles, in bytes.")
-                .define("computer_space_limit", Config.computerSpaceLimit);
+                .define("computer_space_limit", 1000 * 1000);
 
             floppySpaceLimit = builder
                 .comment("The disk space limit for floppy disks, in bytes.")
-                .define("floppy_space_limit", Config.floppySpaceLimit);
+                .define("floppy_space_limit", 125 * 1000);
 
             uploadMaxSize = builder
                 .comment("""
@@ -384,8 +384,6 @@ public final class ConfigSpec {
 
     public static void syncServer(@Nullable Path path) {
         // General
-        Config.computerSpaceLimit = computerSpaceLimit.get();
-        Config.floppySpaceLimit = floppySpaceLimit.get();
         Config.uploadMaxSize = uploadMaxSize.get();
         CoreConfig.maximumFilesOpen = maximumFilesOpen.get();
         CoreConfig.defaultComputerSettings = defaultComputerSettings.get();

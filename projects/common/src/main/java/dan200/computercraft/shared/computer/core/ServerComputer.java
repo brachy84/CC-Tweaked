@@ -21,6 +21,7 @@ import dan200.computercraft.shared.computer.menu.ComputerMenu;
 import dan200.computercraft.shared.computer.terminal.NetworkedTerminal;
 import dan200.computercraft.shared.computer.terminal.TerminalState;
 import dan200.computercraft.shared.config.Config;
+import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.NetworkMessage;
 import dan200.computercraft.shared.network.client.ClientNetworkContext;
 import dan200.computercraft.shared.network.client.ComputerTerminalClientMessage;
@@ -49,15 +50,9 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
     private final NetworkedTerminal terminal;
     private final AtomicBoolean terminalChanged = new AtomicBoolean(false);
 
-    private int ticksSincePing;
+    private final long storageCapacity;
 
-    @Deprecated
-    public ServerComputer(
-        ServerLevel level, BlockPos position, int computerID, @Nullable String label, ComputerFamily family, int terminalWidth, int terminalHeight,
-        ComponentMap baseComponents
-    ) {
-        this(level, position, properties(computerID, family).label(label).terminalSize(terminalWidth, terminalHeight).addComponents(baseComponents));
-    }
+    private int ticksSincePing;
 
     public ServerComputer(ServerLevel level, BlockPos position, Properties properties) {
         this.level = level;
@@ -67,6 +62,8 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
         var context = ServerContext.get(level.getServer());
         terminal = new NetworkedTerminal(properties.terminalWidth, properties.terminalHeight, family != ComputerFamily.NORMAL, this::markTerminalChanged);
         metrics = context.metrics().createMetricObserver(this);
+
+        storageCapacity = properties.storageCapacity;
 
         var componentBuilder = ComponentMap.builder();
         componentBuilder.add(ComponentMap.METRICS, metrics);
@@ -269,7 +266,8 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
 
     @Override
     public final WritableMount createRootMount() {
-        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + computer.getID(), Config.computerSpaceLimit);
+        var capacity = storageCapacity <= 0 ? ConfigSpec.computerSpaceLimit.get() : storageCapacity;
+        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + computer.getID(), capacity);
     }
 
     public static Properties properties(int computerID, ComputerFamily family) {
@@ -277,13 +275,13 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
     }
 
     public static final class Properties {
-
         private final int computerID;
         private @Nullable String label;
         private final ComputerFamily family;
 
         private int terminalWidth = Config.DEFAULT_COMPUTER_TERM_WIDTH;
         private int terminalHeight = Config.DEFAULT_COMPUTER_TERM_HEIGHT;
+        private long storageCapacity = -1;
         private final ComponentMap.Builder components = ComponentMap.builder();
 
         private Properties(int computerID, ComputerFamily family) {
@@ -303,13 +301,19 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
             return this;
         }
 
-        public <T> Properties addComponent(ComputerComponent<T> component, T value) {
-            components.add(component, value);
+        /**
+         * Override the storage capacity for this computer.
+         *
+         * @param capacity The capacity for this computer's drive, or {@code -1} to use the default.
+         * @return {@code this}, for chaining.
+         */
+        public Properties storageCapacity(long capacity) {
+            storageCapacity = capacity;
             return this;
         }
 
-        private Properties addComponents(ComponentMap components) {
-            this.components.add(components);
+        public <T> Properties addComponent(ComputerComponent<T> component, T value) {
+            components.add(component, value);
             return this;
         }
     }
