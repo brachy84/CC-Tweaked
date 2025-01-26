@@ -59,12 +59,12 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -170,8 +170,8 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public void openMenu(Player player, MenuProvider owner, ContainerData menu) {
-        player.openMenu(new WrappedMenuProvider(owner, menu));
+    public void openMenu(Player player, Component title, MenuConstructor menu, ContainerData data) {
+        player.openMenu(new WrappedMenuProvider(title, menu, data));
     }
 
     @Override
@@ -408,21 +408,22 @@ public class PlatformHelperImpl implements PlatformHelper {
         }
     }
 
-    private record WrappedMenuProvider(MenuProvider owner, ContainerData menu) implements ExtendedScreenHandlerFactory {
+    private record WrappedMenuProvider(Component title, MenuConstructor menu,
+                                       ContainerData data) implements ExtendedScreenHandlerFactory {
         @Nullable
         @Override
         public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {
-            return owner.createMenu(id, inventory, player);
+            return menu.createMenu(id, inventory, player);
         }
 
         @Override
         public Component getDisplayName() {
-            return owner.getDisplayName();
+            return title;
         }
 
         @Override
         public void writeScreenOpeningData(ServerPlayer player, FriendlyByteBuf buf) {
-            menu.toBytes(buf);
+            data.toBytes(buf);
         }
     }
 

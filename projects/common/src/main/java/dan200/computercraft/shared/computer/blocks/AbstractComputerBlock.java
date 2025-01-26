@@ -9,6 +9,7 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.shared.common.IBundledRedstoneBlock;
 import dan200.computercraft.shared.computer.items.IComputerItem;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.platform.RegistryEntry;
 import dan200.computercraft.shared.util.BlockEntityHelpers;
 import net.minecraft.core.BlockPos;
@@ -161,7 +162,7 @@ public abstract class AbstractComputerBlock<T extends AbstractComputerBlockEntit
                 var serverComputer = computer.createServerComputer();
                 serverComputer.turnOn();
 
-                new ComputerContainerData(serverComputer, getItem(computer)).open(player, computer);
+                PlatformHelper.get().openMenu(player, computer.getName(), computer, new ComputerContainerData(serverComputer, getItem(computer)));
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

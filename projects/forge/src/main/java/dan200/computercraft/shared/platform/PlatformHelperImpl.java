@@ -28,6 +28,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.resources.ResourceKey;
@@ -41,6 +42,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -157,8 +159,8 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    public void openMenu(Player player, MenuProvider owner, ContainerData menu) {
-        NetworkHooks.openScreen((ServerPlayer) player, owner, menu::toBytes);
+    public void openMenu(Player player, Component title, MenuConstructor menu, ContainerData data) {
+        NetworkHooks.openScreen((ServerPlayer) player, new SimpleMenuProvider(menu, title), data::toBytes);
     }
 
     @Override

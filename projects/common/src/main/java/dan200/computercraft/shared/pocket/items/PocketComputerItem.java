@@ -12,18 +12,20 @@ import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.impl.PocketUpgrades;
+import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.IColouredItem;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
+import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.IComputerItem;
 import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.pocket.core.PocketBrain;
 import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
-import dan200.computercraft.shared.pocket.inventory.PocketComputerMenuProvider;
 import dan200.computercraft.shared.util.IDAssigner;
 import dan200.computercraft.shared.util.InventoryUtil;
 import dan200.computercraft.shared.util.NBTUtil;
@@ -176,8 +178,13 @@ public class PocketComputerItem extends Item implements IComputerItem, IMedia, I
             }
 
             if (!stop) {
-                var isTypingOnly = hand == InteractionHand.OFF_HAND;
-                new ComputerContainerData(computer, stack).open(player, new PocketComputerMenuProvider(computer, stack, this, hand, isTypingOnly));
+                PlatformHelper.get().openMenu(
+                    player, stack.getHoverName(),
+                    (id, inventory, entity) -> new ComputerMenuWithoutInventory(
+                        hand == InteractionHand.OFF_HAND ? ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : ModRegistry.Menus.COMPUTER.get(),
+                        id, inventory, p -> isServerComputer(computer, p.getItemInHand(hand)), computer
+                    ),
+                    new ComputerContainerData(computer, stack));
             }
         }
         return new InteractionResultHolder<>(InteractionResult.sidedSuccess(world.isClientSide), stack);
