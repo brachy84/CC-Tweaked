@@ -29,6 +29,7 @@ import net.minecraft.world.LockCode;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -310,6 +311,10 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         return label;
     }
 
+    public final boolean isAdminOnly() {
+        return getBlockState().getBlock() instanceof GameMasterBlock;
+    }
+
     public final void setComputerID(int id) {
         if (getLevel().isClientSide || computerID == id) return;
 
@@ -420,6 +425,6 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     @Override
     public boolean onlyOpCanSetNbt() {
-        return getFamily() == ComputerFamily.COMMAND;
+        return isAdminOnly();
     }
 }

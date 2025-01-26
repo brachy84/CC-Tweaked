@@ -128,6 +128,14 @@ fun GameTestHelper.sequence(run: GameTestSequence.() -> Unit) {
 }
 
 /**
+ * Run a function immediately, and then succeed.
+ */
+fun GameTestHelper.immediate(run: () -> Unit) {
+    run()
+    succeed()
+}
+
+/**
  * A custom instance of [GameTestAssertPosException] which allows for longer error messages.
  */
 private class VerboseGameTestAssertPosException(message: String, absolutePos: BlockPos, relativePos: BlockPos, tick: Long) :
@@ -232,15 +240,17 @@ private fun GameTestHelper.getPeripheralAt(pos: BlockPos, direction: Direction):
 
 fun GameTestHelper.assertPeripheral(pos: BlockPos, direction: Direction = Direction.UP, type: String) {
     val peripheral = getPeripheralAt(pos, direction)
+    val block = getBlockState(pos).block.name.string
     when {
-        peripheral == null -> fail("No peripheral at position", pos)
-        peripheral.type != type -> fail("Peripheral is of type ${peripheral.type}, expected $type", pos)
+        peripheral == null -> fail("No peripheral for '$block'", pos)
+        peripheral.type != type -> fail("Peripheral for '$block' is of type ${peripheral.type}, expected $type", pos)
     }
 }
 
 fun GameTestHelper.assertNoPeripheral(pos: BlockPos, direction: Direction = Direction.UP) {
     val peripheral = getPeripheralAt(pos, direction)
-    if (peripheral != null) fail("Expected no peripheral, got a ${peripheral.type}", pos)
+    val block = getBlockState(pos).block.name
+    if (peripheral != null) fail("Expected no peripheral for '$block', got a ${peripheral.type}", pos)
 }
 
 fun GameTestHelper.assertExactlyItems(vararg expected: ItemStack, message: String? = null) {
