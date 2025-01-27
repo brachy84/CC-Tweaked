@@ -276,7 +276,6 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
     }
 
     public static final class Properties {
-
         private final int computerID;
         private @Nullable String label;
         private final ComputerFamily family;

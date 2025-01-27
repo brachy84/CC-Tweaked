@@ -73,6 +73,8 @@ object TestHooks {
         LOG.info("Cleaning up after last run")
         GameTestRunner.clearAllTests(server.overworld(), BlockPos(0, -60, 0), GameTestTicker.SINGLETON, 200)
 
+        ManagedComputers.reset()
+
         // Delete server context and add one with a mutable machine factory. This allows us to set the factory for
         // specific test batches without having to reset all computers.
         for (computer in ServerContext.get(server).registry().computers) {

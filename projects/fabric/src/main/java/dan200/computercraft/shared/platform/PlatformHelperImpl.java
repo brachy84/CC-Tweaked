@@ -408,8 +408,9 @@ public class PlatformHelperImpl implements PlatformHelper {
         }
     }
 
-    private record WrappedMenuProvider(Component title, MenuConstructor menu,
-                                       ContainerData data) implements ExtendedScreenHandlerFactory {
+    private record WrappedMenuProvider(
+        Component title, MenuConstructor menu, ContainerData data
+    ) implements ExtendedScreenHandlerFactory {
         @Nullable
         @Override
         public AbstractContainerMenu createMenu(int id, Inventory inventory, Player player) {

@@ -29,9 +29,14 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import javax.annotation.Nullable;
 
 public final class WorldUtil {
+    @SuppressWarnings("deprecation")
     public static boolean isLiquidBlock(Level world, BlockPos pos) {
-        if (!world.isInWorldBounds(pos)) return false;
-        return world.getBlockState(pos).liquid();
+        return world.isInWorldBounds(pos) && world.getBlockState(pos).liquid();
+    }
+
+    @SuppressWarnings("deprecation")
+    public static boolean isEmptyBlock(BlockState state) {
+        return state.isAir() || state.liquid();
     }
 
     public static boolean isVecInside(VoxelShape shape, Vec3 vec) {
