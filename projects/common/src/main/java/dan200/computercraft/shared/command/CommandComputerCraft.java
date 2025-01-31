@@ -24,15 +24,13 @@ import dan200.computercraft.shared.computer.metrics.basic.AggregatedMetric;
 import dan200.computercraft.shared.computer.metrics.basic.BasicComputerMetricsObserver;
 import dan200.computercraft.shared.computer.metrics.basic.ComputerMetrics;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.RelativeMovement;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -259,18 +257,11 @@ public final class CommandComputerCraft {
      * @return The constant {@code 1}.
      */
     private static int view(CommandSourceStack source, ServerComputer computer) throws CommandSyntaxException {
-        var player = source.getPlayerOrException();
-        new ComputerContainerData(computer, new ItemStack(ModRegistry.Items.COMPUTER_NORMAL.get())).open(player, new MenuProvider() {
-            @Override
-            public Component getDisplayName() {
-                return Component.translatable("gui.computercraft.view_computer");
-            }
-
-            @Override
-            public AbstractContainerMenu createMenu(int id, Inventory player, Player entity) {
-                return new ComputerMenuWithoutInventory(ModRegistry.Menus.COMPUTER.get(), id, player, p -> true, computer);
-            }
-        });
+        PlatformHelper.get().openMenu(
+            source.getPlayerOrException(), Component.translatable("gui.computercraft.view_computer"),
+            (id, player, entity) -> new ComputerMenuWithoutInventory(ModRegistry.Menus.COMPUTER.get(), id, player, p -> true, computer),
+            new ComputerContainerData(computer, new ItemStack(ModRegistry.Items.COMPUTER_NORMAL.get()))
+        );
         return 1;
     }
 

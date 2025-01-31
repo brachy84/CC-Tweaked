@@ -18,6 +18,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -237,7 +238,7 @@ public class MonitorBlockEntity extends BlockEntity {
         getLevel().setBlock(getBlockPos(), getBlockState()
             .setValue(MonitorBlock.STATE, MonitorEdgeState.fromConnections(
                 yIndex < height - 1, yIndex > 0,
-                xIndex > 0, xIndex < width - 1)), 2);
+                xIndex > 0, xIndex < width - 1)), Block.UPDATE_CLIENTS);
     }
 
     // region Sizing and placement stuff

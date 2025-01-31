@@ -659,6 +659,27 @@ class Turtle_Test {
     }
 
     /**
+     * Test turtles can push entities.
+     */
+    @GameTest
+    fun Move_push_entity(helper: GameTestHelper) = helper.sequence {
+        thenOnComputer { turtle.up().await().assertArrayEquals(true) }
+        thenIdle(9)
+        thenExecute {
+            // The turtle has moved up
+            helper.assertBlockPresent(ModRegistry.Blocks.TURTLE_NORMAL.get(), BlockPos(2, 3, 2))
+
+            // As has the villager
+            val pos = BlockPos(2, 4, 2)
+            helper.assertEntityPresent(EntityType.VILLAGER, pos)
+
+            val villager = helper.getEntity(EntityType.VILLAGER)
+            val expectedY = helper.absolutePos(pos).y - 0.125
+            if (villager.y < expectedY) helper.fail("Expected villager at y>=$expectedY, but at ${villager.y}", pos)
+        }
+    }
+
+    /**
      * Test a turtle can attack an entity and capture its drops.
      */
     @GameTest

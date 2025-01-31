@@ -17,13 +17,14 @@ import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
+import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.ServerComputerReference;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.pocket.core.PocketBrain;
 import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
-import dan200.computercraft.shared.pocket.inventory.PocketComputerMenuProvider;
 import dan200.computercraft.shared.util.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.HolderLookup;
@@ -147,8 +148,13 @@ public class PocketComputerItem extends Item implements IMedia {
             }
 
             if (!stop) {
-                var isTypingOnly = hand == InteractionHand.OFF_HAND;
-                new ComputerContainerData(computer, stack).open(player, new PocketComputerMenuProvider(computer, stack, this, hand, isTypingOnly));
+                PlatformHelper.get().openMenu(
+                    player, stack.getHoverName(),
+                    (id, inventory, entity) -> new ComputerMenuWithoutInventory(
+                        hand == InteractionHand.OFF_HAND ? ModRegistry.Menus.POCKET_COMPUTER_NO_TERM.get() : ModRegistry.Menus.COMPUTER.get(),
+                        id, inventory, p -> isServerComputer(computer, p.getItemInHand(hand)), computer
+                    ),
+                    new ComputerContainerData(computer, stack));
             }
         }
         return new InteractionResultHolder<>(InteractionResult.sidedSuccess(world.isClientSide), stack);

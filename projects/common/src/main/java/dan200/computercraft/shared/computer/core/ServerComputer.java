@@ -26,18 +26,21 @@ import dan200.computercraft.shared.network.NetworkMessage;
 import dan200.computercraft.shared.network.client.ClientNetworkContext;
 import dan200.computercraft.shared.network.client.ComputerTerminalClientMessage;
 import dan200.computercraft.shared.network.server.ServerNetworking;
-import dan200.computercraft.shared.util.ComponentMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
 public class ServerComputer implements ComputerEnvironment, ComputerEvents.Receiver {
+    public static final ComputerComponent<MetricsObserver> METRICS = ComputerComponent.create("computercraft", "metrics");
+
     private final UUID instanceUUID = UUID.randomUUID();
 
     private ServerLevel level;
@@ -65,14 +68,12 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
 
         storageCapacity = properties.storageCapacity;
 
-        var componentBuilder = ComponentMap.builder();
-        componentBuilder.add(ComponentMap.METRICS, metrics);
+        properties.addComponent(METRICS, metrics);
         if (family == ComputerFamily.COMMAND) {
-            componentBuilder.add(ComputerComponents.ADMIN_COMPUTER, new AdminComputer() {
+            properties.addComponent(ComputerComponents.ADMIN_COMPUTER, new AdminComputer() {
             });
         }
-        componentBuilder.add(properties.components.build());
-        var components = componentBuilder.build();
+        var components = Map.copyOf(properties.components);
 
         computer = new Computer(context.computerContext(), this, terminal, properties.computerID);
         computer.setLabel(properties.label);
@@ -282,7 +283,7 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
         private int terminalWidth = Config.DEFAULT_COMPUTER_TERM_WIDTH;
         private int terminalHeight = Config.DEFAULT_COMPUTER_TERM_HEIGHT;
         private long storageCapacity = -1;
-        private final ComponentMap.Builder components = ComponentMap.builder();
+        private final Map<ComputerComponent<?>, Object> components = new HashMap<>();
 
         private Properties(int computerID, ComputerFamily family) {
             this.computerID = computerID;
@@ -313,7 +314,8 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
         }
 
         public <T> Properties addComponent(ComputerComponent<T> component, T value) {
-            components.add(component, value);
+            if (components.containsKey(component)) throw new IllegalArgumentException(component + " is already set");
+            components.put(component, value);
             return this;
         }
     }

@@ -8,9 +8,7 @@ import dan200.computercraft.shared.network.NetworkMessage;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 
@@ -19,16 +17,6 @@ import net.minecraft.world.inventory.MenuType;
  */
 public interface ContainerData {
     void toBytes(RegistryFriendlyByteBuf buf);
-
-    /**
-     * Open a menu for a specific player using this data.
-     *
-     * @param player The player to open the menu for.
-     * @param menu   The underlying menu provider.
-     */
-    default void open(Player player, MenuProvider menu) {
-        PlatformHelper.get().openMenu(player, menu, this);
-    }
 
     static <C extends AbstractContainerMenu, T extends ContainerData> MenuType<C> toType(StreamCodec<RegistryFriendlyByteBuf, T> codec, Factory<C, T> factory) {
         return PlatformHelper.get().createMenuType(codec, factory);

@@ -84,6 +84,8 @@ object TestHooks {
             StructureUtils.clearSpaceForStructure(StructureUtils.getStructureBoundingBox(structure), level)
         }
 
+        ManagedComputers.reset()
+
         // Delete server context and add one with a mutable machine factory. This allows us to set the factory for
         // specific test batches without having to reset all computers.
         for (computer in ServerContext.get(server).registry().computers) {
@@ -99,6 +101,7 @@ object TestHooks {
     fun areComputersIdle(server: MinecraftServer) = ComputerThreadReflection.isFullyIdle(ServerContext.get(server))
 
     private val testClasses = listOf(
+        Component_Test::class.java,
         Computer_Test::class.java,
         CraftOs_Test::class.java,
         Details_Test::class.java,

@@ -31,6 +31,7 @@ import dan200.computercraft.shared.computer.blocks.CommandComputerBlock;
 import dan200.computercraft.shared.computer.blocks.ComputerBlock;
 import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
+import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.AbstractComputerItem;
 import dan200.computercraft.shared.computer.items.CommandComputerItem;
@@ -90,7 +91,6 @@ import dan200.computercraft.shared.turtle.upgrades.TurtleCraftingTable;
 import dan200.computercraft.shared.turtle.upgrades.TurtleModem;
 import dan200.computercraft.shared.turtle.upgrades.TurtleSpeaker;
 import dan200.computercraft.shared.turtle.upgrades.TurtleTool;
-import dan200.computercraft.shared.util.ComponentMap;
 import dan200.computercraft.shared.util.DataComponentUtil;
 import dan200.computercraft.shared.util.NonNegativeId;
 import dan200.computercraft.shared.util.StorageCapacity;
@@ -615,7 +615,7 @@ public final class ModRegistry {
 
         ComputerCraftAPI.registerAPIFactory(computer -> {
             var turtle = computer.getComponent(ComputerComponents.TURTLE);
-            var metrics = Objects.requireNonNull(computer.getComponent(ComponentMap.METRICS));
+            var metrics = Objects.requireNonNull(computer.getComponent(ServerComputer.METRICS));
             return turtle == null ? null : new TurtleAPI(metrics, (TurtleAccessInternal) turtle);
         });
 

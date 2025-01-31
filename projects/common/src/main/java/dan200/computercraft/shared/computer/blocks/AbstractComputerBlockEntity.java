@@ -28,9 +28,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuConstructor;
+import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -40,7 +41,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.UUID;
 
-public abstract class AbstractComputerBlockEntity extends BlockEntity implements Nameable, MenuProvider {
+public abstract class AbstractComputerBlockEntity extends BlockEntity implements Nameable, MenuConstructor {
     private static final String NBT_ID = "ComputerId";
     private static final String NBT_LABEL = "Label";
     private static final String NBT_ON = "On";
@@ -344,6 +345,10 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         return label;
     }
 
+    public final boolean isAdminOnly() {
+        return getBlockState().getBlock() instanceof GameMasterBlock;
+    }
+
     public final void setComputerID(int id) {
         if (getLevel().isClientSide || computerID == id) return;
 
@@ -453,5 +458,10 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Override
     public Component getDisplayName() {
         return Nameable.super.getDisplayName();
+    }
+
+    @Override
+    public boolean onlyOpCanSetNbt() {
+        return isAdminOnly();
     }
 }

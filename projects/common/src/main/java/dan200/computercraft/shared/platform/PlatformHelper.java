@@ -17,6 +17,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -24,10 +25,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.*;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuConstructor;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DyeColor;
@@ -109,10 +114,11 @@ public interface PlatformHelper {
      * Open a container using a specific {@link ContainerData}.
      *
      * @param player The player to open the menu for.
-     * @param owner  The underlying menu provider.
-     * @param menu   The menu data.
+     * @param title  The title for this menu.
+     * @param menu   The underlying menu constructor.
+     * @param data   The menu data.
      */
-    void openMenu(Player player, MenuProvider owner, ContainerData menu);
+    void openMenu(Player player, Component title, MenuConstructor menu, ContainerData data);
 
     /**
      * Invalidate components on a block enitty.
