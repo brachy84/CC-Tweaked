@@ -1,10 +1,10 @@
-New features in CC: Tweaked 1.114.3
+New features in CC: Tweaked 1.114.4
 
-* `wget` now prints the error that occurred, rather than a generic "Failed" (tizu69).
-* Update several translations.
+* Allow typing/pasting any character in the CC charset.
 
 Several bug fixes:
-* Fix `fs.isDriveRoot` returning true for non-existent files.
-* Fix possible memory leak when sending terminal contents.
+* Fix command computers being exposed as peripherals (Forge only).
+* Fix command computers having NBT set when placed in a Create contraption.
+* Use correct bounding box when checking for entities in turtle movement.
 
 Type "help changelog" to see the full version history.

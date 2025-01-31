@@ -1,3 +1,12 @@
+# New features in CC: Tweaked 1.114.4
+
+* Allow typing/pasting any character in the CC charset.
+
+Several bug fixes:
+* Fix command computers being exposed as peripherals (Forge only).
+* Fix command computers having NBT set when placed in a Create contraption.
+* Use correct bounding box when checking for entities in turtle movement.
+
 # New features in CC: Tweaked 1.114.3
 
 * `wget` now prints the error that occurred, rather than a generic "Failed" (tizu69).
