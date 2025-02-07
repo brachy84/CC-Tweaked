@@ -39,7 +39,7 @@ public final class TurtleInventoryCrafting {
             }
         }
 
-        var input = CraftingInput.ofPositioned(WIDTH, HEIGHT, new AbstractList<>() {
+        List<ItemStack> items = new AbstractList<>() {
             @Override
             public ItemStack get(int index) {
                 var x = xStart + index % WIDTH;
@@ -53,9 +53,10 @@ public final class TurtleInventoryCrafting {
             public int size() {
                 return WIDTH * HEIGHT;
             }
-        });
-        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input.input(), level).orElse(null);
-        return recipe == null ? null : new FoundRecipe(recipe.value(), input.input(), input.left() + xStart, input.top() + yStart);
+        };
+        var input = CraftingInput.of(WIDTH, HEIGHT, items);
+        var recipe = level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, input, level).orElse(null);
+        return recipe == null ? null : new FoundRecipe(recipe.value(), items, xStart, yStart);
     }
 
     @Nullable
@@ -76,18 +77,24 @@ public final class TurtleInventoryCrafting {
         if (maxCount == 0) return List.of();
 
         var recipe = candidate.recipe();
-        var input = candidate.input();
-        var xStart = candidate.xStart();
-        var yStart = candidate.yStart();
+        var items = candidate.items();
 
         var results = new ArrayList<ItemStack>();
-        for (var i = 0; i < maxCount && recipe.matches(input, level); i++) {
+        for (var i = 0; i < maxCount; i++) {
+            var offsetInput = CraftingInput.ofPositioned(WIDTH, HEIGHT, items);
+            var input = offsetInput.input();
+
+            if (!recipe.matches(input, level)) break;
+
             var result = recipe.assemble(input, level.registryAccess());
             if (result.isEmpty()) break;
             results.add(result);
 
             result.onCraftedBySystem(level);
 
+            // Remove items from the inventory, and add back the remainders.
+            var xStart = candidate.xStart() + offsetInput.left();
+            var yStart = candidate.yStart() + offsetInput.top();
             var remainders = recipe.getRemainingItems(input);
             for (var y = 0; y < input.height(); y++) {
                 for (var x = 0; x < input.width(); x++) {
@@ -118,6 +125,6 @@ public final class TurtleInventoryCrafting {
         return Collections.unmodifiableList(results);
     }
 
-    private record FoundRecipe(Recipe<CraftingInput> recipe, CraftingInput input, int xStart, int yStart) {
+    private record FoundRecipe(Recipe<CraftingInput> recipe, List<ItemStack> items, int xStart, int yStart) {
     }
 }

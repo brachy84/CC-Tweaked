@@ -836,6 +836,29 @@ class Turtle_Test {
     }
 
     /**
+     * `turtle.craft` works on shapeless recipes
+     *
+     * @see [#2094](https://github.com/cc-tweaked/CC-Tweaked/issues/2094)
+     */
+    @GameTest
+    fun Craft_shapeless(helper: GameTestHelper) = helper.sequence {
+        thenExecute {
+            val turtle = helper.getBlockEntity(BlockPos(2, 2, 2), ModRegistry.BlockEntities.TURTLE_NORMAL.get())
+            assertTrue(TurtleCraftCommand(64).execute(turtle.access).isSuccess, "Crafting succeeded")
+
+            helper.assertContainerExactly(
+                BlockPos(2, 2, 2),
+                listOf(
+                    ItemStack(Items.ENDER_EYE, 1), ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+                    ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY,
+                ),
+            )
+        }
+    }
+
+    /**
      * `turtle.craft` leaves a remainder
      *
      * @see [#2007](https://github.com/cc-tweaked/CC-Tweaked/issues/2007)
