@@ -1,3 +1,8 @@
+# New features in CC: Tweaked 1.114.5
+
+One bug fix:
+* Fix `turtle.craft` crafting too many items for shapeless recipes.
+
 # New features in CC: Tweaked 1.114.4
 
 * Allow typing/pasting any character in the CC charset.
