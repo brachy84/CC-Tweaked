@@ -18,24 +18,25 @@ public final class StringUtil {
      * Convert a Unicode character to a terminal one.
      *
      * @param chr The Unicode character.
-     * @return The terminal character.
+     * @return The terminal character. This is either in the range [0, 255] (if a valid character) or {@code -1} if
+     * it cannot be mapped to CC's charset.
      */
-    public static byte unicodeToTerminal(int chr) {
+    public static int unicodeToTerminal(int chr) {
         // ASCII and latin1 map to themselves
         if (chr == 0 || chr == '\t' || chr == '\n' || chr == '\r' || (chr >= ' ' && chr <= '~') || (chr >= 160 && chr <= 255)) {
-            return (byte) chr;
+            return chr;
         }
 
         // Teletext block mosaics are *fairly* contiguous.
-        if (chr >= 0x1FB00 && chr <= 0x1FB13) return (byte) (chr + (129 - 0x1fb00));
-        if (chr >= 0x1FB14 && chr <= 0x1FB1D) return (byte) (chr + (150 - 0x1fb14));
+        if (chr >= 0x1FB00 && chr <= 0x1FB13) return chr + (129 - 0x1fb00);
+        if (chr >= 0x1FB14 && chr <= 0x1FB1D) return chr + (150 - 0x1fb14);
 
         // Everything else is just a manual lookup. For now, we just use a big switch statement, which we spin into a
         // separate function to hopefully avoid inlining it here.
         return unicodeToCraftOsFallback(chr);
     }
 
-    private static byte unicodeToCraftOsFallback(int c) {
+    private static int unicodeToCraftOsFallback(int c) {
         return switch (c) {
             case 0x263A -> 1;
             case 0x263B -> 2;
@@ -64,8 +65,8 @@ public final class StringUtil {
             case 0x25B2 -> 30;
             case 0x25BC -> 31;
             case 0x1FB99 -> 127;
-            case 0x258C -> (byte) 149;
-            default -> '?';
+            case 0x258C -> 149;
+            default -> -1;
         };
     }
 
@@ -76,8 +77,8 @@ public final class StringUtil {
      * @param chr The character to check.
      * @return Whether this character can be typed.
      */
-    public static boolean isTypableChar(byte chr) {
-        return chr != 0 && chr != '\r' && chr != '\n';
+    public static boolean isTypableChar(int chr) {
+        return chr >= 0 && chr <= 255 && chr != 0 && chr != '\r' && chr != '\n';
     }
 
     private static boolean isAllowedInLabel(char c) {
@@ -110,8 +111,9 @@ public final class StringUtil {
         var iterator = clipboard.codePoints().iterator();
         while (iterator.hasNext() && idx <= output.length) {
             var chr = unicodeToTerminal(iterator.next());
-            if (!isTypableChar(chr)) break;
-            output[idx++] = chr;
+            if (chr < 0) continue; // Strip out unconvertible characters
+            if (!isTypableChar(chr)) break; // Stop at untypable ones.
+            output[idx++] = (byte) chr;
         }
 
         return ByteBuffer.wrap(output, 0, idx).asReadOnlyBuffer();
