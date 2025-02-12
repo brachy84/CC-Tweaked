@@ -48,7 +48,7 @@ repositories {
             includeGroup("cc.tweaked")
             // Things we mirror
             includeGroup("com.simibubi.create")
-            includeGroup("commoble.morered")
+            includeGroup("net.commoble.morered")
             includeGroup("dev.architectury")
             includeGroup("dev.emi")
             includeGroup("maven.modrinth")
