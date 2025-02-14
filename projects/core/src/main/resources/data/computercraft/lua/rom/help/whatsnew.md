@@ -1,10 +1,11 @@
-New features in CC: Tweaked 1.114.4
+New features in CC: Tweaked 1.115.0
 
-* Allow typing/pasting any character in the CC charset.
+* Support placing pocket computers on lecterns.
+* Suggest alternative table keys on `nil` errors.
+* Errors from inside `parallel` functions now have source information attached.
+* Expose printout contents to the Java API.
 
 Several bug fixes:
-* Fix command computers being exposed as peripherals (Forge only).
-* Fix command computers having NBT set when placed in a Create contraption.
-* Use correct bounding box when checking for entities in turtle movement.
+* Ignore unrepresentable characters in `char`/`paste` events.
 
 Type "help changelog" to see the full version history.

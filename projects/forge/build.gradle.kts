@@ -246,3 +246,6 @@ tasks.register("checkClient") {
 modPublishing {
     output = tasks.reobfJar
 }
+
+// TODO: Remove once https://github.com/modrinth/minotaur/pull/72 is merged.
+modrinth { loaders = listOf("forge") }
