@@ -69,7 +69,7 @@ public class WebsocketHandle {
      * Send a websocket message to the connected server.
      *
      * @param message The message to send.
-     * @param binary  Whether this message should be treated as a
+     * @param binary  Whether this message should be treated as a binary message.
      * @throws LuaException If the message is too large.
      * @throws LuaException If the websocket has been closed.
      * @cc.changed 1.81.0 Added argument for binary mode.
