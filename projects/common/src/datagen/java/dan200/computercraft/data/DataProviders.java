@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.client.gui.GuiSprites;
+import dan200.computercraft.client.model.LecternPocketModel;
 import dan200.computercraft.client.model.LecternPrintoutModel;
 import dan200.computercraft.data.client.ExtraModelsProvider;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
@@ -71,7 +72,9 @@ public final class DataProviders {
             out.accept(ResourceLocation.withDefaultNamespace("blocks"), makeSprites(Stream.of(
                 UpgradeSlot.LEFT_UPGRADE,
                 UpgradeSlot.RIGHT_UPGRADE,
-                LecternPrintoutModel.TEXTURE
+                LecternPrintoutModel.TEXTURE,
+                LecternPocketModel.TEXTURE_NORMAL, LecternPocketModel.TEXTURE_ADVANCED,
+                LecternPocketModel.TEXTURE_COLOUR, LecternPocketModel.TEXTURE_FRAME, LecternPocketModel.TEXTURE_LIGHT
             )));
             out.accept(GuiSprites.SPRITE_SHEET, makeSprites(
                 // Computers

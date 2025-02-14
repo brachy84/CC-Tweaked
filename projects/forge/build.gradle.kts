@@ -265,3 +265,6 @@ tasks.register("checkClient") {
 modPublishing {
     output = tasks.jar
 }
+
+// TODO: Remove once https://github.com/modrinth/minotaur/pull/72 is merged.
+modrinth { loaders = listOf("neoforge") }

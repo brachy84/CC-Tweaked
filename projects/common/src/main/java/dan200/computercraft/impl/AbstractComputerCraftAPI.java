@@ -13,6 +13,7 @@ import dan200.computercraft.api.filesystem.WritableMount;
 import dan200.computercraft.api.lua.GenericSource;
 import dan200.computercraft.api.lua.ILuaAPIFactory;
 import dan200.computercraft.api.media.MediaProvider;
+import dan200.computercraft.api.media.PrintoutContents;
 import dan200.computercraft.api.network.PacketNetwork;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.network.wired.WiredNode;
@@ -25,6 +26,7 @@ import dan200.computercraft.core.filesystem.WritableFileMount;
 import dan200.computercraft.impl.detail.DetailRegistryImpl;
 import dan200.computercraft.impl.network.wired.WiredNodeImpl;
 import dan200.computercraft.impl.upgrades.TurtleToolSpec;
+import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.computer.core.ResourceMount;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.details.BlockDetails;
@@ -152,5 +154,10 @@ public abstract class AbstractComputerCraftAPI implements ComputerCraftAPIServic
     @Override
     public final DetailRegistry<BlockReference> getBlockInWorldDetailRegistry() {
         return blockDetails;
+    }
+
+    @Override
+    public @Nullable PrintoutContents getPrintoutContents(ItemStack stack) {
+        return stack.get(ModRegistry.DataComponents.PRINTOUT.get());
     }
 }

@@ -7,6 +7,7 @@ package dan200.computercraft.shared.media.items;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import dan200.computercraft.api.media.PrintoutContents;
 import dan200.computercraft.core.terminal.Terminal;
 import dan200.computercraft.shared.ModRegistry;
 import io.netty.buffer.ByteBuf;
@@ -16,6 +17,7 @@ import net.minecraft.network.codec.StreamCodec;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * The contents of a printout.
@@ -25,7 +27,7 @@ import java.util.List;
  * @see PrintoutItem
  * @see dan200.computercraft.shared.ModRegistry.DataComponents#PRINTOUT
  */
-public record PrintoutData(String title, List<Line> lines) {
+public record PrintoutData(String title, List<Line> lines) implements PrintoutContents {
     public static final int LINE_LENGTH = 25;
     public static final int LINES_PER_PAGE = 21;
     public static final int MAX_PAGES = 16;
@@ -106,5 +108,15 @@ public record PrintoutData(String title, List<Line> lines) {
      */
     public int pages() {
         return Math.ceilDiv(lines.size(), LINES_PER_PAGE);
+    }
+
+    @Override
+    public String getTitle() {
+        return title();
+    }
+
+    @Override
+    public Stream<String> getTextLines() {
+        return lines().stream().map(Line::text);
     }
 }

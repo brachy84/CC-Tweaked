@@ -6,6 +6,8 @@ package dan200.computercraft.shared.lectern;
 
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.media.items.PrintoutItem;
+import dan200.computercraft.shared.pocket.items.PocketComputerItem;
+import dan200.computercraft.shared.util.BlockEntityHelpers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.stats.Stats;
@@ -20,8 +22,12 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Extends {@link LecternBlock} with support for {@linkplain PrintoutItem printouts}.
@@ -48,7 +54,7 @@ public class CustomLecternBlock extends LecternBlock {
      * @return Whether the item was placed or not.
      */
     public static InteractionResult tryPlaceItem(Player player, Level level, BlockPos pos, BlockState blockState, ItemStack item) {
-        if (item.getItem() instanceof PrintoutItem) {
+        if (item.getItem() instanceof PrintoutItem || item.getItem() instanceof PocketComputerItem) {
             if (!level.isClientSide) replaceLectern(player, level, pos, blockState, item);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
@@ -152,7 +158,7 @@ public class CustomLecternBlock extends LecternBlock {
                 clearLectern(level, pos, state);
             } else {
                 // Otherwise open the screen.
-                player.openMenu(lectern);
+                lectern.openMenu(player);
             }
 
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
@@ -160,4 +166,11 @@ public class CustomLecternBlock extends LecternBlock {
 
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
+
+    @Override
+    public @Nullable <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return level.isClientSide ? null : BlockEntityHelpers.createTickerHelper(type, ModRegistry.BlockEntities.LECTERN.get(), serverTicker);
+    }
+
+    private static final BlockEntityTicker<CustomLecternBlockEntity> serverTicker = (level, pos, state, lectern) -> lectern.tick();
 }
