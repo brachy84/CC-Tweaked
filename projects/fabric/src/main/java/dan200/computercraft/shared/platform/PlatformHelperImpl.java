@@ -77,8 +77,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -207,7 +207,7 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    @SuppressWarnings({ "UnstableApiUsage", "NullAway" }) // FIXME: SIDED is treated as nullable by NullAway
+    @SuppressWarnings("UnstableApiUsage")
     public @Nullable ContainerTransfer getContainer(ServerLevel level, BlockPos pos, Direction side) {
         var storage = ItemStorage.SIDED.find(level, pos, side);
         if (storage != null) return FabricContainerTransfer.of(storage);
@@ -258,7 +258,7 @@ public class PlatformHelperImpl implements PlatformHelper {
 
     @Override
     public int getBurnTime(ItemStack stack) {
-        @Nullable var fuel = FuelRegistry.INSTANCE.get(stack.getItem());
+        var fuel = FuelRegistry.INSTANCE.get(stack.getItem());
         return fuel == null ? 0 : fuel;
     }
 

@@ -19,8 +19,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class PrintoutItem extends Item {
@@ -68,7 +68,7 @@ public class PrintoutItem extends Item {
         return new InteractionResultHolder<>(InteractionResult.sidedSuccess(world.isClientSide), stack);
     }
 
-    private ItemStack createFromTitleAndText(@Nullable String title, @Nullable String[] text, @Nullable String[] colours) {
+    private ItemStack createFromTitleAndText(@Nullable String title, String @Nullable [] text, String @Nullable [] colours) {
         var stack = new ItemStack(this);
 
         // Build NBT
@@ -91,15 +91,15 @@ public class PrintoutItem extends Item {
         return stack;
     }
 
-    public static ItemStack createSingleFromTitleAndText(@Nullable String title, @Nullable String[] text, @Nullable String[] colours) {
+    public static ItemStack createSingleFromTitleAndText(@Nullable String title, String @Nullable [] text, String @Nullable [] colours) {
         return ModRegistry.Items.PRINTED_PAGE.get().createFromTitleAndText(title, text, colours);
     }
 
-    public static ItemStack createMultipleFromTitleAndText(@Nullable String title, @Nullable String[] text, @Nullable String[] colours) {
+    public static ItemStack createMultipleFromTitleAndText(@Nullable String title, String @Nullable [] text, String @Nullable [] colours) {
         return ModRegistry.Items.PRINTED_PAGES.get().createFromTitleAndText(title, text, colours);
     }
 
-    public static ItemStack createBookFromTitleAndText(@Nullable String title, @Nullable String[] text, @Nullable String[] colours) {
+    public static ItemStack createBookFromTitleAndText(@Nullable String title, String @Nullable [] text, String @Nullable [] colours) {
         return ModRegistry.Items.PRINTED_BOOK.get().createFromTitleAndText(title, text, colours);
     }
 

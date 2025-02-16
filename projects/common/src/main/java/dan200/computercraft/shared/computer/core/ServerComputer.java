@@ -29,8 +29,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -214,7 +214,7 @@ public class ServerComputer implements ComputerEnvironment, ComputerEvents.Recei
     }
 
     @Override
-    public final void queueEvent(String event, @Nullable Object[] arguments) {
+    public final void queueEvent(String event, @Nullable Object @Nullable [] arguments) {
         computer.queueEvent(event, arguments);
     }
 

@@ -8,8 +8,7 @@ import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.impl.MediaProviders;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.ItemStack;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An immutable snapshot of the current disk. This allows us to read the stack in a thread-safe manner.

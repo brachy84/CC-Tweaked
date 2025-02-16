@@ -21,8 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public final class PrinterBlockEntity extends AbstractContainerBlockEntity implements BasicWorldlyContainer {
     private static final String NBT_PRINTING = "Printing";

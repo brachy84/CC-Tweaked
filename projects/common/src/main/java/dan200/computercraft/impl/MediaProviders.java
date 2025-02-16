@@ -7,10 +7,10 @@ package dan200.computercraft.impl;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.media.MediaProvider;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;

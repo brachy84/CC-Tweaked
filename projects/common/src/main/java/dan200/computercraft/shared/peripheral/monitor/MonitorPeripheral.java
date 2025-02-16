@@ -11,8 +11,7 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.apis.TermMethods;
 import dan200.computercraft.core.terminal.Terminal;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Monitors are a block which act as a terminal, displaying information on one side. This allows them to be read and

@@ -6,7 +6,7 @@ import dan200.computercraft.api.lua.Coerced;
 import dan200.computercraft.api.lua.ILuaAPI;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.turtle.ITurtleAccess;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An example API that will be available on every turtle. This demonstrates both registering an API, and how to write

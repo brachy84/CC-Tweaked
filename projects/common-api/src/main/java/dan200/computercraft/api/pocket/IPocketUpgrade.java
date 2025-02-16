@@ -7,8 +7,7 @@ package dan200.computercraft.api.pocket;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.upgrades.UpgradeBase;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A peripheral which can be equipped to the back side of a pocket computer.

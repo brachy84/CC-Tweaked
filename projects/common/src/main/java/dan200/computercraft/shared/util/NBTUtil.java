@@ -9,10 +9,10 @@ import com.google.common.io.BaseEncoding;
 import dan200.computercraft.core.util.Nullability;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.nbt.*;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;

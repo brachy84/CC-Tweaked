@@ -23,3 +23,5 @@ tasks.javadoc {
     // Depend on the common API when publishing javadoc
     classpath += docApi.get()
 }
+
+cct.linters(minecraft = false, loader = null)

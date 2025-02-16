@@ -11,9 +11,9 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.computer.ComputerBootstrap;
 import dan200.computercraft.core.computer.ComputerSide;
 import dan200.computercraft.core.methods.ObjectSource;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;

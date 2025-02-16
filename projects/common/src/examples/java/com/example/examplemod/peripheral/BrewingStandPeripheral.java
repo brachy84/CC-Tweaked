@@ -3,7 +3,7 @@ package com.example.examplemod.peripheral;
 import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A peripheral that adds a {@code getFuel()} method to brewing stands. This demonstrates the usage of

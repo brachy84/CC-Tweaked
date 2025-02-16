@@ -9,8 +9,8 @@ import dan200.computercraft.api.upgrades.UpgradeBase;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.item.Items;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 
 /**

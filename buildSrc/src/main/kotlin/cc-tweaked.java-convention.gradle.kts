@@ -84,7 +84,6 @@ sourceSets.all {
 
         options.errorprone {
             check("InvalidBlockTag", CheckSeverity.OFF) // Broken by @cc.xyz
-            check("InvalidParam", CheckSeverity.OFF) // Broken by records.
             check("InlineMeSuggester", CheckSeverity.OFF) // Minecraft uses @Deprecated liberally
             // Too many false positives right now. Maybe we need an indirection for it later on.
             check("ReferenceEquality", CheckSeverity.OFF)

@@ -22,8 +22,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DiskDriveBlock extends HorizontalContainerBlock {
     public static final EnumProperty<DiskDriveState> STATE = EnumProperty.create("state", DiskDriveState.class);

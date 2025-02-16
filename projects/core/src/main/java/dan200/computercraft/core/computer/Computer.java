@@ -14,8 +14,8 @@ import dan200.computercraft.core.computer.mainthread.MainThreadScheduler;
 import dan200.computercraft.core.filesystem.FileSystem;
 import dan200.computercraft.core.redstone.RedstoneState;
 import dan200.computercraft.core.terminal.Terminal;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -115,7 +115,7 @@ public class Computer implements ComputerEvents.Receiver {
     }
 
     @Override
-    public void queueEvent(String event, @Nullable Object[] args) {
+    public void queueEvent(String event, @Nullable Object @Nullable [] args) {
         executor.queueEvent(event, args);
     }
 
