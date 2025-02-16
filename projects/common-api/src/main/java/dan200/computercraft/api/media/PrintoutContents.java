@@ -6,8 +6,8 @@ package dan200.computercraft.api.media;
 
 import dan200.computercraft.impl.ComputerCraftAPIService;
 import net.minecraft.world.item.ItemStack;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.stream.Stream;
 
 /**

@@ -20,8 +20,8 @@ import net.minecraft.commands.arguments.UuidArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
@@ -40,7 +40,7 @@ public record ComputerSelector(
     @Nullable String label,
     @Nullable ComputerFamily family,
     @Nullable AABB bounds,
-    @Nullable MinMaxBounds.Doubles range
+    MinMaxBounds.@Nullable Doubles range
 ) {
     private static final ComputerSelector all = new ComputerSelector("@c[]", null, OptionalInt.empty(), null, null, null, null);
 
@@ -258,7 +258,7 @@ public record ComputerSelector(
         private @Nullable String label;
         private @Nullable ComputerFamily family;
         private @Nullable AABB bounds;
-        private @Nullable MinMaxBounds.Doubles range;
+        private MinMaxBounds.@Nullable Doubles range;
     }
 
     private static final Map<String, Option> options;

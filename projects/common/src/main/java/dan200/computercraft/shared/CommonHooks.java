@@ -38,8 +38,8 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -129,7 +129,7 @@ public final class CommonHooks {
         BuiltInLootTables.VILLAGE_CARTOGRAPHER
     );
 
-    public static @Nullable LootPool.Builder getExtraLootPool(ResourceKey<LootTable> lootTable) {
+    public static LootPool.@Nullable Builder getExtraLootPool(ResourceKey<LootTable> lootTable) {
         if (!TREASURE_DISK_LOOT_TABLES.contains(lootTable)) {
             return null;
         }

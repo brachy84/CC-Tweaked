@@ -18,8 +18,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class ComputerBlock<T extends ComputerBlockEntity> extends AbstractComputerBlock<T> {
     private static final MapCodec<ComputerBlock<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(

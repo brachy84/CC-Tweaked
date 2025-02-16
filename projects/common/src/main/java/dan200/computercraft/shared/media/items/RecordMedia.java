@@ -8,8 +8,7 @@ import dan200.computercraft.api.media.IMedia;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxSong;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * An implementation of {@link IMedia} for items with a {@link JukeboxSong}.

@@ -7,6 +7,7 @@ package dan200.computercraft.impl;
 import com.google.auto.service.AutoService;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.detail.DetailRegistry;
+import dan200.computercraft.api.media.MediaProvider;
 import dan200.computercraft.impl.detail.DetailRegistryImpl;
 import dan200.computercraft.shared.details.FluidData;
 import dan200.computercraft.shared.peripheral.generic.ComponentLookup;
@@ -19,8 +20,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.fluids.FluidStack;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 @AutoService(ComputerCraftAPIService.class)
@@ -46,6 +47,11 @@ public final class ComputerCraftAPIImpl extends AbstractComputerCraftAPI impleme
     @Override
     public DetailRegistry<FluidStack> getFluidStackDetailRegistry() {
         return fluidStackDetails;
+    }
+
+    @Override
+    public void registerMediaProvider(MediaProvider provider) {
+        MediaProviders.register(provider);
     }
 
     /**

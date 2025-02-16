@@ -7,6 +7,8 @@ package dan200.computercraft;
 import com.google.auto.service.AutoService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import dan200.computercraft.api.media.IMedia;
+import dan200.computercraft.api.media.MediaProvider;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.impl.AbstractComputerCraftAPI;
@@ -18,8 +20,8 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -40,8 +42,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -148,6 +150,11 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     }
 
     @Override
+    public @Nullable IMedia getMedia(ItemStack stack) {
+        return null;
+    }
+
+    @Override
     public ContainerTransfer.Slotted wrapContainer(Container container) {
         throw new UnsupportedOperationException("Cannot wrap container");
     }
@@ -156,6 +163,11 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Override
     public ContainerTransfer getContainer(ServerLevel level, BlockPos pos, Direction side) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
+    }
+
+    @Override
+    public void registerMediaProvider(MediaProvider provider) {
+        throw new UnsupportedOperationException("Cannot register media providers inside tests");
     }
 
     @Override

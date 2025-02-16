@@ -5,12 +5,12 @@
 package dan200.computercraft.core.lua.errorinfo;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.jspecify.annotations.Nullable;
 import org.squiddev.cobalt.*;
 import org.squiddev.cobalt.debug.DebugFrame;
 import org.squiddev.cobalt.function.LuaFunction;
 import org.squiddev.cobalt.function.RegisteredFunction;
 
-import javax.annotation.Nullable;
 import java.util.Objects;
 
 import static org.squiddev.cobalt.Lua.*;

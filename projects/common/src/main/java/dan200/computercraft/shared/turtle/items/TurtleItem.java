@@ -20,8 +20,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class TurtleItem extends AbstractComputerItem {
     public TurtleItem(TurtleBlock block, Properties settings) {

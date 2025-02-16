@@ -5,9 +5,9 @@
 package dan200.computercraft.shared.peripheral.diskdrive;
 
 import com.mojang.serialization.MapCodec;
-import dan200.computercraft.impl.MediaProviders;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.HorizontalContainerBlock;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -24,8 +24,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class DiskDriveBlock extends HorizontalContainerBlock {
     private static final MapCodec<DiskDriveBlock> CODEC = simpleCodec(DiskDriveBlock::new);
@@ -57,7 +56,7 @@ public class DiskDriveBlock extends HorizontalContainerBlock {
             // Try to put a disk into the drive
             if (stack.isEmpty()) return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
 
-            if (!level.isClientSide && drive.getDiskStack().isEmpty() && MediaProviders.get(stack) != null) {
+            if (!level.isClientSide && drive.getDiskStack().isEmpty() && PlatformHelper.get().getMedia(stack) != null) {
                 drive.setDiskStack(stack.split(1));
             }
             return ItemInteractionResult.sidedSuccess(level.isClientSide);

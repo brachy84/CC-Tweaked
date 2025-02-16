@@ -11,8 +11,8 @@ import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.core.util.StringUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -245,9 +245,8 @@ public class OSAPI implements ILuaAPI {
      * @cc.treturn string|nil The label of the computer.
      * @cc.since 1.3
      */
-    @Nullable
     @LuaFunction({ "getComputerLabel", "computerLabel" })
-    public final Object[] getComputerLabel() {
+    public final Object @Nullable [] getComputerLabel() {
         var label = apiEnvironment.getLabel();
         return label == null ? null : new Object[]{ label };
     }

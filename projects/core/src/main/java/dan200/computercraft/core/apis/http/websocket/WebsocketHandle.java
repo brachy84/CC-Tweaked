@@ -7,6 +7,7 @@ package dan200.computercraft.core.apis.http.websocket;
 import dan200.computercraft.api.lua.*;
 import dan200.computercraft.core.apis.IAPIEnvironment;
 import dan200.computercraft.core.apis.http.options.Options;
+import org.jspecify.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
@@ -119,7 +120,7 @@ public class WebsocketHandle {
         }
 
         @Override
-        public MethodResult resume(Object[] event) {
+        public MethodResult resume(@Nullable Object[] event) {
             if (event.length >= 3 && Objects.equals(event[0], MESSAGE_EVENT) && Objects.equals(event[1], address)) {
                 environment.cancelTimer(timeoutId);
                 return MethodResult.of(Arrays.copyOfRange(event, 2, event.length));

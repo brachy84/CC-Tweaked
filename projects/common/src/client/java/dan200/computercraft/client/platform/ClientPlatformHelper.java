@@ -7,8 +7,7 @@ package dan200.computercraft.client.platform;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public interface ClientPlatformHelper extends dan200.computercraft.impl.client.ClientPlatformHelper {
     static ClientPlatformHelper get() {
@@ -25,5 +24,5 @@ public interface ClientPlatformHelper extends dan200.computercraft.impl.client.C
      * @param overlayLight  The current overlay light.
      * @param tints         Block colour tints to apply to the model.
      */
-    void renderBakedModel(PoseStack transform, MultiBufferSource buffers, BakedModel model, int lightmapCoord, int overlayLight, @Nullable int[] tints);
+    void renderBakedModel(PoseStack transform, MultiBufferSource buffers, BakedModel model, int lightmapCoord, int overlayLight, int @Nullable [] tints);
 }

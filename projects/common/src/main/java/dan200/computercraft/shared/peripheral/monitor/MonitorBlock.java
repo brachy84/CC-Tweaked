@@ -30,8 +30,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 public class MonitorBlock extends HorizontalDirectionalBlock implements EntityBlock {
     private static final MapCodec<MonitorBlock> CODEC = BlockCodecs.blockWithBlockEntityCodec(MonitorBlock::new, x -> x.type);

@@ -6,6 +6,7 @@ package dan200.computercraft.shared.platform;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.impl.Services;
@@ -44,8 +45,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -340,4 +341,13 @@ public interface PlatformHelper {
         private Instance() {
         }
     }
+
+    /**
+     * Find a {@link IMedia} instance for an item stack.
+     *
+     * @param stack The stack to look up the media for.
+     * @return The media instance, or {@code null} if not found.
+     */
+    @Nullable
+    IMedia getMedia(ItemStack stack);
 }

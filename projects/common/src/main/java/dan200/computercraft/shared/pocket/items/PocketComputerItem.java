@@ -6,8 +6,6 @@ package dan200.computercraft.shared.pocket.items;
 
 import dan200.computercraft.annotations.ForgeOverride;
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.filesystem.Mount;
-import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.core.computer.ComputerSide;
@@ -19,7 +17,6 @@ import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.ServerComputerReference;
-import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.pocket.core.PocketBrain;
@@ -27,7 +24,6 @@ import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
 import dan200.computercraft.shared.util.*;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -42,12 +38,12 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Objects;
 
-public class PocketComputerItem extends Item implements IMedia {
+public class PocketComputerItem extends Item {
     private final ComputerFamily family;
 
     public PocketComputerItem(Properties settings, ComputerFamily family) {
@@ -95,7 +91,7 @@ public class PocketComputerItem extends Item implements IMedia {
         var label = computer.getLabel();
         if (!Objects.equals(label, getLabel(stack))) {
             changed = true;
-            setLabel(stack, label);
+            DataComponentUtil.setCustomName(stack, label);
         }
 
         var on = computer.isOn();
@@ -274,26 +270,6 @@ public class PocketComputerItem extends Item implements IMedia {
 
     private @Nullable String getLabel(ItemStack stack) {
         return DataComponentUtil.getCustomName(stack);
-    }
-
-    @Override
-    public @Nullable String getLabel(HolderLookup.Provider registries, ItemStack stack) {
-        return getLabel(stack);
-    }
-
-    @Override
-    public boolean setLabel(ItemStack stack, @Nullable String label) {
-        DataComponentUtil.setCustomName(stack, label);
-        return true;
-    }
-
-    @Override
-    public @Nullable Mount createDataMount(ItemStack stack, ServerLevel level) {
-        var id = stack.get(ModRegistry.DataComponents.COMPUTER_ID.get());
-        if (id == null) return null;
-
-        var capacity = StorageCapacity.getOrDefault(stack.get(ModRegistry.DataComponents.STORAGE_CAPACITY.get()), ConfigSpec.computerSpaceLimit);
-        return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id.id(), capacity);
     }
 
     private static boolean isMarkedOn(ItemStack stack) {

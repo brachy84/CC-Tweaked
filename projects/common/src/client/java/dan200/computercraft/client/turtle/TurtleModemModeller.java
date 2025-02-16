@@ -15,7 +15,7 @@ import dan200.computercraft.shared.turtle.upgrades.TurtleModem;
 import dan200.computercraft.shared.util.DataComponentUtil;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.stream.Stream;
 

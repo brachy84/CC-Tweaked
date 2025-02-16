@@ -5,8 +5,8 @@
 package dan200.computercraft.core.apis;
 
 import dan200.computercraft.api.lua.LuaException;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

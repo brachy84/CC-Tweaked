@@ -6,9 +6,9 @@ package dan200.computercraft.core.lua;
 
 import dan200.computercraft.api.lua.LuaException;
 import dan200.computercraft.api.lua.LuaValues;
+import org.jspecify.annotations.Nullable;
 import org.squiddev.cobalt.*;
 
-import javax.annotation.Nullable;
 import java.util.*;
 
 import static dan200.computercraft.api.lua.LuaValues.badTableItem;

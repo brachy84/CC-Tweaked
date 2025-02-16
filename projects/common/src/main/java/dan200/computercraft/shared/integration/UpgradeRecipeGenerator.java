@@ -22,8 +22,8 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapedRecipePattern;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Function;
 
@@ -251,12 +251,12 @@ public class UpgradeRecipeGenerator<T> {
     private class UpgradeInfo {
         final ItemStack stack;
         final Ingredient ingredient;
-        final @Nullable Holder.Reference<ITurtleUpgrade> turtle;
-        final @Nullable Holder.Reference<IPocketUpgrade> pocket;
+        final Holder.@Nullable Reference<ITurtleUpgrade> turtle;
+        final Holder.@Nullable Reference<IPocketUpgrade> pocket;
         final UpgradeBase upgrade;
         private @Nullable ArrayList<T> recipes;
 
-        UpgradeInfo(ItemStack stack, UpgradeBase upgrade, @Nullable Holder.Reference<ITurtleUpgrade> turtle, @Nullable Holder.Reference<IPocketUpgrade> pocket) {
+        UpgradeInfo(ItemStack stack, UpgradeBase upgrade, Holder.@Nullable Reference<ITurtleUpgrade> turtle, Holder.@Nullable Reference<IPocketUpgrade> pocket) {
             this.stack = stack;
             ingredient = Ingredient.of(stack);
             this.turtle = turtle;

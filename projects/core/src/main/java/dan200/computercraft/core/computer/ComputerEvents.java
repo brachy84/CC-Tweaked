@@ -5,8 +5,8 @@
 package dan200.computercraft.core.computer;
 
 import dan200.computercraft.core.util.StringUtil;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 
 /**
@@ -67,6 +67,6 @@ public final class ComputerEvents {
      */
     @FunctionalInterface
     public interface Receiver {
-        void queueEvent(String event, @Nullable Object[] arguments);
+        void queueEvent(String event, @Nullable Object @Nullable [] arguments);
     }
 }

@@ -7,16 +7,17 @@ package dan200.computercraft;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.ForgeComputerCraftAPI;
 import dan200.computercraft.api.detail.ForgeDetailRegistries;
+import dan200.computercraft.api.media.MediaCapability;
 import dan200.computercraft.api.network.wired.WiredElementCapability;
 import dan200.computercraft.api.peripheral.PeripheralCapability;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
+import dan200.computercraft.impl.MediaProviders;
 import dan200.computercraft.impl.PocketUpgrades;
 import dan200.computercraft.impl.Services;
 import dan200.computercraft.impl.TurtleUpgrades;
 import dan200.computercraft.shared.CommonHooks;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.details.FluidData;
 import dan200.computercraft.shared.integration.CreateIntegration;
@@ -25,19 +26,19 @@ import dan200.computercraft.shared.network.NetworkMessage;
 import dan200.computercraft.shared.network.NetworkMessages;
 import dan200.computercraft.shared.network.client.ClientNetworkContext;
 import dan200.computercraft.shared.network.server.ServerNetworkContext;
-import dan200.computercraft.shared.peripheral.commandblock.CommandBlockPeripheral;
 import dan200.computercraft.shared.peripheral.generic.methods.EnergyMethods;
 import dan200.computercraft.shared.peripheral.generic.methods.FluidMethods;
 import dan200.computercraft.shared.peripheral.generic.methods.InventoryMethods;
-import dan200.computercraft.shared.peripheral.modem.wired.CableBlockEntity;
-import dan200.computercraft.shared.peripheral.modem.wired.WiredModemFullBlockEntity;
-import dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemBlockEntity;
 import dan200.computercraft.shared.platform.ForgeConfigFile;
 import dan200.computercraft.shared.recipe.function.RecipeFunction;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -48,7 +49,9 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -56,9 +59,10 @@ import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
 import net.neoforged.neoforge.registries.RegistryBuilder;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.nio.file.Path;
+import java.util.function.BiFunction;
 
 @Mod(ComputerCraftAPI.MOD_ID)
 @EventBusSubscriber(modid = ComputerCraftAPI.MOD_ID, bus = EventBusSubscriber.Bus.MOD)
@@ -141,29 +145,36 @@ public final class ComputerCraft {
      */
     @SubscribeEvent
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.COMPUTER_NORMAL.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.COMPUTER_ADVANCED.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.TURTLE_NORMAL.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.TURTLE_ADVANCED.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.SPEAKER.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.PRINTER.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.DISK_DRIVE.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.MONITOR_NORMAL.get(), (b, d) -> b.peripheral());
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.MONITOR_ADVANCED.get(), (b, d) -> b.peripheral());
+        ModRegistry.registerPeripherals(new BlockComponentImpl<>(event, PeripheralCapability.get()));
+        ModRegistry.registerWiredElements(new BlockComponentImpl<>(event, WiredElementCapability.get()));
 
-        event.registerBlockEntity(
-            PeripheralCapability.get(), BlockEntityType.COMMAND_BLOCK,
-            (b, d) -> Config.enableCommandBlock ? new CommandBlockPeripheral(b) : null
-        );
+        var media = new ItemComponentImpl<>(event, MediaCapability.get());
+        ModRegistry.registerMedia(media);
+        media.registerFallback((stack, ctx) -> MediaProviders.get(stack));
+    }
 
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRELESS_MODEM_NORMAL.get(), WirelessModemBlockEntity::getPeripheral);
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRELESS_MODEM_ADVANCED.get(), WirelessModemBlockEntity::getPeripheral);
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), WiredModemFullBlockEntity::getPeripheral);
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getPeripheral);
-        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.REDSTONE_RELAY.get(), (b, d) -> b.peripheral());
+    private record BlockComponentImpl<T, C extends @Nullable Object>(
+        RegisterCapabilitiesEvent event, BlockCapability<T, C> capability
+    ) implements ModRegistry.BlockComponent<T, C> {
+        @Override
+        public <B extends BlockEntity> void registerForBlockEntity(BlockEntityType<B> blockEntityType, BiFunction<? super B, C, @Nullable T> provider) {
+            event.registerBlockEntity(capability, blockEntityType, provider::apply);
+        }
+    }
 
-        event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), (b, d) -> b.getElement());
-        event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getWiredElement);
+    private record ItemComponentImpl<T>(
+        RegisterCapabilitiesEvent event, ItemCapability<T, @Nullable Void> capability
+    ) implements ModRegistry.ItemComponent<T> {
+        @Override
+        public void registerForItems(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider, ItemLike... items) {
+            event.registerItem(capability, provider::apply, items);
+        }
+
+        @Override
+        public void registerFallback(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider) {
+            var items = BuiltInRegistries.ITEM.stream().toArray(ItemLike[]::new);
+            event.registerItem(capability, provider::apply, items);
+        }
     }
 
     @SubscribeEvent

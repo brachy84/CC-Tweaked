@@ -58,6 +58,8 @@ val checkChangelog by tasks.registering(cc.tweaked.gradle.CheckChangelog::class)
 
 tasks.check { dependsOn(checkChangelog) }
 
+cct.linters(minecraft = false, loader = null)
+
 // We configure the shadow jar to ship netty-codec and all its dependencies, relocating them under the
 // dan200.computercraft.core package.
 // This is used as part of the Forge build, so that our version of netty-codec is loaded under the GAME layer, and so

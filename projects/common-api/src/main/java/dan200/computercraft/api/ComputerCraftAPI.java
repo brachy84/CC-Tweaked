@@ -26,8 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * The static entry point to the ComputerCraft API.
@@ -148,7 +147,10 @@ public final class ComputerCraftAPI {
      *
      * @param provider The media provider to register.
      * @see MediaProvider
+     * @deprecated Prefer {@code dan200.computercraft.api.media.MediaLookup} (Fabric) or
+     * {@code dan200.computercraft.api.media.MediaCapability} (NeoForge).
      */
+    @Deprecated
     public static void registerMediaProvider(MediaProvider provider) {
         getInstance().registerMediaProvider(provider);
     }

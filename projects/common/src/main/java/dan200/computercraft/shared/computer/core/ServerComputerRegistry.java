@@ -4,7 +4,8 @@
 
 package dan200.computercraft.shared.computer.core;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import java.util.*;
 
 public class ServerComputerRegistry {

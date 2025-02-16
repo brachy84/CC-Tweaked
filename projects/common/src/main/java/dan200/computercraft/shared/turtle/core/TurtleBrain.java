@@ -44,8 +44,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -749,7 +749,7 @@ public class TurtleBrain implements TurtleAccessInternal {
     }
 
     private static final class UpgradeInstance {
-        private @Nullable Holder.Reference<ITurtleUpgrade> upgrade;
+        private Holder.@Nullable Reference<ITurtleUpgrade> upgrade;
         private DataComponentPatch data = DataComponentPatch.EMPTY;
         private @Nullable IPeripheral peripheral;
 

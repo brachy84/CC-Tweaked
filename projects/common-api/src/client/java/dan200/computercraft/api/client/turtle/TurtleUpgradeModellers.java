@@ -13,8 +13,7 @@ import dan200.computercraft.impl.client.ClientPlatformHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.component.DataComponentPatch;
 import org.joml.Matrix4f;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 final class TurtleUpgradeModellers {
     private static final Transformation leftTransform = getMatrixFor(-0.4065f);

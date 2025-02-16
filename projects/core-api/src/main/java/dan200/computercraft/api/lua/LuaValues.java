@@ -4,7 +4,8 @@
 
 package dan200.computercraft.api.lua;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
+
 import java.nio.ByteBuffer;
 import java.util.Map;
 

@@ -14,14 +14,14 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.JukeboxSong;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents an item that can be placed in a disk drive and used by a Computer.
  * <p>
- * Implement this interface on your {@link Item} class to allow it to be used in the drive. Alternatively, register
- * a {@link MediaProvider}.
+ * Implement this interface on your {@link Item} class to allow it to be used in the drive, or register via
+ * {@code dan200.computercraft.api.media.MediaLookup} (Fabric) or {@code dan200.computercraft.api.media.MediaCapability}
+ * (NeoForge).
  */
 public interface IMedia {
     /**

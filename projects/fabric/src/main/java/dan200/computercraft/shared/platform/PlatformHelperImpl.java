@@ -8,6 +8,8 @@ import com.google.auto.service.AutoService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.media.IMedia;
+import dan200.computercraft.api.media.MediaLookup;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.network.wired.WiredElementLookup;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -61,8 +63,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -130,7 +132,7 @@ public class PlatformHelperImpl implements PlatformHelper {
     }
 
     @Override
-    @SuppressWarnings({ "UnstableApiUsage", "NullAway" }) // FIXME: SIDED is treated as nullable by NullAway
+    @SuppressWarnings("UnstableApiUsage")
     public @Nullable ContainerTransfer getContainer(ServerLevel level, BlockPos pos, Direction side) {
         var storage = ItemStorage.SIDED.find(level, pos, side);
         if (storage != null) return FabricContainerTransfer.of(storage);
@@ -179,7 +181,7 @@ public class PlatformHelperImpl implements PlatformHelper {
 
     @Override
     public int getBurnTime(ItemStack stack) {
-        @Nullable var fuel = FuelRegistry.INSTANCE.get(stack.getItem());
+        var fuel = FuelRegistry.INSTANCE.get(stack.getItem());
         return fuel == null ? 0 : fuel;
     }
 
@@ -227,6 +229,12 @@ public class PlatformHelperImpl implements PlatformHelper {
         var result = UseBlockCallback.EVENT.invoker().interact(player, player.level(), InteractionHand.MAIN_HAND, hit);
         if (result != InteractionResult.PASS) return new UseOnResult.Handled(result);
         return new UseOnResult.Continue(true, true);
+    }
+
+    @Override
+    @SuppressWarnings("NullAway") // NullAway doesn't like the null here.
+    public @Nullable IMedia getMedia(ItemStack stack) {
+        return MediaLookup.get().find(stack, null);
     }
 
     private static final class RegistrationHelperImpl<T> implements RegistrationHelper<T> {

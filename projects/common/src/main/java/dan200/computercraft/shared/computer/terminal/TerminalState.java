@@ -7,8 +7,7 @@ package dan200.computercraft.shared.computer.terminal;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import org.jetbrains.annotations.Contract;
-
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A snapshot of a terminal's state.
