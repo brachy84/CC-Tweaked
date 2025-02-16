@@ -6,6 +6,7 @@ package dan200.computercraft.shared;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.detail.FabricDetailRegistries;
+import dan200.computercraft.api.media.MediaLookup;
 import dan200.computercraft.api.node.wired.WiredElementLookup;
 import dan200.computercraft.api.peripheral.PeripheralLookup;
 import dan200.computercraft.impl.Peripherals;
@@ -27,6 +28,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.lookup.v1.block.BlockApiLookup;
+import net.fabricmc.fabric.api.lookup.v1.item.ItemApiLookup;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
@@ -38,6 +40,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.storage.LevelResource;
@@ -62,6 +66,7 @@ public class ComputerCraft {
 
         ModRegistry.registerPeripherals(new BlockComponentImpl<>(PeripheralLookup.get()));
         ModRegistry.registerWiredElements(new BlockComponentImpl<>(WiredElementLookup.get()));
+        ModRegistry.registerMedia(new ItemComponentImpl<>(MediaLookup.get()));
 
         // Register commands
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> CommandComputerCraft.register(dispatcher));
@@ -125,6 +130,20 @@ public class ComputerCraft {
         @Override
         public <B extends BlockEntity> void registerForBlockEntity(BlockEntityType<B> blockEntityType, BiFunction<? super B, C, @Nullable T> provider) {
             lookup.registerForBlockEntity(provider, blockEntityType);
+        }
+    }
+
+    private record ItemComponentImpl<T>(
+        ItemApiLookup<T, @Nullable Void> lookup
+    ) implements ModRegistry.ItemComponent<T> {
+        @Override
+        public void registerForItems(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider, ItemLike... items) {
+            lookup().registerForItems(provider::apply, items);
+        }
+
+        @Override
+        public void registerFallback(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider) {
+            lookup().registerFallback(provider::apply);
         }
     }
 }

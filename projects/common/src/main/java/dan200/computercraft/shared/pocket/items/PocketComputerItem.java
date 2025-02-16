@@ -6,8 +6,6 @@ package dan200.computercraft.shared.pocket.items;
 
 import dan200.computercraft.annotations.ForgeOverride;
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.filesystem.Mount;
-import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.core.computer.ComputerSide;
@@ -20,7 +18,6 @@ import dan200.computercraft.shared.computer.core.ServerComputerRegistry;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
 import dan200.computercraft.shared.computer.items.IComputerItem;
-import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.lectern.CustomLecternBlock;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
@@ -53,7 +50,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-public class PocketComputerItem extends Item implements IComputerItem, IMedia, IColouredItem {
+public class PocketComputerItem extends Item implements IComputerItem, IColouredItem {
     private static final String NBT_UPGRADE = "Upgrade";
     private static final String NBT_UPGRADE_INFO = "UpgradeInfo";
     public static final String NBT_ON = "On";
@@ -127,7 +124,11 @@ public class PocketComputerItem extends Item implements IComputerItem, IMedia, I
         var label = computer.getLabel();
         if (!Objects.equals(label, getLabel(stack))) {
             changed = true;
-            setLabel(stack, label);
+            if (label != null) {
+                stack.setHoverName(Component.literal(label));
+            } else {
+                stack.resetHoverName();
+            }
         }
 
         var on = computer.isOn();
@@ -340,27 +341,6 @@ public class PocketComputerItem extends Item implements IComputerItem, IMedia, I
             getComputerID(stack), getLabel(stack), getColour(stack),
             getUpgradeWithData(stack)
         ) : ItemStack.EMPTY;
-    }
-
-    // IMedia
-
-    @Override
-    public boolean setLabel(ItemStack stack, @Nullable String label) {
-        if (label != null) {
-            stack.setHoverName(Component.literal(label));
-        } else {
-            stack.resetHoverName();
-        }
-        return true;
-    }
-
-    @Override
-    public @Nullable Mount createDataMount(ItemStack stack, ServerLevel level) {
-        var id = getComputerID(stack);
-        if (id >= 0) {
-            return ComputerCraftAPI.createSaveDirMount(level.getServer(), "computer/" + id, Config.computerSpaceLimit);
-        }
-        return null;
     }
 
     public static @Nullable UUID getInstanceID(ItemStack stack) {

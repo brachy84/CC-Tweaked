@@ -45,11 +45,9 @@ import dan200.computercraft.shared.details.ItemDetails;
 import dan200.computercraft.shared.integration.PermissionRegistry;
 import dan200.computercraft.shared.lectern.CustomLecternBlock;
 import dan200.computercraft.shared.lectern.CustomLecternBlockEntity;
+import dan200.computercraft.shared.media.MountMedia;
 import dan200.computercraft.shared.media.PrintoutMenu;
-import dan200.computercraft.shared.media.items.DiskItem;
-import dan200.computercraft.shared.media.items.PrintoutItem;
-import dan200.computercraft.shared.media.items.RecordMedia;
-import dan200.computercraft.shared.media.items.TreasureDiskItem;
+import dan200.computercraft.shared.media.items.*;
 import dan200.computercraft.shared.media.recipes.DiskRecipe;
 import dan200.computercraft.shared.media.recipes.PrintoutRecipe;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
@@ -107,6 +105,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.SimpleCraftingRecipeSerializer;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -467,12 +466,6 @@ public final class ModRegistry {
         // Register bundled power providers
         ComputerCraftAPI.registerBundledRedstoneProvider(new DefaultBundledRedstoneProvider());
         ComputerCraftAPI.registerRefuelHandler(new FurnaceRefuelHandler());
-        ComputerCraftAPI.registerMediaProvider(stack -> {
-            var item = stack.getItem();
-            if (item instanceof IMedia media) return media;
-            if (item instanceof RecordItem) return RecordMedia.INSTANCE;
-            return null;
-        });
 
         ComputerCraftAPI.registerAPIFactory(computer -> {
             var turtle = computer.getComponent(ComputerComponents.TURTLE);
@@ -532,6 +525,26 @@ public final class ModRegistry {
     }
 
     /**
+     * Register our custom {@link IMedia} implementations.
+     *
+     * @param media The object to register our media capabilities/lookups with.
+     */
+    public static void registerMedia(ItemComponent<IMedia> media) {
+        media.registerForItems((s, c) -> MountMedia.COMPUTER,
+            ModRegistry.Items.COMPUTER_NORMAL.get(), ModRegistry.Items.COMPUTER_ADVANCED.get(),
+            ModRegistry.Items.TURTLE_NORMAL.get(), ModRegistry.Items.TURTLE_ADVANCED.get(),
+            ModRegistry.Items.POCKET_COMPUTER_NORMAL.get(), ModRegistry.Items.POCKET_COMPUTER_ADVANCED.get()
+        );
+        media.registerForItems((s, c) -> MountMedia.DISK, ModRegistry.Items.DISK.get());
+        media.registerForItems((s, c) -> TreasureDiskMedia.INSTANCE, ModRegistry.Items.TREASURE_DISK.get());
+        media.registerFallback((stack, ctx) -> {
+            if (stack.getItem() instanceof IMedia m) return m;
+            if (stack.getItem() instanceof RecordItem) return RecordMedia.INSTANCE;
+            return null;
+        });
+    }
+
+    /**
      * An abstraction for registering capabilities/block lookups for blocks and block entities.
      *
      * @param <T> The type of the component.
@@ -539,6 +552,17 @@ public final class ModRegistry {
      */
     public interface BlockComponent<T, C extends @Nullable Object> {
         <B extends BlockEntity> void registerForBlockEntity(BlockEntityType<B> blockEntityType, BiFunction<? super B, C, @Nullable T> provider);
+    }
+
+    /**
+     * An abstraction for registering capabilities/block lookups for items.
+     *
+     * @param <T> The type of the component.
+     */
+    public interface ItemComponent<T> {
+        void registerForItems(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider, ItemLike... items);
+
+        void registerFallback(BiFunction<ItemStack, @Nullable Void, @Nullable T> provider);
     }
 
     private static void addTurtle(CreativeModeTab.Output out, TurtleItem turtle) {
