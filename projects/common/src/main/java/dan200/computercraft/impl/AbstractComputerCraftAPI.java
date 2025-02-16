@@ -11,7 +11,6 @@ import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.filesystem.WritableMount;
 import dan200.computercraft.api.lua.GenericSource;
 import dan200.computercraft.api.lua.ILuaAPIFactory;
-import dan200.computercraft.api.media.MediaProvider;
 import dan200.computercraft.api.media.PrintoutContents;
 import dan200.computercraft.api.network.PacketNetwork;
 import dan200.computercraft.api.network.wired.WiredElement;
@@ -91,11 +90,6 @@ public abstract class AbstractComputerCraftAPI implements ComputerCraftAPIServic
     @Override
     public final int getBundledRedstoneOutput(Level world, BlockPos pos, Direction side) {
         return BundledRedstone.getDefaultOutput(world, pos, side);
-    }
-
-    @Override
-    public final void registerMediaProvider(MediaProvider provider) {
-        MediaProviders.register(provider);
     }
 
     @Override

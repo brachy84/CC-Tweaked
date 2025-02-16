@@ -7,6 +7,7 @@ package dan200.computercraft.shared.platform;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.shared.config.ConfigFile;
@@ -424,4 +425,13 @@ public interface PlatformHelper extends dan200.computercraft.impl.PlatformHelper
     default boolean canClickRunClientCommand() {
         return true;
     }
+
+    /**
+     * Find a {@link IMedia} instance for an item stack.
+     *
+     * @param stack The stack to look up the media for.
+     * @return The media instance, or {@code null} if not found.
+     */
+    @Nullable
+    IMedia getMedia(ItemStack stack);
 }

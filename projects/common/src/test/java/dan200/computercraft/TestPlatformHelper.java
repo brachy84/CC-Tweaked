@@ -8,6 +8,8 @@ import com.google.auto.service.AutoService;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import dan200.computercraft.api.media.IMedia;
+import dan200.computercraft.api.media.MediaProvider;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.impl.AbstractComputerCraftAPI;
@@ -228,6 +230,11 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     }
 
     @Override
+    public @Nullable IMedia getMedia(ItemStack stack) {
+        return null;
+    }
+
+    @Override
     public ContainerTransfer.Slotted wrapContainer(Container container) {
         throw new UnsupportedOperationException("Cannot wrap container");
     }
@@ -246,6 +253,11 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Override
     public void onItemCrafted(ServerPlayer player, CraftingContainer container, ItemStack stack) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
+    }
+
+    @Override
+    public void registerMediaProvider(MediaProvider provider) {
+        throw new UnsupportedOperationException("Cannot register media providers inside tests");
     }
 
     @Override

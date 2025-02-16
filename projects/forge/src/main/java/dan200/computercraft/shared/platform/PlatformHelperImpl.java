@@ -10,8 +10,10 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.impl.MediaProviders;
 import dan200.computercraft.impl.Peripherals;
 import dan200.computercraft.shared.Capabilities;
 import dan200.computercraft.shared.config.ConfigFile;
@@ -346,6 +348,11 @@ public class PlatformHelperImpl implements PlatformHelper {
     @Override
     public boolean canClickRunClientCommand() {
         return false;
+    }
+
+    @Override
+    public @Nullable IMedia getMedia(ItemStack stack) {
+        return MediaProviders.get(stack);
     }
 
     private record RegistryWrapperImpl<T>(

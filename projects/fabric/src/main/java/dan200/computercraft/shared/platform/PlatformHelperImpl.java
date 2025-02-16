@@ -10,6 +10,8 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.media.IMedia;
+import dan200.computercraft.api.media.MediaLookup;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.node.wired.WiredElementLookup;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -315,6 +317,12 @@ public class PlatformHelperImpl implements PlatformHelper {
         var result = UseBlockCallback.EVENT.invoker().interact(player, player.level(), InteractionHand.MAIN_HAND, hit);
         if (result != InteractionResult.PASS) return new UseOnResult.Handled(result);
         return new UseOnResult.Continue(true, true);
+    }
+
+    @Override
+    @SuppressWarnings("NullAway") // NullAway doesn't like the null here.
+    public @Nullable IMedia getMedia(ItemStack stack) {
+        return MediaLookup.get().find(stack, null);
     }
 
     private record RegistryWrapperImpl<T>(

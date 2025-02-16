@@ -4,9 +4,9 @@
 
 package dan200.computercraft.shared.peripheral.diskdrive;
 
-import dan200.computercraft.impl.MediaProviders;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.HorizontalContainerBlock;
+import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
@@ -50,7 +50,7 @@ public class DiskDriveBlock extends HorizontalContainerBlock {
             var disk = player.getItemInHand(hand);
             if (disk.isEmpty()) return InteractionResult.PASS;
 
-            if (!level.isClientSide && drive.getDiskStack().isEmpty() && MediaProviders.get(disk) != null) {
+            if (!level.isClientSide && drive.getDiskStack().isEmpty() && PlatformHelper.get().getMedia(disk) != null) {
                 drive.setDiskStack(disk.split(1));
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
