@@ -10,6 +10,8 @@ import dan200.computercraft.api.component.ComputerComponents;
 import dan200.computercraft.api.detail.DetailProvider;
 import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dan200.computercraft.api.media.IMedia;
+import dan200.computercraft.api.network.wired.WiredElement;
+import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.pocket.PocketUpgradeSerialiser;
 import dan200.computercraft.api.turtle.TurtleUpgradeSerialiser;
 import dan200.computercraft.api.upgrades.UpgradeData;
@@ -52,6 +54,7 @@ import dan200.computercraft.shared.media.recipes.DiskRecipe;
 import dan200.computercraft.shared.media.recipes.PrintoutRecipe;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.network.container.ContainerData;
+import dan200.computercraft.shared.peripheral.commandblock.CommandBlockPeripheral;
 import dan200.computercraft.shared.peripheral.diskdrive.DiskDriveBlock;
 import dan200.computercraft.shared.peripheral.diskdrive.DiskDriveBlockEntity;
 import dan200.computercraft.shared.peripheral.diskdrive.DiskDriveMenu;
@@ -94,6 +97,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -112,6 +116,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
@@ -495,6 +500,45 @@ public final class ModRegistry {
     public static void registerMainThread() {
         CauldronInteraction.WATER.put(Items.TURTLE_NORMAL.get(), TurtleItem.CAULDRON_INTERACTION);
         CauldronInteraction.WATER.put(Items.TURTLE_ADVANCED.get(), TurtleItem.CAULDRON_INTERACTION);
+    }
+
+    /**
+     * Register our peripherals.
+     *
+     * @param peripherals The object to register our peripheral capability/lookups with.
+     */
+    public static void registerPeripherals(BlockComponent<IPeripheral, Direction> peripherals) {
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.COMPUTER_NORMAL.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.COMPUTER_ADVANCED.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.TURTLE_NORMAL.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.TURTLE_ADVANCED.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.SPEAKER.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.PRINTER.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.DISK_DRIVE.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.MONITOR_NORMAL.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.MONITOR_ADVANCED.get(), (b, d) -> b.peripheral());
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.WIRELESS_MODEM_NORMAL.get(), WirelessModemBlockEntity::getPeripheral);
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.WIRELESS_MODEM_ADVANCED.get(), WirelessModemBlockEntity::getPeripheral);
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), WiredModemFullBlockEntity::getPeripheral);
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getPeripheral);
+        peripherals.registerForBlockEntity(ModRegistry.BlockEntities.REDSTONE_RELAY.get(), (b, d) -> b.peripheral());
+
+        peripherals.registerForBlockEntity(BlockEntityType.COMMAND_BLOCK, (b, d) -> Config.enableCommandBlock ? new CommandBlockPeripheral(b) : null);
+    }
+
+    public static void registerWiredElements(BlockComponent<WiredElement, Direction> wiredElements) {
+        wiredElements.registerForBlockEntity(ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), (b, d) -> b.getElement());
+        wiredElements.registerForBlockEntity(ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getWiredElement);
+    }
+
+    /**
+     * An abstraction for registering capabilities/block lookups for blocks and block entities.
+     *
+     * @param <T> The type of the component.
+     * @param <C> The context parameter to the component.
+     */
+    public interface BlockComponent<T, C extends @Nullable Object> {
+        <B extends BlockEntity> void registerForBlockEntity(BlockEntityType<B> blockEntityType, BiFunction<? super B, C, @Nullable T> provider);
     }
 
     private static void addTurtle(CreativeModeTab.Output out, TurtleItem turtle) {
