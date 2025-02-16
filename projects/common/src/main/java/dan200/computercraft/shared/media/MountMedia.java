@@ -8,7 +8,7 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.computer.items.AbstractComputerItem;
+import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.media.items.DiskItem;
 import dan200.computercraft.shared.util.DataComponentUtil;
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  */
 public final class MountMedia implements IMedia {
     /**
-     * A {@link MountMedia} implementation for {@linkplain AbstractComputerItem computers}.
+     * A {@link MountMedia} implementation for {@linkplain ComputerItem computers}.
      */
     public static final IMedia COMPUTER = new MountMedia("computer", ModRegistry.DataComponents.COMPUTER_ID, false, ConfigSpec.computerSpaceLimit);
 

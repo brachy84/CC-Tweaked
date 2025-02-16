@@ -11,7 +11,7 @@ import dan200.computercraft.api.turtle.TurtleSide;
 import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.impl.TurtleUpgrades;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.computer.items.AbstractComputerItem;
+import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import dan200.computercraft.shared.turtle.blocks.TurtleBlock;
 import net.minecraft.core.cauldron.CauldronInteraction;
@@ -22,7 +22,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import org.jspecify.annotations.Nullable;
 
-public class TurtleItem extends AbstractComputerItem {
+public class TurtleItem extends ComputerItem {
     public TurtleItem(TurtleBlock block, Properties settings) {
         super(block, settings);
     }
@@ -76,11 +76,6 @@ public class TurtleItem extends AbstractComputerItem {
     public static @Nullable TurtleOverlay getOverlay(ItemStack stack) {
         var overlay = stack.get(ModRegistry.DataComponents.OVERLAY.get());
         return overlay == null ? null : overlay.value();
-    }
-
-    public static int getFuelLevel(ItemStack stack) {
-        var fuel = stack.get(ModRegistry.DataComponents.FUEL.get());
-        return fuel == null ? 0 : fuel;
     }
 
     public static final CauldronInteraction CAULDRON_INTERACTION = (blockState, level, pos, player, hand, stack) -> {

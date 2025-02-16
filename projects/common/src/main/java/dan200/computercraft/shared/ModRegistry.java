@@ -35,9 +35,8 @@ import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
-import dan200.computercraft.shared.computer.items.AbstractComputerItem;
-import dan200.computercraft.shared.computer.items.CommandComputerItem;
 import dan200.computercraft.shared.computer.items.ComputerItem;
+import dan200.computercraft.shared.computer.items.CommandComputerItem;
 import dan200.computercraft.shared.computer.items.ServerComputerReference;
 import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.data.BlockNamedEntityLootCondition;
@@ -317,7 +316,7 @@ public final class ModRegistry {
         /**
          * The id of a computer.
          *
-         * @see AbstractComputerItem
+         * @see ComputerItem
          * @see PocketComputerItem
          */
         public static final RegistryEntry<DataComponentType<NonNegativeId>> COMPUTER_ID = register("computer_id", b -> b
@@ -327,7 +326,7 @@ public final class ModRegistry {
         /**
          * The storage capacity of a computer or disk.
          *
-         * @see AbstractComputerItem
+         * @see ComputerItem
          * @see PocketComputerItem
          * @see DiskItem
          */
