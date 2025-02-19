@@ -22,6 +22,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.inventory.InventoryMenu;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * A model for {@linkplain PocketComputerItem pocket computers} placed on a lectern.

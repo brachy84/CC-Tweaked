@@ -3,6 +3,7 @@ package com.example.examplemod;
 import com.example.examplemod.data.TurtleDataProvider;
 import com.example.examplemod.peripheral.FurnacePeripheral;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dan200.computercraft.api.turtle.TurtleUpgradeSerialiser;
 
 /**
@@ -33,6 +34,16 @@ public final class ExampleMod {
         // @start region=generic_source
         ComputerCraftAPI.registerGenericSource(new FurnacePeripheral());
         // @end region=generic_source
+
+        // @start region=details
+        VanillaDetailRegistries.ITEM_STACK.addProvider((out, stack) -> {
+            var food = stack.getItem().getFoodProperties();
+            if (food == null) return;
+
+            out.put("saturation", food.getSaturationModifier());
+            out.put("nutrition", food.getNutrition());
+        });
+        // @end region=details
 
         ExampleAPI.register();
     }
