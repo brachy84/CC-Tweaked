@@ -47,8 +47,8 @@ public class LecternPocketModel {
     public static final float TERM_HEIGHT = 14.0f / 32.0f;
 
     // The size of the texture. The texture is 36x36, but is at 2x resolution.
-    private static final int TEXTURE_WIDTH = 36 / 2;
-    private static final int TEXTURE_HEIGHT = 36 / 2;
+    private static final int TEXTURE_WIDTH = 48 / 2;
+    private static final int TEXTURE_HEIGHT = 48 / 2;
 
     private final ModelPart root;
 
