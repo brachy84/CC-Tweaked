@@ -3,7 +3,9 @@ package com.example.examplemod;
 import com.example.examplemod.data.TurtleUpgradeProvider;
 import com.example.examplemod.peripheral.FurnacePeripheral;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.detail.VanillaDetailRegistries;
 import dan200.computercraft.api.upgrades.UpgradeType;
+import net.minecraft.core.component.DataComponents;
 
 /**
  * Our example mod, containing the various things we register.
@@ -33,6 +35,16 @@ public final class ExampleMod {
         // @start region=generic_source
         ComputerCraftAPI.registerGenericSource(new FurnacePeripheral());
         // @end region=generic_source
+
+        // @start region=details
+        VanillaDetailRegistries.ITEM_STACK.addProvider((out, stack) -> {
+            var food = stack.get(DataComponents.FOOD);
+            if (food == null) return;
+
+            out.put("saturation", food.saturation());
+            out.put("nutrition", food.nutrition());
+        });
+        // @end region=details
 
         ExampleAPI.register();
     }

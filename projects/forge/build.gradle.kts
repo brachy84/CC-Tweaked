@@ -160,7 +160,7 @@ dependencies {
     clientCompileOnly(variantOf(libs.emi) { classifier("api") })
     compileOnly(libs.bundles.externalMods.forge.compile)
     clientRuntimeOnly(libs.bundles.externalMods.forge.runtime)
-    compileOnly(variantOf(libs.create.forge) { classifier("slim") }) { isTransitive = false }
+    compileOnly(libs.create.forge) { isTransitive = false }
 
     // Depend on our other projects.
     "localImplementation"(project(":core"))

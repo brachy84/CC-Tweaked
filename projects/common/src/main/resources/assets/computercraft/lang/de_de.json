@@ -1,5 +1,6 @@
 {
     "argument.computercraft.argument_expected": "Parameter erwartet",
+    "argument.computercraft.computer.distance": "Entfernung zur Entität",
     "argument.computercraft.computer.family": "Computer familie",
     "argument.computercraft.computer.id": "Computer ID",
     "argument.computercraft.computer.instance": "einzigartige Instanz ID",
@@ -98,6 +99,7 @@
     "gui.computercraft.config.http.bandwidth.tooltip": "Limitiert die Bandbreite der Computer.",
     "gui.computercraft.config.http.enabled": "HTTP-API aktivieren",
     "gui.computercraft.config.http.max_requests": "Maximale Anzahl gleichzeitiger Anfragen",
+    "gui.computercraft.config.http.max_requests.tooltip": "Die Anzahl der http Anfragen, die ein Computer gleichzeitig machen kann. Zusätzliche Anfragen werden der Warteschlange hinzugefügt und nach den laufenden Anfragen gesendet. Für unendlich auf 0 setzen.",
     "gui.computercraft.config.http.max_websockets": "Maximale Anzahl gleichzeitiger Websockets",
     "gui.computercraft.config.http.max_websockets.tooltip": "Die Anzahl der Websockets die ein Computer gleichzeitig öffnen kann.",
     "gui.computercraft.config.http.proxy": "Proxy",
@@ -114,6 +116,7 @@
     "gui.computercraft.config.log_computer_errors": "Computerfehler loggen",
     "gui.computercraft.config.maximum_open_files": "Maximalanzahl an gleichzeitig offenen Dateien je Computer",
     "gui.computercraft.config.maximum_open_files.tooltip": "Legen Sie fest, wie viele Dateien gleichzeitig geöffnet werden können. Setzen Sie auf 0 für unbegrenzt.",
+    "gui.computercraft.config.monitor_distance": "Monitordistanz",
     "gui.computercraft.config.peripheral": "Peripheriegeräte",
     "gui.computercraft.config.peripheral.command_block_enabled": "Befehlsblöcke als Peripheriegerät erlauben",
     "gui.computercraft.config.peripheral.command_block_enabled.tooltip": "Befehlsblock Peripherie Unterstützung aktivieren",
