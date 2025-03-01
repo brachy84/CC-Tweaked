@@ -83,4 +83,10 @@ public class SpeakerSound extends AbstractSoundInstance implements TickableSound
     public @Nullable AudioStream getStream() {
         return stream;
     }
+
+    boolean setVolume(float volume) {
+        if (volume == this.volume) return false;
+        this.volume = volume;
+        return true;
+    }
 }
