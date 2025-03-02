@@ -20,6 +20,7 @@ import dan200.computercraft.shared.details.FluidDetails;
 import dan200.computercraft.shared.integration.CreateIntegration;
 import dan200.computercraft.shared.network.NetworkMessages;
 import dan200.computercraft.shared.peripheral.generic.methods.InventoryMethods;
+import dan200.computercraft.shared.peripheral.modem.wired.CableBlock;
 import dan200.computercraft.shared.platform.FabricConfigFile;
 import dan200.computercraft.shared.recipe.function.RecipeFunction;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
@@ -28,6 +29,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.PlayerPickItemEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
@@ -48,7 +50,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.ResourceManager;
-import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -109,6 +110,10 @@ public class ComputerCraft {
         UseBlockCallback.EVENT.register(FabricCommonHooks::useOnBlock);
         UseBlockCallback.EVENT.register(CommonHooks::onUseBlock);
 
+        PlayerPickItemEvents.BLOCK.register((player, pos, state, includeData) ->
+            state.getBlock() instanceof CableBlock cable ? cable.getCloneItemStack(player.level(), pos, state, includeData, player) : null
+        );
+
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {
             var pool = CommonHooks.getExtraLootPool(id);
             if (pool != null) tableBuilder.withPool(pool);
@@ -134,17 +139,17 @@ public class ComputerCraft {
         if (FabricLoader.getInstance().isModLoaded(CreateIntegration.ID)) CreateIntegration.setup();
     }
 
-    private record ReloadListener(String name, PreparableReloadListener listener)
+    private record ReloadListener(ResourceLocation name, PreparableReloadListener listener)
         implements IdentifiableResourceReloadListener {
 
         @Override
         public ResourceLocation getFabricId() {
-            return ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, name);
+            return name;
         }
 
         @Override
-        public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
-            return listener.reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+        public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, Executor backgroundExecutor, Executor gameExecutor) {
+            return listener.reload(preparationBarrier, resourceManager, backgroundExecutor, gameExecutor);
         }
     }
 

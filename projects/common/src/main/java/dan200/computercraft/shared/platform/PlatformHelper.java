@@ -21,6 +21,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerPlayerGameMode;
@@ -200,10 +201,12 @@ public interface PlatformHelper {
     /**
      * Get the amount of fuel an item provides.
      *
-     * @param stack The item to burn.
+     * @param server The current server.
+     * @param stack  The item to burn.
      * @return The amount of fuel it provides.
+     * @see MinecraftServer#fuelValues()
      */
-    int getBurnTime(ItemStack stack);
+    int getBurnTime(MinecraftServer server, ItemStack stack);
 
     /**
      * Create a builder for a new creative tab.

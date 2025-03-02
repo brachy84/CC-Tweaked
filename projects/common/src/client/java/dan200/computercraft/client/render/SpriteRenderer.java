@@ -5,10 +5,14 @@
 package dan200.computercraft.client.render;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import dan200.computercraft.client.gui.GuiSprites;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.joml.Matrix4f;
+
+import java.util.function.Consumer;
 
 /**
  * A {@link GuiGraphics}-equivalent which is suitable for both rendering in to a GUI and in-world (as part of an entity
@@ -34,11 +38,11 @@ public class SpriteRenderer {
         this.b = b;
     }
 
-    public static SpriteRenderer createForGui(GuiGraphics graphics, RenderType renderType) {
-        return new SpriteRenderer(
-            graphics.pose().last().pose(), graphics.bufferSource().getBuffer(renderType),
-            0, RenderTypes.FULL_BRIGHT_LIGHTMAP, 255, 255, 255
-        );
+    public static void inGui(GuiGraphics graphics, Consumer<SpriteRenderer> renderer) {
+        graphics.drawSpecial(bufferSource -> renderer.accept(new SpriteRenderer(
+            graphics.pose().last().pose(), bufferSource.getBuffer(RenderType.guiTextured(GuiSprites.TEXTURE)),
+            0, LightTexture.FULL_BRIGHT, 255, 255, 255
+        )));
     }
 
     /**
@@ -68,7 +72,7 @@ public class SpriteRenderer {
      * @param textureWidth The width of the whole texture.
      */
     public void blitHorizontalSliced(TextureAtlasSprite sprite, int x, int y, int width, int height, int leftBorder, int rightBorder, int textureWidth) {
-        // TODO(1.20.2)/TODO(1.21.0): Drive this from mcmeta files, like vanilla does.
+        // TODO(1.21.4): Drive this from mcmeta files, like vanilla does.
         if (width < leftBorder + rightBorder) throw new IllegalArgumentException("width is less than two borders");
 
         var centerStart = SpriteRenderer.u(sprite, leftBorder, textureWidth);
@@ -93,7 +97,7 @@ public class SpriteRenderer {
      * @param textureHeight The height of the whole texture.
      */
     public void blitVerticalSliced(TextureAtlasSprite sprite, int x, int y, int width, int height, int topBorder, int bottomBorder, int textureHeight) {
-        // TODO(1.20.2)/TODO(1.21.0): Drive this from mcmeta files, like vanilla does.
+        // TODO(1.21.4): Drive this from mcmeta files, like vanilla does.
         if (width < topBorder + bottomBorder) throw new IllegalArgumentException("height is less than two borders");
 
         var centerStart = SpriteRenderer.v(sprite, topBorder, textureHeight);

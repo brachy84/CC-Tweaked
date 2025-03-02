@@ -6,12 +6,10 @@ package dan200.computercraft.client.platform;
 
 import com.google.auto.service.AutoService;
 import com.mojang.blaze3d.vertex.PoseStack;
-import dan200.computercraft.client.model.FoiledModel;
 import dan200.computercraft.client.render.ModelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelManager;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -28,28 +26,17 @@ public class ClientPlatformHelperImpl implements ClientPlatformHelper {
 
     @Override
     public BakedModel getModel(ModelManager manager, ResourceLocation resourceLocation) {
-        return manager.getModel(ModelResourceLocation.standalone(resourceLocation));
-    }
-
-    @Override
-    public BakedModel getModel(ModelManager manager, ModelResourceLocation modelLocation, @Nullable ResourceLocation resourceLocation) {
-        return manager.getModel(modelLocation);
-    }
-
-    @Override
-    public BakedModel createdFoiledModel(BakedModel model) {
-        return new FoiledModel(model);
+        return manager.getStandaloneModel(resourceLocation);
     }
 
     @Override
     public void renderBakedModel(PoseStack transform, MultiBufferSource buffers, BakedModel model, int lightmapCoord, int overlayLight, int @Nullable [] tints) {
-        for (var renderType : model.getRenderTypes(ItemStack.EMPTY, true)) {
-            var buffer = buffers.getBuffer(renderType);
-            for (var face : directions) {
-                random.setSeed(42);
-                var quads = model.getQuads(null, face, random, ModelData.EMPTY, renderType);
-                ModelRenderer.renderQuads(transform, buffer, quads, lightmapCoord, overlayLight, tints);
-            }
+        var renderType = model.getRenderType(ItemStack.EMPTY);
+        var buffer = buffers.getBuffer(renderType);
+        for (var face : directions) {
+            random.setSeed(42);
+            var quads = model.getQuads(null, face, random, ModelData.EMPTY, renderType);
+            ModelRenderer.renderQuads(transform, buffer, quads, lightmapCoord, overlayLight, tints);
         }
     }
 }

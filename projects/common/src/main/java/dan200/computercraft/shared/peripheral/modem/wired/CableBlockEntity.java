@@ -106,11 +106,9 @@ public class CableBlockEntity extends BlockEntity {
         return getBlockState().getValue(CableBlock.MODEM).getFacing();
     }
 
-    void neighborChanged(BlockPos neighbour) {
+    void neighborChanged() {
         var dir = getModemDirection();
-        if (!getLevel().isClientSide && dir != null && getBlockPos().relative(dir).equals(neighbour) && isPeripheralOn()) {
-            queueRefreshPeripheral();
-        }
+        if (!getLevel().isClientSide && dir != null && isPeripheralOn()) queueRefreshPeripheral();
     }
 
     void queueRefreshPeripheral() {

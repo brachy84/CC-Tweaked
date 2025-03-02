@@ -6,14 +6,13 @@ package dan200.computercraft.client;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.client.FabricComputerCraftAPIClient;
-import dan200.computercraft.client.model.CustomModelLoader;
+import dan200.computercraft.client.model.ExtraModels;
 import dan200.computercraft.core.util.Nullability;
 import dan200.computercraft.impl.Services;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.NetworkMessages;
 import dan200.computercraft.shared.network.client.ClientNetworkContext;
-import dan200.computercraft.shared.peripheral.modem.wired.CableBlock;
 import dan200.computercraft.shared.platform.FabricConfigFile;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -21,19 +20,18 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.fabric.api.event.client.player.ClientPickBlockGatherCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.client.renderer.item.ItemModels;
+import net.minecraft.client.renderer.item.properties.conditional.ConditionalItemModelProperties;
+import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperties;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
-import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 import static dan200.computercraft.core.util.Nullability.assertNonNull;
 
@@ -48,15 +46,16 @@ public class ComputerCraftClient {
 
         ClientRegistry.register();
         ClientRegistry.registerTurtleModellers(FabricComputerCraftAPIClient::registerTurtleUpgradeModeller);
-        ClientRegistry.registerItemColours(ColorProviderRegistry.ITEM::register);
         ClientRegistry.registerMenuScreens(MenuScreens::register);
-        ClientRegistry.registerMainThread(ItemProperties::register);
+        ClientRegistry.registerItemModels(ItemModels.ID_MAPPER::put);
+        ClientRegistry.registerItemColours(ItemTintSources.ID_MAPPER::put);
+        ClientRegistry.registerSelectItemProperties(SelectItemModelProperties.ID_MAPPER::put);
+        ClientRegistry.registerConditionalItemProperties(ConditionalItemModelProperties.ID_MAPPER::put);
 
-        PreparableModelLoadingPlugin.register(CustomModelLoader::prepare, (state, context) -> {
-            ClientRegistry.registerExtraModels(context::addModels, state.getExtraModels());
-            context.resolveModel().register(ctx -> state.loadModel(ctx.id()));
-            context.modifyModelAfterBake().register((model, ctx) -> model == null ? null : state.wrapModel(ctx, model));
-        });
+        PreparableModelLoadingPlugin.register(
+            (resources, executor) -> CompletableFuture.supplyAsync(() -> ExtraModels.loadAll(resources), executor),
+            (state, context) -> ClientRegistry.registerExtraModels(context::addModels, state)
+        );
 
         BlockRenderLayerMap.INSTANCE.putBlock(ModRegistry.Blocks.COMPUTER_NORMAL.get(), RenderType.cutout());
         BlockRenderLayerMap.INSTANCE.putBlock(ModRegistry.Blocks.COMPUTER_COMMAND.get(), RenderType.cutout());
@@ -74,18 +73,6 @@ public class ComputerCraftClient {
             } else {
                 return true;
             }
-        });
-
-        // Easier to hook in as an event than use BlockPickInteractionAware.
-        ClientPickBlockGatherCallback.EVENT.register((player, hit) -> {
-            if (hit.getType() != HitResult.Type.BLOCK) return ItemStack.EMPTY;
-
-            var pos = ((BlockHitResult) hit).getBlockPos();
-            var level = Objects.requireNonNull(Minecraft.getInstance().level);
-            var state = level.getBlockState(pos);
-            if (!(state.getBlock() instanceof CableBlock cable)) return ItemStack.EMPTY;
-
-            return cable.getCloneItemStack(state, hit, level, pos, player);
         });
 
         ClientCommandRegistrationCallback.EVENT.register(

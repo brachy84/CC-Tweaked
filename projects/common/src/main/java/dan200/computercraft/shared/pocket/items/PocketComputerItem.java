@@ -24,13 +24,13 @@ import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
 import dan200.computercraft.shared.util.*;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -129,7 +129,7 @@ public class PocketComputerItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand) {
+    public InteractionResult use(Level world, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         if (!world.isClientSide) {
             var holder = new PocketHolder.PlayerHolder((ServerPlayer) player, InventoryUtil.getHandSlot(player, hand));
@@ -147,7 +147,7 @@ public class PocketComputerItem extends Item {
 
             if (!stop) openImpl(player, stack, holder, hand == InteractionHand.OFF_HAND, computer);
         }
-        return new InteractionResultHolder<>(InteractionResult.sidedSuccess(world.isClientSide), stack);
+        return InteractionResult.SUCCESS;
     }
 
     /**
@@ -175,7 +175,7 @@ public class PocketComputerItem extends Item {
 
     @Override
     public Component getName(ItemStack stack) {
-        var baseString = getDescriptionId(stack);
+        var baseString = getDescriptionId();
         var upgrade = getUpgrade(stack);
         if (upgrade != null) {
             return Component.translatable(baseString + ".upgraded", upgrade.getAdjective());
@@ -198,10 +198,9 @@ public class PocketComputerItem extends Item {
 
     @Nullable
     @ForgeOverride
-    public String getCreatorModId(ItemStack stack) {
+    public String getCreatorModId(HolderLookup.Provider registries, ItemStack stack) {
         var upgrade = getUpgradeWithData(stack);
         return upgrade != null ? PocketUpgrades.instance().getOwner(upgrade.holder()) : ComputerCraftAPI.MOD_ID;
-
     }
 
     private PocketBrain getOrCreateBrain(ServerLevel level, PocketHolder holder, ItemStack stack) {

@@ -12,7 +12,6 @@ import dan200.computercraft.api.network.wired.WiredElementCapability;
 import dan200.computercraft.api.peripheral.PeripheralCapability;
 import dan200.computercraft.api.pocket.IPocketUpgrade;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
-import dan200.computercraft.impl.MediaProviders;
 import dan200.computercraft.impl.PocketUpgrades;
 import dan200.computercraft.impl.Services;
 import dan200.computercraft.impl.TurtleUpgrades;
@@ -147,10 +146,7 @@ public final class ComputerCraft {
     public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
         ModRegistry.registerPeripherals(new BlockComponentImpl<>(event, PeripheralCapability.get()));
         ModRegistry.registerWiredElements(new BlockComponentImpl<>(event, WiredElementCapability.get()));
-
-        var media = new ItemComponentImpl<>(event, MediaCapability.get());
-        ModRegistry.registerMedia(media);
-        media.registerFallback((stack, ctx) -> MediaProviders.get(stack));
+        ModRegistry.registerMedia(new ItemComponentImpl<>(event, MediaCapability.get()));
     }
 
     private record BlockComponentImpl<T, C extends @Nullable Object>(

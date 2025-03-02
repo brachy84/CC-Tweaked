@@ -21,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -212,9 +211,9 @@ public class TurtlePlaceCommand implements TurtleCommand {
                 var block = player.level().getBlockState(hit.getBlockPos());
                 if (adjacent && canUse.block()) {
                     var useItemOnResult = block.useItemOn(stack, player.level(), player, InteractionHand.MAIN_HAND, hit);
-                    if (useItemOnResult.consumesAction()) return useItemOnResult.result();
+                    if (useItemOnResult.consumesAction()) return useItemOnResult;
 
-                    if (useItemOnResult == ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION && block.is(ComputerCraftTags.Blocks.TURTLE_CAN_USE)) {
+                    if (useItemOnResult instanceof InteractionResult.TryEmptyHandInteraction && block.is(ComputerCraftTags.Blocks.TURTLE_CAN_USE)) {
                         var useWithoutItemResult = block.useWithoutItem(player.level(), player, hit);
                         if (useWithoutItemResult.consumesAction()) return useWithoutItemResult;
                     }

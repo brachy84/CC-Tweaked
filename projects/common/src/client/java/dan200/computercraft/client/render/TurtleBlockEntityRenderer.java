@@ -6,11 +6,12 @@ package dan200.computercraft.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import com.mojang.math.Transformation;
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.client.TransformedModel;
 import dan200.computercraft.api.turtle.TurtleSide;
 import dan200.computercraft.client.platform.ClientPlatformHelper;
 import dan200.computercraft.client.turtle.TurtleUpgradeModellers;
+import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import dan200.computercraft.shared.turtle.blocks.TurtleBlockEntity;
 import dan200.computercraft.shared.util.Holiday;
@@ -22,13 +23,17 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.CommonColors;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.Mth;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import org.jspecify.annotations.Nullable;
 
 public class TurtleBlockEntityRenderer implements BlockEntityRenderer<TurtleBlockEntity> {
+    public static final ResourceLocation NORMAL_TURTLE_MODEL = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_normal");
+    public static final ResourceLocation ADVANCED_TURTLE_MODEL = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_advanced");
     public static final ResourceLocation COLOUR_TURTLE_MODEL = ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_colour");
 
     private final BlockEntityRenderDispatcher renderer;
@@ -72,9 +77,6 @@ public class TurtleBlockEntityRenderer implements BlockEntityRenderer<TurtleBloc
         transform.translate(0.5f, 0.5f, 0.5f);
         var yaw = turtle.getRenderYaw(partialTicks);
         transform.mulPose(Axis.YP.rotationDegrees(180.0f - yaw));
-        if (label != null && (label.equals("Dinnerbone") || label.equals("Grumm"))) {
-            transform.scale(1.0f, -1.0f, 1.0f);
-        }
         transform.translate(-0.5f, -0.5f, -0.5f);
 
         // Render the turtle
@@ -82,14 +84,10 @@ public class TurtleBlockEntityRenderer implements BlockEntityRenderer<TurtleBloc
         var overlay = turtle.getOverlay();
 
         if (colour == -1) {
-            // Render the turtle using its item model.
-            var modelManager = Minecraft.getInstance().getItemRenderer().getItemModelShaper();
-            var model = modelManager.getItemModel(turtle.getBlockState().getBlock().asItem());
-            if (model == null) model = modelManager.getModelManager().getMissingModel();
-            renderModel(transform, buffers, lightmapCoord, overlayLight, model, null);
+            renderModel(transform, buffers, lightmapCoord, overlayLight, turtle.getFamily() == ComputerFamily.NORMAL ? NORMAL_TURTLE_MODEL : ADVANCED_TURTLE_MODEL, null);
         } else {
             // Otherwise render it using the colour item.
-            renderModel(transform, buffers, lightmapCoord, overlayLight, COLOUR_TURTLE_MODEL, new int[]{ FastColor.ARGB32.opaque(colour) });
+            renderModel(transform, buffers, lightmapCoord, overlayLight, COLOUR_TURTLE_MODEL, new int[]{ ARGB.opaque(colour) });
         }
 
         // Render the overlay
@@ -116,15 +114,25 @@ public class TurtleBlockEntityRenderer implements BlockEntityRenderer<TurtleBloc
         transform.mulPose(Axis.XN.rotationDegrees(toolAngle));
         transform.translate(0.0f, -0.5f, -0.5f);
 
-        var model = TurtleUpgradeModellers.getModel(upgrade, turtle.getAccess(), side);
-        applyTransformation(transform, model.matrix());
-        renderModel(transform, buffers, lightmapCoord, overlayLight, model.model(), null);
+        switch (TurtleUpgradeModellers.getModel(upgrade, turtle.getAccess(), side)) {
+            case TransformedModel.Item model -> {
+                transform.mulPose(model.transformation().getMatrix());
+                transform.mulPose(Axis.YP.rotation(Mth.PI));
+                Minecraft.getInstance().getItemRenderer().renderStatic(
+                    model.stack(), ItemDisplayContext.FIXED, lightmapCoord, overlayLight, transform, buffers, turtle.getLevel(), 0
+                );
+            }
+
+            case TransformedModel.Baked model ->
+                renderModel(transform, buffers, lightmapCoord, overlayLight, model.model(), null);
+        }
+
 
         transform.popPose();
     }
 
     private void renderModel(PoseStack transform, MultiBufferSource buffers, int lightmapCoord, int overlayLight, ResourceLocation modelLocation, int @Nullable [] tints) {
-        var modelManager = Minecraft.getInstance().getItemRenderer().getItemModelShaper().getModelManager();
+        var modelManager = Minecraft.getInstance().getModelManager();
         renderModel(transform, buffers, lightmapCoord, overlayLight, ClientPlatformHelper.get().getModel(modelManager, modelLocation), tints);
     }
 
@@ -141,17 +149,5 @@ public class TurtleBlockEntityRenderer implements BlockEntityRenderer<TurtleBloc
      */
     private void renderModel(PoseStack transform, MultiBufferSource renderer, int lightmapCoord, int overlayLight, BakedModel model, int @Nullable [] tints) {
         ClientPlatformHelper.get().renderBakedModel(transform, renderer, model, lightmapCoord, overlayLight, tints);
-    }
-
-    private static void applyTransformation(PoseStack stack, Transformation transformation) {
-        var trans = transformation.getTranslation();
-        stack.translate(trans.x(), trans.y(), trans.z());
-
-        stack.mulPose(transformation.getLeftRotation());
-
-        var scale = transformation.getScale();
-        stack.scale(scale.x(), scale.y(), scale.z());
-
-        stack.mulPose(transformation.getRightRotation());
     }
 }

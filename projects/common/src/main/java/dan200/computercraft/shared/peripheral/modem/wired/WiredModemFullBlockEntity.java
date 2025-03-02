@@ -108,10 +108,9 @@ public class WiredModemFullBlockEntity extends BlockEntity {
         TickScheduler.schedule(tickToken);
     }
 
-    void neighborChanged(BlockPos neighbour) {
-        for (var facing : DirectionUtil.FACINGS) {
-            if (getBlockPos().relative(facing).equals(neighbour)) queueRefreshPeripheral(facing);
-        }
+    void neighborChanged() {
+        invalidSides = DirectionUtil.ALL_SIDES;
+        TickScheduler.schedule(tickToken);
     }
 
     void queueRefreshPeripheral(Direction facing) {

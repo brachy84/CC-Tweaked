@@ -7,23 +7,23 @@
 # Minecraft
 # MC version is specified in gradle.properties, as we need that in settings.gradle.
 # Remember to update corresponding versions in fabric.mod.json/neoforge.mods.toml
-fabric-api = "0.102.1+1.21.1"
-fabric-loader = "0.15.11"
-neoForge = "21.1.9"
+fabric-api = "0.118.0+1.21.4"
+fabric-loader = "0.16.10"
+neoForge = "21.4.101-beta"
 neoForgeSpi = "8.0.1"
 mixin = "0.8.5"
-parchment = "2024.07.28"
-parchmentMc = "1.21"
-yarn = "1.21.1+build.1"
+parchment = "2024.12.07"
+parchmentMc = "1.21.4"
+yarn = "1.21.4+build.1"
 
 # Core dependencies (these versions are tied to the version Minecraft uses)
-fastutil = "8.5.12"
-guava = "32.1.2-jre"
-netty = "4.1.97.Final"
-slf4j = "2.0.9"
+fastutil = "8.5.15"
+guava = "33.3.1-jre"
+netty = "4.1.115.Final"
+slf4j = "2.0.16"
 
 # Core dependencies (independent of Minecraft)
-asm = "9.6"
+asm = "9.7.1"
 autoService = "1.1.1"
 checkerFramework = "3.42.0"
 cobalt = { strictly = "0.9.5" }
@@ -37,15 +37,15 @@ nightConfig = "3.8.1"
 
 # Minecraft mods
 emi = "1.1.7+1.21"
-fabricPermissions = "0.3.1"
-iris-fabric = "1.8.0-beta.3+1.21-fabric"
-iris-forge = "1.8.0-beta.3+1.21-neoforge"
+fabricPermissions = "0.3.3"
+iris-fabric = "1.8.8+1.21.4-fabric"
+iris-forge = "1.8.8+1.21.4-neoforge"
 jei = "19.8.2.99"
-modmenu = "11.0.0-rc.4"
+modmenu = "13.0.2"
 moreRed = "6.0.0.3"
-rei = "16.0.729"
-sodium-fabric = "mc1.21-0.6.0-beta.1-fabric"
-sodium-forge = "mc1.21-0.6.0-beta.1-neoforge"
+rei = "18.0.800"
+sodium-fabric = "mc1.21.4-0.6.10-fabric"
+sodium-forge = "mc1.21.4-0.6.10-neoforge"
 mixinExtra = "0.3.5"
 create-forge = "6.0.0-6"
 create-fabric = "0.5.1-f-build.1467+mc1.20.1"
@@ -186,9 +186,9 @@ kotlin = ["kotlin-stdlib", "kotlin-coroutines"]
 # Minecraft
 externalMods-common = ["iris-forge", "jei-api", "nightConfig-core", "nightConfig-toml"]
 externalMods-forge-compile = ["moreRed", "iris-forge", "jei-api"]
-externalMods-forge-runtime = ["jei-forge"]
+externalMods-forge-runtime = []
 externalMods-fabric-compile = ["fabricPermissions", "iris-fabric", "jei-api", "rei-api", "rei-builtin"]
-externalMods-fabric-runtime = ["jei-fabric", "modmenu"]
+externalMods-fabric-runtime = []
 
 # Testing
 test = ["junit-jupiter-api", "junit-jupiter-params", "hamcrest", "jqwik-api"]

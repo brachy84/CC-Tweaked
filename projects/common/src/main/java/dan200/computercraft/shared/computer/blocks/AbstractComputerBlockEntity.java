@@ -31,7 +31,6 @@ import net.minecraft.world.LockCode;
 import net.minecraft.world.Nameable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.MenuConstructor;
-import net.minecraft.world.level.block.GameMasterBlock;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -150,7 +149,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         if (storageCapacity > 0) nbt.putLong(NBT_CAPACITY, storageCapacity);
         nbt.putBoolean(NBT_ON, on);
 
-        lockCode.addToTag(nbt);
+        lockCode.addToTag(nbt, registries);
 
         super.saveAdditional(nbt, registries);
     }
@@ -172,7 +171,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
         storageCapacity = nbt.contains(NBT_CAPACITY, Tag.TAG_ANY_NUMERIC) ? nbt.getLong(NBT_CAPACITY) : -1;
         on = startOn = nbt.getBoolean(NBT_ON);
 
-        lockCode = LockCode.fromTag(nbt);
+        lockCode = LockCode.fromTag(nbt, registries);
     }
 
     @Override
@@ -220,7 +219,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     /**
      * Update the redstone input on a particular side.
      * <p>
-     * This is called <em>immediately</em> when a neighbouring block changes (see {@link #neighborChanged(BlockPos)}).
+     * This is called <em>immediately</em> when a neighbouring block changes (see {@link #neighborChanged()}).
      *
      * @param computer  The current server computer.
      * @param dir       The direction to update in.
@@ -240,7 +239,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
      * Update the peripheral on a particular side.
      * <p>
      * This is called from {@link #serverTick()}, after a peripheral has been marked as invalid (such as in
-     * {@link #neighborChanged(BlockPos)})
+     * {@link #neighborChanged()})
      *
      * @param computer The current server computer.
      * @param dir      The direction to update in.
@@ -278,31 +277,16 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     }
 
     /**
-     * Called when a neighbour block changes.
-     * <p>
-     * This finds the side the neighbour block is on, and updates the inputs accordingly.
+     * Called when we receive a block update from a neighbour. This updates all redstone and peripheral inputs.
      * <p>
      * We do <strong>NOT</strong> update the peripheral immediately. Blocks and block entities are sometimes
      * inconsistent at the point where an update is received, and so we instead just mark that side as dirty (see
      * {@link #invalidSides}) and refresh it {@linkplain #serverTick() next tick}.
-     *
-     * @param neighbour The position of the neighbour block.
      */
-    public void neighborChanged(BlockPos neighbour) {
+    public void neighborChanged() {
         var computer = getServerComputer();
         if (computer == null) return;
 
-        for (var dir : DirectionUtil.FACINGS) {
-            var offset = getBlockPos().relative(dir);
-            if (offset.equals(neighbour)) {
-                updateRedstoneInput(computer, dir, offset);
-                invalidSides |= 1 << dir.ordinal();
-                return;
-            }
-        }
-
-        // If the position is not any adjacent one, update all inputs. This is pretty terrible, but some redstone mods
-        // handle this incorrectly.
         for (var dir : DirectionUtil.FACINGS) updateRedstoneInput(computer, dir, getBlockPos().relative(dir));
         invalidSides = DirectionUtil.ALL_SIDES; // Mark all peripherals as dirty.
     }
@@ -310,7 +294,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     /**
      * Called when a neighbour block's shape changes.
      * <p>
-     * Unlike {@link #neighborChanged(BlockPos)}, we don't update redstone, only peripherals.
+     * Unlike {@link #neighborChanged()}, we don't update redstone, only peripherals.
      *
      * @param direction The side that changed.
      */
@@ -343,10 +327,6 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     public final @Nullable String getLabel() {
         return label;
-    }
-
-    public final boolean isAdminOnly() {
-        return getBlockState().getBlock() instanceof GameMasterBlock;
     }
 
     public final void setComputerID(int id) {
@@ -458,10 +438,5 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Override
     public Component getDisplayName() {
         return Nameable.super.getDisplayName();
-    }
-
-    @Override
-    public boolean onlyOpCanSetNbt() {
-        return isAdminOnly();
     }
 }

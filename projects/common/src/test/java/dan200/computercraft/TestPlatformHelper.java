@@ -8,7 +8,6 @@ import com.google.auto.service.AutoService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
 import dan200.computercraft.api.media.IMedia;
-import dan200.computercraft.api.media.MediaProvider;
 import dan200.computercraft.api.network.wired.WiredElement;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.impl.AbstractComputerCraftAPI;
@@ -24,6 +23,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -115,13 +115,13 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     }
 
     @Override
-    public int getBurnTime(ItemStack stack) {
+    public int getBurnTime(MinecraftServer server, ItemStack stack) {
         throw new UnsupportedOperationException("Cannot get burn time inside tests");
     }
 
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
-        return new ItemStack(stack.getItem().getCraftingRemainingItem());
+        return stack.getItem().getCraftingRemainder();
     }
 
     @Override
@@ -163,11 +163,6 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Override
     public ContainerTransfer getContainer(ServerLevel level, BlockPos pos, Direction side) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
-    }
-
-    @Override
-    public void registerMediaProvider(MediaProvider provider) {
-        throw new UnsupportedOperationException("Cannot register media providers inside tests");
     }
 
     @Override

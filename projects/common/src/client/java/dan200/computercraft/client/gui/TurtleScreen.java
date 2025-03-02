@@ -7,12 +7,12 @@ package dan200.computercraft.client.gui;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.client.gui.widgets.ComputerSidebar;
 import dan200.computercraft.client.gui.widgets.TerminalWidget;
-import dan200.computercraft.client.render.RenderTypes;
 import dan200.computercraft.client.render.SpriteRenderer;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.inventory.AbstractComputerMenu;
 import dan200.computercraft.shared.turtle.inventory.TurtleMenu;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
@@ -49,8 +49,11 @@ public class TurtleScreen extends AbstractComputerScreen<TurtleMenu> {
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTicks, int mouseX, int mouseY) {
         var advanced = family == ComputerFamily.ADVANCED;
-        var texture = advanced ? BACKGROUND_ADVANCED : BACKGROUND_NORMAL;
-        graphics.blit(texture, leftPos + AbstractComputerMenu.SIDEBAR_WIDTH, topPos, 0, 0, 0, TEX_WIDTH, TEX_HEIGHT, FULL_TEX_SIZE, FULL_TEX_SIZE);
+        graphics.blit(
+            RenderType::guiTextured, advanced ? BACKGROUND_ADVANCED : BACKGROUND_NORMAL,
+            leftPos + AbstractComputerMenu.SIDEBAR_WIDTH, topPos, 0, 0,
+            TEX_WIDTH, TEX_HEIGHT, FULL_TEX_SIZE, FULL_TEX_SIZE
+        );
 
         // Render selected slot
         var slot = getMenu().getSelectedSlot();
@@ -58,14 +61,14 @@ public class TurtleScreen extends AbstractComputerScreen<TurtleMenu> {
             var slotX = slot % 4;
             var slotY = slot / 4;
             graphics.blitSprite(
-                advanced ? SELECTED_ADVANCED : SELECTED_NORMAL,
-                leftPos + TURTLE_START_X - 2 + slotX * 18, topPos + PLAYER_START_Y - 2 + slotY * 18, 0, 22, 22
+                RenderType::guiTextured, advanced ? SELECTED_ADVANCED : SELECTED_NORMAL,
+                leftPos + TURTLE_START_X - 2 + slotX * 18, topPos + PLAYER_START_Y - 2 + slotY * 18, 22, 22
             );
         }
 
         // Render sidebar
-        var spriteRenderer = SpriteRenderer.createForGui(graphics, RenderTypes.GUI_SPRITES);
-        ComputerSidebar.renderBackground(spriteRenderer, GuiSprites.getComputerTextures(family), leftPos, topPos + sidebarYOffset);
-        graphics.flush(); // Flush to ensure background textures are drawn before foreground.
+        SpriteRenderer.inGui(graphics, spriteRenderer ->
+            ComputerSidebar.renderBackground(spriteRenderer, GuiSprites.getComputerTextures(family), leftPos, topPos + sidebarYOffset)
+        );
     }
 }

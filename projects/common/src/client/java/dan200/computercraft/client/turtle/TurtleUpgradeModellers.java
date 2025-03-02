@@ -4,7 +4,6 @@
 
 package dan200.computercraft.client.turtle;
 
-import com.mojang.math.Transformation;
 import dan200.computercraft.api.client.TransformedModel;
 import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
 import dan200.computercraft.api.turtle.ITurtleAccess;
@@ -25,7 +24,7 @@ import java.util.stream.Stream;
  */
 public final class TurtleUpgradeModellers {
     private static final TurtleUpgradeModeller<ITurtleUpgrade> NULL_TURTLE_MODELLER = (upgrade, turtle, side, data) ->
-        new TransformedModel(Minecraft.getInstance().getModelManager().getMissingModel(), Transformation.identity());
+        TransformedModel.of(Minecraft.getInstance().getModelManager().getMissingModel());
 
     private static final Map<UpgradeType<? extends ITurtleUpgrade>, TurtleUpgradeModeller<?>> turtleModels = new ConcurrentHashMap<>();
     private static volatile boolean fetchedModels;

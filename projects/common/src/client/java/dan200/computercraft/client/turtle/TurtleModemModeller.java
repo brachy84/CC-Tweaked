@@ -5,7 +5,6 @@
 package dan200.computercraft.client.turtle;
 
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.api.client.ModelLocation;
 import dan200.computercraft.api.client.TransformedModel;
 import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
 import dan200.computercraft.api.turtle.ITurtleAccess;
@@ -39,23 +38,23 @@ public class TurtleModemModeller implements TurtleUpgradeModeller<TurtleModem> {
     }
 
     private record ModemModels(
-        ModelLocation leftOffModel, ModelLocation rightOffModel,
-        ModelLocation leftOnModel, ModelLocation rightOnModel
+        ResourceLocation leftOffModel, ResourceLocation rightOffModel,
+        ResourceLocation leftOnModel, ResourceLocation rightOnModel
     ) {
         private static final ModemModels NORMAL = create("normal");
         private static final ModemModels ADVANCED = create("advanced");
 
         public static ModemModels create(String type) {
             return new ModemModels(
-                ModelLocation.ofResource(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_off_left")),
-                ModelLocation.ofResource(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_off_right")),
-                ModelLocation.ofResource(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_on_left")),
-                ModelLocation.ofResource(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_on_right"))
+                ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_off_left"),
+                ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_off_right"),
+                ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_on_left"),
+                ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "block/turtle_modem_" + type + "_on_right")
             );
         }
 
         public Stream<ResourceLocation> getDependencies() {
-            return Stream.of(leftOffModel, rightOffModel, leftOnModel, rightOnModel).flatMap(ModelLocation::getDependencies);
+            return Stream.of(leftOffModel, rightOffModel, leftOnModel, rightOnModel);
         }
     }
 }

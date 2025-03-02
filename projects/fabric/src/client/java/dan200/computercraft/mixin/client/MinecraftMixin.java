@@ -46,6 +46,6 @@ class MinecraftMixin {
     )
     @SuppressWarnings("unused")
     private void beforeInitialResourceReload(GameConfig gameConfig, CallbackInfo ci) {
-        ClientRegistry.registerReloadListeners(resourceManager::registerReloadListener, (Minecraft) (Object) this);
+        ClientRegistry.registerReloadListeners((id, l) -> resourceManager.registerReloadListener(l), (Minecraft) (Object) this);
     }
 }

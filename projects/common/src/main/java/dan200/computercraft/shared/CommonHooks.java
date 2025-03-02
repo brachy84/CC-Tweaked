@@ -139,8 +139,8 @@ public final class CommonHooks {
             .setRolls(ConstantValue.exactly(1));
     }
 
-    public static void onDatapackReload(BiConsumer<String, PreparableReloadListener> addReload) {
-        addReload.accept("mounts", ResourceMount.RELOAD_LISTENER);
+    public static void onDatapackReload(BiConsumer<ResourceLocation, PreparableReloadListener> addReload) {
+        addReload.accept(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "mounts"), ResourceMount.RELOAD_LISTENER);
     }
 
     public static boolean onEntitySpawn(Entity entity) {

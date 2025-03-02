@@ -27,8 +27,8 @@ class Relay_Test {
      */
     @GameTest
     fun No_through_signal(context: GameTestHelper) = context.sequence {
-        val lamp = BlockPos(2, 2, 4)
-        val lever = BlockPos(2, 2, 0)
+        val lamp = BlockPos(2, 1, 4)
+        val lever = BlockPos(2, 1, 0)
         thenExecute {
             context.assertBlockHas(lamp, RedstoneLampBlock.LIT, false, "Lamp should not be lit")
             context.modifyBlock(lever) { x -> x.setValue(LeverBlock.POWERED, true) }
@@ -44,8 +44,8 @@ class Relay_Test {
      */
     @GameTest
     fun No_through_signal_reverse(context: GameTestHelper) = context.sequence {
-        val lamp = BlockPos(2, 2, 4)
-        val lever = BlockPos(2, 2, 0)
+        val lamp = BlockPos(2, 1, 4)
+        val lever = BlockPos(2, 1, 0)
         thenExecute {
             context.assertBlockHas(lamp, RedstoneLampBlock.LIT, false, "Lamp should not be lit")
             context.modifyBlock(lever) { x -> x.setValue(LeverBlock.POWERED, true) }
@@ -61,17 +61,17 @@ class Relay_Test {
      */
     @GameTest
     fun Set_and_destroy(context: GameTestHelper) = context.sequence {
-        val lamp = BlockPos(2, 2, 3)
+        val lamp = BlockPos(2, 1, 3)
 
         thenExecute {
-            val peripheral = context.getBlockEntity(BlockPos(2, 2, 2), ModRegistry.BlockEntities.REDSTONE_RELAY.get())
+            val peripheral = context.getBlockEntity(BlockPos(2, 1, 2), ModRegistry.BlockEntities.REDSTONE_RELAY.get())
                 .peripheral()
                 as RedstoneRelayPeripheral
             peripheral.setOutput(ComputerSide.BACK, true)
         }
         thenIdle(1)
         thenExecute { context.assertBlockHas(lamp, RedstoneLampBlock.LIT, true, "Lamp should be lit") }
-        thenExecute { context.setBlock(BlockPos(2, 2, 2), Blocks.AIR) }
+        thenExecute { context.setBlock(BlockPos(2, 1, 2), Blocks.AIR) }
         thenIdle(4)
         thenExecute { context.assertBlockHas(lamp, RedstoneLampBlock.LIT, false, "Lamp should not be lit") }
     }
@@ -83,7 +83,7 @@ class Relay_Test {
      */
     @GameTest
     fun Self_output_update(context: GameTestHelper) = context.sequence {
-        fun relay() = context.getBlockEntity(BlockPos(2, 2, 2), ModRegistry.BlockEntities.REDSTONE_RELAY.get())
+        fun relay() = context.getBlockEntity(BlockPos(2, 1, 2), ModRegistry.BlockEntities.REDSTONE_RELAY.get())
             .peripheral() as RedstoneRelayPeripheral
 
         thenExecute { relay().setOutput(ComputerSide.BACK, true) }

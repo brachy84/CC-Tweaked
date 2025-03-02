@@ -4,6 +4,7 @@
 
 package dan200.computercraft.api.client;
 
+import dan200.computercraft.api.client.turtle.RegisterTurtleUpgradeModeller;
 import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.api.upgrades.UpgradeType;
@@ -24,7 +25,7 @@ public final class FabricComputerCraftAPIClient {
      * This may be called at any point after registry creation, though it is recommended to call it within your client
      * setup step.
      * <p>
-     * This method may be used as a {@link dan200.computercraft.api.client.turtle.RegisterTurtleUpgradeModeller}, for
+     * This method may be used as a {@link RegisterTurtleUpgradeModeller}, for
      * convenient use in multi-loader code.
      *
      * @param type     The turtle upgrade type.

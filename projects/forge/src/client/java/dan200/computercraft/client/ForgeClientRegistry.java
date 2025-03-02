@@ -4,38 +4,37 @@
 
 package dan200.computercraft.client;
 
+import com.google.common.reflect.TypeToken;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.client.turtle.RegisterTurtleModellersEvent;
 import dan200.computercraft.client.model.ExtraModels;
-import dan200.computercraft.client.model.turtle.TurtleModelLoader;
+import dan200.computercraft.client.render.ExtendedItemFrameRenderState;
 import dan200.computercraft.client.turtle.TurtleUpgradeModellers;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.context.ContextKey;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
+import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
 
-import java.io.IOException;
 
 /**
  * Registers textures and models for items.
  */
 @EventBusSubscriber(modid = ComputerCraftAPI.MOD_ID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ForgeClientRegistry {
+    static final ContextKey<ExtendedItemFrameRenderState> ITEM_FRAME_STATE = new ContextKey<>(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "item_frame"));
+
     private static final Object lock = new Object();
     private static boolean gatheredModellers = false;
 
     private ForgeClientRegistry() {
-    }
-
-    @SubscribeEvent
-    public static void registerModelLoaders(ModelEvent.RegisterGeometryLoaders event) {
-        event.register(ResourceLocation.fromNamespaceAndPath(ComputerCraftAPI.MOD_ID, "turtle"), TurtleModelLoader.INSTANCE);
     }
 
     /**
@@ -59,12 +58,7 @@ public final class ForgeClientRegistry {
     public static void registerModels(ModelEvent.RegisterAdditional event) {
         gatherModellers();
         var extraModels = ExtraModels.loadAll(Minecraft.getInstance().getResourceManager());
-        ClientRegistry.registerExtraModels(x -> event.register(ModelResourceLocation.standalone(x)), extraModels);
-    }
-
-    @SubscribeEvent
-    public static void registerShaders(RegisterShadersEvent event) throws IOException {
-        ClientRegistry.registerShaders(event.getResourceProvider(), event::registerShader);
+        ClientRegistry.registerExtraModels(event::register, extraModels);
     }
 
     @SubscribeEvent
@@ -73,8 +67,23 @@ public final class ForgeClientRegistry {
     }
 
     @SubscribeEvent
-    public static void onItemColours(RegisterColorHandlersEvent.Item event) {
+    public static void registerItemModels(RegisterItemModelsEvent event) {
+        ClientRegistry.registerItemModels(event::register);
+    }
+
+    @SubscribeEvent
+    public static void registerItemColours(RegisterColorHandlersEvent.ItemTintSources event) {
         ClientRegistry.registerItemColours(event::register);
+    }
+
+    @SubscribeEvent
+    public static void registerSelectItemProperties(RegisterSelectItemModelPropertyEvent event) {
+        ClientRegistry.registerSelectItemProperties(event::register);
+    }
+
+    @SubscribeEvent
+    public static void registerConditionalItemProperties(RegisterConditionalItemModelPropertyEvent event) {
+        ClientRegistry.registerConditionalItemProperties(event::register);
     }
 
     @SubscribeEvent
@@ -83,13 +92,22 @@ public final class ForgeClientRegistry {
     }
 
     @SubscribeEvent
-    public static void registerReloadListeners(RegisterClientReloadListenersEvent event) {
-        ClientRegistry.registerReloadListeners(event::registerReloadListener, Minecraft.getInstance());
+    public static void registerReloadListeners(AddClientReloadListenersEvent event) {
+        ClientRegistry.registerReloadListeners(event::addListener, Minecraft.getInstance());
+    }
+
+    @SubscribeEvent
+    public static void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
+        event.<ItemFrame, ItemFrameRenderState>registerEntityModifier(new TypeToken<>() {
+        }, (e, s) -> {
+            var data = s.getRenderData(ITEM_FRAME_STATE);
+            if (data == null) s.setRenderData(ITEM_FRAME_STATE, data = new ExtendedItemFrameRenderState());
+            data.setup(e.getItem());
+        });
     }
 
     @SubscribeEvent
     public static void setupClient(FMLClientSetupEvent event) {
         ClientRegistry.register();
-        event.enqueueWork(() -> ClientRegistry.registerMainThread(ItemProperties::register));
     }
 }

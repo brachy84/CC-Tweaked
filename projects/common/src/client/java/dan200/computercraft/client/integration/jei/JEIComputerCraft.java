@@ -8,7 +8,6 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.turtle.TurtleSide;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.integration.RecipeModHelpers;
-import dan200.computercraft.shared.media.items.DiskItem;
 import dan200.computercraft.shared.pocket.items.PocketComputerItem;
 import dan200.computercraft.shared.turtle.items.TurtleItem;
 import mezz.jei.api.IModPlugin;
@@ -23,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.DyedItemColor;
 
 import java.util.List;
 
@@ -100,7 +100,7 @@ public class JEIComputerCraft implements IModPlugin {
     /**
      * Distinguishes disks by colour.
      */
-    private static final IIngredientSubtypeInterpreter<ItemStack> diskSubtype = (stack, ctx) -> Integer.toString(DiskItem.getColour(stack));
+    private static final IIngredientSubtypeInterpreter<ItemStack> diskSubtype = (stack, ctx) -> Integer.toString(DyedItemColor.getOrDefault(stack, -1));
 
     private static RegistryAccess getRegistryAccess() {
         return Minecraft.getInstance().level.registryAccess();

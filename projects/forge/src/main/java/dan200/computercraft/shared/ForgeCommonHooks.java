@@ -10,11 +10,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.level.chunk.LevelChunk;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddReloadListenerEvent;
+import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.LootTableLoadEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
@@ -65,9 +64,7 @@ public class ForgeCommonHooks {
 
     @SubscribeEvent
     public static void onChunkUnload(ChunkEvent.Unload event) {
-        if (event.getLevel() instanceof ServerLevel && event.getChunk() instanceof LevelChunk chunk) {
-            CommonHooks.onServerChunkUnload(chunk);
-        }
+        if (event.getLevel() instanceof ServerLevel) CommonHooks.onServerChunkUnload(event.getChunk());
     }
 
     @SubscribeEvent
@@ -90,8 +87,8 @@ public class ForgeCommonHooks {
     }
 
     @SubscribeEvent
-    public static void onAddReloadListeners(AddReloadListenerEvent event) {
-        CommonHooks.onDatapackReload((id, listener) -> event.addListener(listener));
+    public static void onAddReloadListeners(AddServerReloadListenersEvent event) {
+        CommonHooks.onDatapackReload(event::addListener);
     }
 
     @SubscribeEvent

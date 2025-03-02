@@ -119,8 +119,8 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
     }
 
     @Override
-    public void neighborChanged(BlockPos neighbour) {
-        if (moveState == MoveState.NOT_MOVED) super.neighborChanged(neighbour);
+    public void neighborChanged() {
+        if (moveState == MoveState.NOT_MOVED) super.neighborChanged();
     }
 
     public void notifyMoveStart() {

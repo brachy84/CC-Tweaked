@@ -10,10 +10,14 @@ import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.client.gui.GuiSprites;
 import dan200.computercraft.client.model.LecternPocketModel;
 import dan200.computercraft.client.model.LecternPrintoutModel;
+import dan200.computercraft.data.client.BlockModelProvider;
 import dan200.computercraft.data.client.ExtraModelsProvider;
+import dan200.computercraft.data.client.ItemModelProvider;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import dan200.computercraft.shared.turtle.inventory.UpgradeSlot;
 import net.minecraft.Util;
+import net.minecraft.client.data.models.BlockModelGenerators;
+import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.renderer.texture.atlas.SpriteSource;
 import net.minecraft.client.renderer.texture.atlas.SpriteSources;
 import net.minecraft.client.renderer.texture.atlas.sources.SingleFile;
@@ -24,7 +28,6 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.registries.RegistryPatchGenerator;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
@@ -57,25 +60,27 @@ public final class DataProviders {
         var fullRegistries = fullRegistryPatch.thenApply(RegistrySetBuilder.PatchedRegistries::full);
 
         generator.registries(fullRegistryPatch);
-        generator.add(out -> new RecipeProvider(out, fullRegistries));
+        generator.add(out -> new RecipeProvider.Runner(out, fullRegistries));
 
         var blockTags = generator.blockTags(TagProvider::blockTags);
         generator.itemTags(TagProvider::itemTags, blockTags);
 
         generator.add(out -> new net.minecraft.data.loot.LootTableProvider(out, Set.of(), LootTableProvider.getTables(), fullRegistries));
 
-        generator.add(out -> new ModelProvider(out, BlockModelProvider::addBlockModels, ItemModelProvider::addItemModels));
-
         generator.add(out -> new LanguageProvider(out, fullRegistries));
 
-        generator.addFromCodec("Block atlases", PackType.CLIENT_RESOURCES, "atlases", SpriteSources.FILE_CODEC, out -> {
+        generator.addFromCodec("Block atlases", PackOutput.Target.RESOURCE_PACK, "atlases", SpriteSources.FILE_CODEC, out -> {
             out.accept(ResourceLocation.withDefaultNamespace("blocks"), makeSprites(Stream.of(
-                UpgradeSlot.LEFT_UPGRADE,
-                UpgradeSlot.RIGHT_UPGRADE,
                 LecternPrintoutModel.TEXTURE,
                 LecternPocketModel.TEXTURE_NORMAL, LecternPocketModel.TEXTURE_ADVANCED,
                 LecternPocketModel.TEXTURE_COLOUR, LecternPocketModel.TEXTURE_FRAME, LecternPocketModel.TEXTURE_LIGHT
             )));
+
+            out.accept(ResourceLocation.withDefaultNamespace("gui"), makeSprites(Stream.of(
+                UpgradeSlot.LEFT_UPGRADE,
+                UpgradeSlot.RIGHT_UPGRADE
+            )));
+
             out.accept(GuiSprites.SPRITE_SHEET, makeSprites(
                 // Computers
                 GuiSprites.COMPUTER_NORMAL.textures(),
@@ -91,6 +96,8 @@ public final class DataProviders {
                 return registries.lookupOrThrow(TurtleOverlay.REGISTRY).listElements().map(x -> x.value().model());
             }
         });
+
+        generator.addModels(BlockModelProvider::addBlockModels, ItemModelProvider::addItemModels);
     }
 
     @SafeVarargs
@@ -104,7 +111,7 @@ public final class DataProviders {
 
         <T extends DataProvider> T add(DataProvider.Factory<T> factory);
 
-        <T> void addFromCodec(String name, PackType type, String directory, Codec<T> codec, Consumer<BiConsumer<ResourceLocation, T>> output);
+        <T> void addFromCodec(String name, PackOutput.Target target, String directory, Codec<T> codec, Consumer<BiConsumer<ResourceLocation, T>> output);
 
         TagsProvider<Block> blockTags(Consumer<TagProvider.TagConsumer<Block>> tags);
 
@@ -116,5 +123,14 @@ public final class DataProviders {
          * @param registries The patched registries to write.
          */
         void registries(CompletableFuture<RegistrySetBuilder.PatchedRegistries> registries);
+
+        /**
+         * Generate block and item models.
+         *
+         * @param blocks The generator for block states and models.
+         * @param items  The generator for item models.
+         * @see net.minecraft.client.data.models.ModelProvider
+         */
+        void addModels(Consumer<BlockModelGenerators> blocks, Consumer<ItemModelGenerators> items);
     }
 }
