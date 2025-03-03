@@ -11,10 +11,9 @@ import dan200.computercraft.client.model.ExtraModels;
 import dan200.computercraft.client.render.ExtendedItemFrameRenderState;
 import dan200.computercraft.client.turtle.TurtleUpgradeModellers;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
+import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModLoader;
@@ -98,7 +97,7 @@ public final class ForgeClientRegistry {
 
     @SubscribeEvent
     public static void registerRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
-        event.<ItemFrame, ItemFrameRenderState>registerEntityModifier(new TypeToken<>() {
+        event.registerEntityModifier(new TypeToken<ItemFrameRenderer<?>>() {
         }, (e, s) -> {
             var data = s.getRenderData(ITEM_FRAME_STATE);
             if (data == null) s.setRenderData(ITEM_FRAME_STATE, data = new ExtendedItemFrameRenderState());

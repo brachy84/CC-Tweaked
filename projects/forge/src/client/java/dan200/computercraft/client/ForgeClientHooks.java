@@ -6,7 +6,6 @@ package dan200.computercraft.client;
 
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.client.sound.SpeakerSound;
-import net.minecraft.commands.CommandSourceStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -67,7 +66,6 @@ public final class ForgeClientHooks {
     }
 
 
-
     @SubscribeEvent
     public static void onRenderInFrame(RenderItemInFrameEvent event) {
         var state = event.getItemFrameRenderState().getRenderData(ITEM_FRAME_STATE);
@@ -82,10 +80,5 @@ public final class ForgeClientHooks {
     public static void playStreaming(PlayStreamingSourceEvent event) {
         if (!(event.getSound() instanceof SpeakerSound sound) || sound.getStream() == null) return;
         ClientHooks.onPlayStreaming(event.getEngine(), event.getChannel(), sound.getStream());
-    }
-
-    @SubscribeEvent
-    public static void registerClientCommands(RegisterClientCommandsEvent event) {
-        ClientRegistry.registerClientCommands(event.getDispatcher(), CommandSourceStack::sendFailure);
     }
 }

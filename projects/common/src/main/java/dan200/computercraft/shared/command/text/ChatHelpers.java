@@ -52,10 +52,6 @@ public final class ChatHelpers {
         return link(component, new ClickEvent(ClickEvent.Action.RUN_COMMAND, command), toolTip);
     }
 
-    public static Component clientLink(MutableComponent component, String command, Component toolTip) {
-        return link(component, new ClickEvent(ClickEvent.Action.RUN_COMMAND, command), toolTip);
-    }
-
     public static Component link(Component component, ClickEvent click, Component toolTip) {
         var style = component.getStyle();
 

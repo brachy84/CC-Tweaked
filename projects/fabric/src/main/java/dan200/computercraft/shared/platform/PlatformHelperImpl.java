@@ -7,6 +7,7 @@ package dan200.computercraft.shared.platform;
 import com.google.auto.service.AutoService;
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.api.media.MediaLookup;
@@ -16,6 +17,7 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.PeripheralLookup;
 import dan200.computercraft.impl.Peripherals;
 import dan200.computercraft.mixin.ArgumentTypeInfosAccessor;
+import dan200.computercraft.shared.ComputerCraft;
 import dan200.computercraft.shared.config.ConfigFile;
 import dan200.computercraft.shared.network.container.ContainerData;
 import dan200.computercraft.shared.util.InventoryUtil;
@@ -37,6 +39,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
@@ -64,6 +67,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -233,6 +237,14 @@ public class PlatformHelperImpl implements PlatformHelper {
     @SuppressWarnings("NullAway") // NullAway doesn't like the null here.
     public @Nullable IMedia getMedia(ItemStack stack) {
         return MediaLookup.get().find(stack, null);
+    }
+
+    @Override
+    public ClickEvent createOpenFolderAction(Path path) {
+        return new ClickEvent(
+            ClickEvent.Action.RUN_COMMAND,
+            "/" + ComputerCraft.CLIENT_OPEN_FOLDER + " " + StringArgumentType.escapeIfRequired(path.toAbsolutePath().toString())
+        );
     }
 
     private static final class RegistrationHelperImpl<T> implements RegistrationHelper<T> {

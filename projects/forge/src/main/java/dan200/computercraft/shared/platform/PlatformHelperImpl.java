@@ -25,6 +25,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
@@ -65,6 +66,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jspecify.annotations.Nullable;
 
+import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
@@ -242,6 +244,11 @@ public class PlatformHelperImpl implements PlatformHelper {
     @Override
     public @Nullable IMedia getMedia(ItemStack stack) {
         return stack.getCapability(MediaCapability.get());
+    }
+
+    @Override
+    public ClickEvent createOpenFolderAction(Path path) {
+        return new ClickEvent(ClickEvent.Action.OPEN_FILE, path.toAbsolutePath().toString());
     }
 
     private record RegistrationHelperImpl<R>(DeferredRegister<R> registry) implements RegistrationHelper<R> {

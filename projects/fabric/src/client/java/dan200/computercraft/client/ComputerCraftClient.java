@@ -4,11 +4,15 @@
 
 package dan200.computercraft.client;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.client.FabricComputerCraftAPIClient;
 import dan200.computercraft.client.model.ExtraModels;
 import dan200.computercraft.core.util.Nullability;
 import dan200.computercraft.impl.Services;
+import dan200.computercraft.shared.ComputerCraft;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.config.ConfigSpec;
 import dan200.computercraft.shared.network.NetworkMessages;
@@ -22,6 +26,7 @@ import net.fabricmc.fabric.api.client.model.loading.v1.PreparableModelLoadingPlu
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemTintSources;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -31,6 +36,8 @@ import net.minecraft.client.renderer.item.properties.conditional.ConditionalItem
 import net.minecraft.client.renderer.item.properties.select.SelectItemModelProperties;
 import net.minecraft.world.phys.BlockHitResult;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 import static dan200.computercraft.core.util.Nullability.assertNonNull;
@@ -75,9 +82,17 @@ public class ComputerCraftClient {
             }
         });
 
-        ClientCommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess) -> ClientRegistry.registerClientCommands(dispatcher, FabricClientCommandSource::sendError)
-        );
+        // Register our open folder command
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) ->
+            dispatcher.register(LiteralArgumentBuilder.<FabricClientCommandSource>literal(ComputerCraft.CLIENT_OPEN_FOLDER)
+                .requires(x -> Minecraft.getInstance().getSingleplayerServer() != null)
+                .then(RequiredArgumentBuilder.<FabricClientCommandSource, String>argument("path", StringArgumentType.string())
+                    .executes(c -> {
+                        var file = Path.of(c.getArgument("path", String.class));
+                        if (Files.isDirectory(file)) Util.getPlatform().openFile(file.toFile());
+                        return 0;
+                    })
+                )));
 
         ((FabricConfigFile) ConfigSpec.clientSpec).load(FabricLoader.getInstance().getConfigDir().resolve(ComputerCraftAPI.MOD_ID + "-client.toml"));
     }

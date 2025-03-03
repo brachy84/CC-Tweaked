@@ -36,7 +36,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
-import java.io.File;
+import java.nio.file.Files;
 import java.util.*;
 
 import static dan200.computercraft.shared.command.CommandUtils.isPlayer;
@@ -51,12 +51,6 @@ import static net.minecraft.commands.Commands.literal;
 
 public final class CommandComputerCraft {
     public static final UUID SYSTEM_UUID = new UUID(0, 0);
-
-    /**
-     * The client-side command to open the folder. Ideally this would live under the main {@code computercraft}
-     * namespace, but unfortunately that overrides commands, rather than merging them.
-     */
-    public static final String CLIENT_OPEN_FOLDER = "computercraft-computer-folder";
 
     private CommandComputerCraft() {
     }
@@ -351,8 +345,8 @@ public final class CommandComputerCraft {
             }
         }
 
-        if (isPlayer(source) && UserLevel.isOwner(source)) {
-            var linkPath = linkStorage(source, computerId);
+        if (computer != null && isPlayer(source) && UserLevel.isOwner(source)) {
+            var linkPath = linkStorage(source, computer);
             if (linkPath != null) out.append(" ").append(linkPath);
         }
 
@@ -371,13 +365,13 @@ public final class CommandComputerCraft {
         }
     }
 
-    private static @Nullable Component linkStorage(CommandSourceStack source, int id) {
-        var file = new File(ServerContext.get(source.getServer()).storageDir().toFile(), "computer/" + id);
-        if (!file.isDirectory()) return null;
+    private static @Nullable Component linkStorage(CommandSourceStack source, ServerComputer computer) {
+        var file = ServerContext.get(source.getServer()).storageDir().resolve(computer.getFamily().getSaveFolder()).resolve(Integer.toString(computer.getID()));
+        if (!Files.isDirectory(file)) return null;
 
-        return clientLink(
+        return link(
             text("\u270E"),
-            "/" + CLIENT_OPEN_FOLDER + " " + id,
+            PlatformHelper.get().createOpenFolderAction(file),
             Component.translatable("commands.computercraft.dump.open_path")
         );
     }

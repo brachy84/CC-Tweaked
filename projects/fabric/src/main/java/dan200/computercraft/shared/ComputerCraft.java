@@ -64,6 +64,12 @@ import java.util.function.BiFunction;
 public class ComputerCraft {
     private static final LevelResource SERVERCONFIG = new LevelResource("serverconfig");
 
+    /**
+     * The client-side command to open a folder. Ideally this would live under the main {@code computercraft}
+     * namespace, but unfortunately that overrides commands, rather than merging them.
+     */
+    public static final String CLIENT_OPEN_FOLDER = "computercraft-open-folder";
+
     public static void init() {
         for (var type : NetworkMessages.getServerbound()) registerPayloadType(PayloadTypeRegistry.playC2S(), type);
         for (var type : NetworkMessages.getClientbound()) registerPayloadType(PayloadTypeRegistry.playS2C(), type);
