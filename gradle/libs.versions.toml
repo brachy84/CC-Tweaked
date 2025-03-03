@@ -57,7 +57,7 @@ junitPlatform = "1.11.4"
 jmh = "1.37"
 
 # Build tools
-cctJavadoc = "1.8.3"
+cctJavadoc = "1.8.4"
 checkstyle = "10.21.2"
 errorProne-core = "2.36.0"
 errorProne-plugin = "4.1.0"
