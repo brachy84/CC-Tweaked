@@ -31,6 +31,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.Container;
 import net.minecraft.world.ContainerHelper;
@@ -284,8 +285,14 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
     // Networking stuff
 
     @Override
+    public final ClientboundBlockEntityDataPacket getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+
+    @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         var nbt = super.getUpdateTag(registries);
+        if (label != null) nbt.putString(NBT_LABEL, label);
         brain.writeDescription(nbt, registries);
         return nbt;
     }
@@ -293,6 +300,7 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
     @Override
     public void loadClient(CompoundTag nbt, HolderLookup.Provider registries) {
         super.loadClient(nbt, registries);
+        label = nbt.contains(NBT_LABEL) ? nbt.getString(NBT_LABEL) : null;
         brain.readDescription(nbt, registries);
     }
 

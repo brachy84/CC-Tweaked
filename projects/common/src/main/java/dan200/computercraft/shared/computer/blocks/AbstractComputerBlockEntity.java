@@ -25,7 +25,6 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Container;
 import net.minecraft.world.LockCode;
 import net.minecraft.world.Nameable;
@@ -42,7 +41,7 @@ import java.util.UUID;
 
 public abstract class AbstractComputerBlockEntity extends BlockEntity implements Nameable, MenuConstructor {
     private static final String NBT_ID = "ComputerId";
-    private static final String NBT_LABEL = "Label";
+    protected static final String NBT_LABEL = "Label";
     private static final String NBT_ON = "On";
     private static final String NBT_CAPACITY = "Capacity";
 
@@ -381,25 +380,7 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
 
     // Networking stuff
 
-    @Override
-    public final ClientboundBlockEntityDataPacket getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-        // We need this for pick block on the client side.
-        var nbt = super.getUpdateTag(registries);
-        if (computerID >= 0) nbt.putInt(NBT_ID, computerID);
-        if (label != null) nbt.putString(NBT_LABEL, label);
-        if (storageCapacity > 0) nbt.putLong(NBT_CAPACITY, storageCapacity);
-        return nbt;
-    }
-
     protected void loadClient(CompoundTag nbt, HolderLookup.Provider registries) {
-        computerID = nbt.contains(NBT_ID) ? nbt.getInt(NBT_ID) : -1;
-        label = nbt.contains(NBT_LABEL) ? nbt.getString(NBT_LABEL) : null;
-        storageCapacity = nbt.contains(NBT_CAPACITY, Tag.TAG_ANY_NUMERIC) ? nbt.getLong(NBT_CAPACITY) : -1;
     }
 
     protected void transferStateFrom(AbstractComputerBlockEntity copy) {
