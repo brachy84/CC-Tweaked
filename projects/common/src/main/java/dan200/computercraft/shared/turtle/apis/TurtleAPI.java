@@ -696,6 +696,7 @@ public class TurtleAPI implements ILuaAPI {
      *
      * @return Details about the currently equipped item, or {@code nil} if no upgrade is equipped.
      * @see #equipLeft()
+     * @cc.since 1.116.0
      */
     @LuaFunction(mainThread = true)
     public final @Nullable Map<?, ?> getEquippedLeft() {
@@ -711,6 +712,7 @@ public class TurtleAPI implements ILuaAPI {
      *
      * @return Details about the currently equipped item, or {@code nil} if no upgrade is equipped.
      * @see #equipRight()
+     * @cc.since 1.116.0
      */
     @LuaFunction(mainThread = true)
     public final @Nullable Map<?, ?> getEquippedRight() {
