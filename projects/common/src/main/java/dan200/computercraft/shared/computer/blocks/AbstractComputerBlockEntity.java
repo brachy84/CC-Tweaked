@@ -5,6 +5,7 @@
 package dan200.computercraft.shared.computer.blocks;
 
 import com.google.common.base.Strings;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
 import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.computer.ComputerSide;
@@ -187,10 +188,20 @@ public abstract class AbstractComputerBlockEntity extends BlockEntity implements
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder builder) {
         super.collectImplicitComponents(builder);
+        collectSafeComponents(builder);
+        if (lockCode != LockCode.NO_LOCK) builder.set(DataComponents.LOCK, lockCode);
+    }
+
+    /**
+     * Collect components that are safe to share with the client.
+     *
+     * @param builder The component builder.
+     */
+    @OverridingMethodsMustInvokeSuper
+    protected void collectSafeComponents(DataComponentMap.Builder builder) {
         builder.set(ModRegistry.DataComponents.COMPUTER_ID.get(), NonNegativeId.of(computerID));
         builder.set(DataComponents.CUSTOM_NAME, label == null ? null : Component.literal(label));
         builder.set(ModRegistry.DataComponents.STORAGE_CAPACITY.get(), storageCapacity > 0 ? new StorageCapacity(storageCapacity) : null);
-        if (lockCode != LockCode.NO_LOCK) builder.set(DataComponents.LOCK, lockCode);
     }
 
     @Override

@@ -169,8 +169,8 @@ public class TurtleBlockEntity extends AbstractComputerBlockEntity implements Ba
     }
 
     @Override
-    protected void collectImplicitComponents(DataComponentMap.Builder builder) {
-        super.collectImplicitComponents(builder);
+    protected void collectSafeComponents(DataComponentMap.Builder builder) {
+        super.collectSafeComponents(builder);
 
         builder.set(DataComponents.DYED_COLOR, brain.getColour() == -1 ? null : new DyedItemColor(brain.getColour(), false));
         builder.set(ModRegistry.DataComponents.OVERLAY.get(), brain.getOverlay());
