@@ -10,7 +10,7 @@
 #define FONT_HEIGHT 9.0
 
 uniform sampler2D Sampler0; // Font
-uniform mediump usamplerBuffer Tbo;
+uniform usamplerBuffer Tbo;
 
 layout(std140) uniform MonitorData {
     vec3 Palette[16];
