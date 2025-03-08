@@ -223,6 +223,9 @@ public interface IArguments {
 
     /**
      * Get an argument as a table.
+     * <p>
+     * The returned table may be converted into a {@link LuaTable} (using {@link ObjectLuaTable}) for easier parsing of
+     * table keys.
      *
      * @param index The argument number.
      * @return The argument's value.

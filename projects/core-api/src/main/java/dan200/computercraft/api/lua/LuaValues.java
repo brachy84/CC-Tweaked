@@ -97,7 +97,7 @@ public final class LuaValues {
      * @return The constructed exception, which should be thrown immediately.
      */
     public static LuaException badTableItem(int index, String expected, String actual) {
-        return new LuaException("table item #" + index + " is not " + expected + " (got " + actual + ")");
+        return new LuaException("bad item #" + index + " (" + expected + " expected, got " + actual + ")");
     }
 
     /**
@@ -109,7 +109,7 @@ public final class LuaValues {
      * @return The constructed exception, which should be thrown immediately.
      */
     public static LuaException badField(String key, String expected, String actual) {
-        return new LuaException("field " + key + " is not " + expected + " (got " + actual + ")");
+        return new LuaException("bad field '" + key + "' (" + expected + " expected, got " + actual + ")");
     }
 
     /**
@@ -135,6 +135,16 @@ public final class LuaValues {
      */
     public static double checkFinite(int index, double value) throws LuaException {
         if (!Double.isFinite(value)) throw badArgument(index, "number", getNumericType(value));
+        return value;
+    }
+
+    static double checkFiniteIndex(int index, double value) throws LuaException {
+        if (!Double.isFinite(value)) throw badTableItem(index, "number", getNumericType(value));
+        return value;
+    }
+
+    static double checkFiniteField(String key, double value) throws LuaException {
+        if (!Double.isFinite(value)) throw badField(key, "number", getNumericType(value));
         return value;
     }
 
