@@ -23,7 +23,6 @@ import dan200.computercraft.shared.pocket.core.PocketBrain;
 import dan200.computercraft.shared.pocket.core.PocketHolder;
 import dan200.computercraft.shared.pocket.core.PocketServerComputer;
 import dan200.computercraft.shared.util.*;
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -36,11 +35,9 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
 
 public class PocketComputerItem extends Item {
@@ -181,18 +178,6 @@ public class PocketComputerItem extends Item {
             return Component.translatable(baseString + ".upgraded", upgrade.getAdjective());
         } else {
             return super.getName(stack);
-        }
-    }
-
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag flag) {
-        if (flag.isAdvanced() || getLabel(stack) == null) {
-            var id = stack.get(ModRegistry.DataComponents.COMPUTER_ID.get());
-            if (id != null) {
-                list.add(Component.translatable("gui.computercraft.tooltip.computer_id", id.id())
-                    .withStyle(ChatFormatting.GRAY));
-            }
         }
     }
 

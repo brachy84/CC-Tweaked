@@ -25,7 +25,6 @@ import dan200.computercraft.shared.command.CommandComputerCraft;
 import dan200.computercraft.shared.computer.core.ComputerState;
 import dan200.computercraft.shared.computer.core.ServerContext;
 import dan200.computercraft.shared.computer.inventory.AbstractComputerMenu;
-import dan200.computercraft.shared.media.items.DiskItem;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -164,7 +163,7 @@ public final class ClientRegistry {
 
     public static void registerItemColours(BiConsumer<ItemColor, ItemLike> register) {
         register.accept(
-            (stack, layer) -> layer == 1 ? DiskItem.getColour(stack) : -1,
+            (stack, layer) -> layer == 1 ? DyedItemColor.getOrDefault(stack, Colour.WHITE.getARGB()) : -1,
             ModRegistry.Items.DISK.get()
         );
 

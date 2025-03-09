@@ -7,13 +7,17 @@ package dan200.computercraft.shared.util;
 import com.mojang.serialization.Codec;
 import dan200.computercraft.api.ComputerCraftAPI;
 import io.netty.buffer.ByteBuf;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.item.ItemStack;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 /**
  * A non-negative integer id, used for computer and disk ids.
@@ -46,5 +50,9 @@ public record NonNegativeId(int id) {
         var diskID = ComputerCraftAPI.createUniqueNumberedSaveDir(server, type);
         stack.set(component, new NonNegativeId(diskID));
         return diskID;
+    }
+
+    public void addToTooltip(String translation, Consumer<Component> out) {
+        out.accept(Component.translatable(translation, id()).withStyle(ChatFormatting.GRAY));
     }
 }

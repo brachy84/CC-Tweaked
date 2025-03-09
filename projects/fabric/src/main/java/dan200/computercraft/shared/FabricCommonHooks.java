@@ -5,7 +5,6 @@
 package dan200.computercraft.shared;
 
 import dan200.computercraft.shared.media.items.DiskItem;
-import dan200.computercraft.shared.media.items.TreasureDiskItem;
 import dan200.computercraft.shared.peripheral.modem.wired.CableBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,6 +49,6 @@ public class FabricCommonHooks {
     }
 
     private static boolean doesSneakBypassUse(ItemStack stack) {
-        return stack.isEmpty() || stack.getItem() instanceof DiskItem || stack.getItem() instanceof TreasureDiskItem;
+        return stack.isEmpty() || stack.getItem() instanceof DiskItem;
     }
 }

@@ -12,11 +12,16 @@ import dan200.computercraft.core.terminal.Terminal;
 import dan200.computercraft.shared.ModRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.component.DataComponentHolder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipProvider;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -27,7 +32,7 @@ import java.util.stream.Stream;
  * @see PrintoutItem
  * @see dan200.computercraft.shared.ModRegistry.DataComponents#PRINTOUT
  */
-public record PrintoutData(String title, List<Line> lines) implements PrintoutContents {
+public record PrintoutData(String title, List<Line> lines) implements PrintoutContents, TooltipProvider {
     public static final int LINE_LENGTH = 25;
     public static final int LINES_PER_PAGE = 21;
     public static final int MAX_PAGES = 16;
@@ -70,6 +75,11 @@ public record PrintoutData(String title, List<Line> lines) implements PrintoutCo
         LINE_STREAM_CODEC.apply(ByteBufCodecs.list(MAX_PAGES * LINES_PER_PAGE)), PrintoutData::lines,
         PrintoutData::new
     );
+
+    @Override
+    public void addToTooltip(Item.TooltipContext context, Consumer<Component> out, TooltipFlag flag) {
+        if (!title().isEmpty()) out.accept(Component.literal(title()));
+    }
 
     /**
      * A single line on our printed pages.

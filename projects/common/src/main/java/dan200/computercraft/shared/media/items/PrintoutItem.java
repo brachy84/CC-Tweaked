@@ -14,20 +14,11 @@ import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
-
-import java.util.List;
 
 public class PrintoutItem extends Item {
     public PrintoutItem(Properties settings) {
         super(settings);
-    }
-
-    @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag options) {
-        var title = PrintoutData.getOrEmpty(stack).title();
-        if (!title.isEmpty()) list.add(Component.literal(title));
     }
 
     @Override

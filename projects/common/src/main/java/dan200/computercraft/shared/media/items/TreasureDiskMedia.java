@@ -17,7 +17,7 @@ import org.jspecify.annotations.Nullable;
 import java.io.IOException;
 
 /**
- * An {@link IMedia} instance for {@linkplain TreasureDiskItem treasure disks}.
+ * An {@link IMedia} instance for {@linkplain ModRegistry.Items#TREASURE_DISK treasure disks}.
  */
 public final class TreasureDiskMedia implements IMedia {
     public static final IMedia INSTANCE = new TreasureDiskMedia();
