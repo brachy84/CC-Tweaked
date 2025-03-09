@@ -5,6 +5,7 @@
 package dan200.computercraft.gametest.api
 
 import dan200.computercraft.api.peripheral.IPeripheral
+import dan200.computercraft.gametest.Recipe_Test.DummyMenu
 import dan200.computercraft.gametest.core.ManagedComputers
 import dan200.computercraft.mixin.gametest.GameTestHelperAccessor
 import dan200.computercraft.mixin.gametest.GameTestInfoAccessor
@@ -22,9 +23,11 @@ import net.minecraft.world.Container
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.inventory.TransientCraftingContainer
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.UseOnContext
+import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BarrelBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
@@ -341,6 +344,32 @@ fun GameTestHelper.placeItemAt(stack: ItemStack, pos: BlockPos, direction: Direc
     val absolutePos = absolutePos(pos.relative(direction))
     val hit = BlockHitResult(Vec3.atCenterOf(absolutePos), direction, absolutePos, false)
     stack.useOn(UseOnContext(player, InteractionHand.MAIN_HAND, hit))
+}
+
+/**
+ * Assert a recipe is not craftable.
+ */
+fun GameTestHelper.assertNotCraftable(vararg items: ItemStack) {
+    val container = TransientCraftingContainer(DummyMenu, 3, 3)
+    for ((i, item) in items.withIndex()) container.setItem(i, item)
+
+    val recipe = level.server.recipeManager.getRecipeFor(RecipeType.CRAFTING, container, level)
+
+    if (recipe.isPresent) fail("Expected no recipe to match $items")
+}
+
+/**
+ * Attempt to craft an item.
+ */
+fun GameTestHelper.craftItem(vararg items: ItemStack): ItemStack {
+    val container = TransientCraftingContainer(DummyMenu, 3, 3)
+    for ((i, item) in items.withIndex()) container.setItem(i, item)
+
+    val recipe = level.server.recipeManager
+        .getRecipeFor(RecipeType.CRAFTING, container, level)
+        .orElseThrow { GameTestAssertException("No recipe matches $items") }
+
+    return recipe.assemble(container, level.registryAccess())
 }
 
 /**
