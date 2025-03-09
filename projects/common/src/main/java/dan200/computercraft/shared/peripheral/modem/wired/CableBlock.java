@@ -260,11 +260,6 @@ public class CableBlock extends Block implements SimpleWaterloggedBlock, EntityB
         if (world.getBlockEntity(pos) instanceof CableBlockEntity modem) modem.neighborChanged(neighbourPos);
     }
 
-    @ForgeOverride
-    public final void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbour) {
-        if (world.getBlockEntity(pos) instanceof CableBlockEntity modem) modem.neighborChanged(neighbour);
-    }
-
     @Override
     @Deprecated
     public void tick(BlockState state, ServerLevel world, BlockPos pos, RandomSource rand) {
