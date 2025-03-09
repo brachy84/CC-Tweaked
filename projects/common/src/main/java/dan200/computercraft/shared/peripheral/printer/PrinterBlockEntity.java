@@ -5,6 +5,7 @@
 package dan200.computercraft.shared.peripheral.printer;
 
 import dan200.computercraft.api.peripheral.IPeripheral;
+import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.AbstractContainerBlockEntity;
 import dan200.computercraft.shared.computer.terminal.NetworkedTerminal;
 import dan200.computercraft.shared.container.BasicWorldlyContainer;
@@ -159,9 +160,7 @@ public final class PrinterBlockEntity extends AbstractContainerBlockEntity imple
     }
 
     static boolean isPaper(ItemStack stack) {
-        var item = stack.getItem();
-        return item == Items.PAPER
-            || (item instanceof PrintoutItem printout && printout.getType() == PrintoutItem.Type.PAGE);
+        return stack.is(Items.PAPER) || stack.is(ModRegistry.Items.PRINTED_PAGE.get());
     }
 
     private boolean canInputPage() {

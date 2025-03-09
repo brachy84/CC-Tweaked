@@ -439,14 +439,14 @@ class Turtle_Test {
                 object :
                     BasicItemDetailProvider<PrintoutItem>("printout", PrintoutItem::class.java) {
                     override fun provideDetails(data: MutableMap<in String, Any>, stack: ItemStack, item: PrintoutItem) {
-                        data["type"] = item.type.toString().lowercase()
+                        data["pages"] = PrintoutItem.getPageCount(stack)
                     }
                 },
             )
         }
         thenOnComputer {
             val details = getTurtleItemDetail(detailed = true)
-            assertEquals(mapOf("type" to "page"), details["printout"]) {
+            assertEquals(mapOf("pages" to 1), details["printout"]) {
                 "Printout information is returned (whole map is $details)"
             }
         }

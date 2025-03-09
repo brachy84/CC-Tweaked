@@ -264,11 +264,11 @@ public final class ModRegistry {
             REGISTRY.register("treasure_disk", () -> new TreasureDiskItem(properties().stacksTo(1)));
 
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGE = REGISTRY.register("printed_page",
-            () -> new PrintoutItem(properties().stacksTo(1), PrintoutItem.Type.PAGE));
+            () -> new PrintoutItem(properties().stacksTo(1)));
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGES = REGISTRY.register("printed_pages",
-            () -> new PrintoutItem(properties().stacksTo(1), PrintoutItem.Type.PAGES));
+            () -> new PrintoutItem(properties().stacksTo(1)));
         public static final RegistryEntry<PrintoutItem> PRINTED_BOOK = REGISTRY.register("printed_book",
-            () -> new PrintoutItem(properties().stacksTo(1), PrintoutItem.Type.BOOK));
+            () -> new PrintoutItem(properties().stacksTo(1)));
 
         public static final RegistryEntry<BlockItem> SPEAKER = ofBlock(Blocks.SPEAKER, BlockItem::new);
         public static final RegistryEntry<BlockItem> DISK_DRIVE = ofBlock(Blocks.DISK_DRIVE, BlockItem::new);

@@ -33,17 +33,8 @@ public class PrintoutItem extends Item {
     public static final int LINE_MAX_LENGTH = 25;
     public static final int MAX_PAGES = 16;
 
-    public enum Type {
-        PAGE,
-        PAGES,
-        BOOK
-    }
-
-    private final Type type;
-
-    public PrintoutItem(Properties settings, Type type) {
+    public PrintoutItem(Properties settings) {
         super(settings);
-        this.type = type;
     }
 
     @Override
@@ -101,10 +92,6 @@ public class PrintoutItem extends Item {
 
     public static ItemStack createBookFromTitleAndText(@Nullable String title, String @Nullable [] text, String @Nullable [] colours) {
         return ModRegistry.Items.PRINTED_BOOK.get().createFromTitleAndText(title, text, colours);
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public static String getTitle(ItemStack stack) {
