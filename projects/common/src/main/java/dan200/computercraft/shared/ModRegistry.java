@@ -284,11 +284,11 @@ public final class ModRegistry {
         }
 
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGE = REGISTRY.register("printed_page",
-            () -> new PrintoutItem(printoutProperties(), PrintoutItem.Type.PAGE));
+            () -> new PrintoutItem(printoutProperties()));
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGES = REGISTRY.register("printed_pages",
-            () -> new PrintoutItem(printoutProperties(), PrintoutItem.Type.PAGES));
+            () -> new PrintoutItem(printoutProperties()));
         public static final RegistryEntry<PrintoutItem> PRINTED_BOOK = REGISTRY.register("printed_book",
-            () -> new PrintoutItem(printoutProperties(), PrintoutItem.Type.BOOK));
+            () -> new PrintoutItem(printoutProperties()));
 
         public static final RegistryEntry<BlockItem> SPEAKER = ofBlock(Blocks.SPEAKER, BlockItem::new);
         public static final RegistryEntry<BlockItem> DISK_DRIVE = ofBlock(Blocks.DISK_DRIVE, BlockItem::new);

@@ -12,6 +12,7 @@ import dan200.computercraft.client.pocket.ClientPocketComputers;
 import dan200.computercraft.client.render.text.FixedWidthFontRenderer;
 import dan200.computercraft.core.terminal.Terminal;
 import dan200.computercraft.core.util.Colour;
+import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.lectern.CustomLecternBlockEntity;
 import dan200.computercraft.shared.media.items.PrintoutData;
 import dan200.computercraft.shared.media.items.PrintoutItem;
@@ -59,9 +60,9 @@ public class CustomLecternRenderer implements BlockEntityRenderer<CustomLecternB
         poseStack.translate(0, -0.125f, 0);
 
         var item = lectern.getItem();
-        if (item.getItem() instanceof PrintoutItem printout) {
+        if (item.getItem() instanceof PrintoutItem) {
             var vertexConsumer = LecternPrintoutModel.MATERIAL.buffer(buffer, RenderType::entitySolid);
-            if (printout.getType() == PrintoutItem.Type.BOOK) {
+            if (item.is(ModRegistry.Items.PRINTED_BOOK.get())) {
                 printoutModel.renderBook(poseStack, vertexConsumer, packedLight, packedOverlay);
             } else {
                 printoutModel.renderPages(poseStack, vertexConsumer, packedLight, packedOverlay, PrintoutData.getOrEmpty(item).pages());

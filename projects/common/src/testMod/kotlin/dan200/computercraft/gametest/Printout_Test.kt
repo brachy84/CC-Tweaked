@@ -5,9 +5,20 @@
 package dan200.computercraft.gametest
 
 import dan200.computercraft.gametest.api.*
+import dan200.computercraft.shared.ModRegistry
+import dan200.computercraft.shared.media.items.PrintoutData
+import dan200.computercraft.shared.util.DataComponentUtil
+import dan200.computercraft.test.shared.ItemStackMatcher.isStack
+import net.minecraft.gametest.framework.GameTest
 import net.minecraft.gametest.framework.GameTestGenerator
 import net.minecraft.gametest.framework.GameTestHelper
 import net.minecraft.gametest.framework.TestFunction
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
+import org.hamcrest.MatcherAssert.assertThat
+import org.junit.jupiter.api.Assertions.assertEquals
+import java.util.function.Supplier
 
 class Printout_Test {
     /**
@@ -55,5 +66,55 @@ class Printout_Test {
         thenScreenshot()
 
         thenExecute { helper.level.dayTime = Times.NOON }
+    }
+
+    @GameTest(template = "default")
+    fun Craft_pages(helper: GameTestHelper) = helper.immediate {
+        // Assert that crafting with only one page fails
+        helper.assertNotCraftable(ItemStack(ModRegistry.Items.PRINTED_PAGE.get()), ItemStack(Items.STRING))
+
+        // Assert that crafting with no pages fails
+        helper.assertNotCraftable(ItemStack(Items.PAPER), ItemStack(Items.PAPER), ItemStack(Items.STRING))
+
+        // Assert that crafting with a book fails
+        helper.assertNotCraftable(ItemStack(ModRegistry.Items.PRINTED_PAGE.get()), ItemStack(ModRegistry.Items.PRINTED_BOOK.get()), ItemStack(Items.STRING))
+
+        assertThat(
+            helper.craftItem(
+                createPrintoutOf(ModRegistry.Items.PRINTED_PAGE, "First"),
+                createPrintoutOf(ModRegistry.Items.PRINTED_PAGES, "First"),
+                ItemStack(Items.STRING),
+            ),
+            isStack(createPrintoutOf(ModRegistry.Items.PRINTED_PAGES, "First", 2)),
+        )
+    }
+
+    @GameTest(template = "default")
+    fun Craft_book(helper: GameTestHelper) = helper.immediate {
+        // Assert that crafting with no pages fails
+        helper.assertNotCraftable(ItemStack(Items.PAPER), ItemStack(Items.PAPER), ItemStack(Items.STRING), ItemStack(Items.LEATHER))
+
+        // Assert that crafting with only one page works
+        assertEquals(
+            ModRegistry.Items.PRINTED_BOOK.get(),
+            helper.craftItem(ItemStack(ModRegistry.Items.PRINTED_PAGE.get()), ItemStack(Items.STRING), ItemStack(Items.LEATHER)).item,
+        )
+
+        assertThat(
+            helper.craftItem(
+                createPrintoutOf(ModRegistry.Items.PRINTED_PAGE, "First"),
+                createPrintoutOf(ModRegistry.Items.PRINTED_PAGES, "First"),
+                ItemStack(Items.STRING),
+                ItemStack(Items.LEATHER),
+            ),
+            isStack(createPrintoutOf(ModRegistry.Items.PRINTED_BOOK, "First", 2)),
+        )
+    }
+
+    private fun createPrintoutOf(item: Supplier<out Item>, title: String, pages: Int = 1): ItemStack {
+        val line =
+            PrintoutData.Line(" ".repeat(PrintoutData.LINE_LENGTH), 'b'.toString().repeat(PrintoutData.LINE_LENGTH))
+        val lines = List(PrintoutData.LINES_PER_PAGE * pages) { line }
+        return DataComponentUtil.createStack(item.get(), ModRegistry.DataComponents.PRINTOUT.get(), PrintoutData(title, lines))
     }
 }

@@ -20,17 +20,8 @@ import net.minecraft.world.level.Level;
 import java.util.List;
 
 public class PrintoutItem extends Item {
-    public enum Type {
-        PAGE,
-        PAGES,
-        BOOK
-    }
-
-    private final Type type;
-
-    public PrintoutItem(Properties settings, Type type) {
+    public PrintoutItem(Properties settings) {
         super(settings);
-        this.type = type;
     }
 
     @Override
@@ -48,9 +39,5 @@ public class PrintoutItem extends Item {
             player.openMenu(new SimpleMenuProvider((id, playerInventory, p) -> PrintoutMenu.createInHand(id, p, hand), displayTitle));
         }
         return new InteractionResultHolder<>(InteractionResult.sidedSuccess(world.isClientSide), stack);
-    }
-
-    public Type getType() {
-        return type;
     }
 }

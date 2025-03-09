@@ -170,8 +170,7 @@ public final class PrinterBlockEntity extends AbstractContainerBlockEntity imple
     }
 
     static boolean isPaper(ItemStack stack) {
-        var item = stack.getItem();
-        return item == Items.PAPER || item == ModRegistry.Items.PRINTED_PAGE.get();
+        return stack.is(Items.PAPER) || stack.is(ModRegistry.Items.PRINTED_PAGE.get());
     }
 
     private boolean canInputPage() {

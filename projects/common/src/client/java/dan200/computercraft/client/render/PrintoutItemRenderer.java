@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.media.items.PrintoutData;
-import dan200.computercraft.shared.media.items.PrintoutItem;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -53,7 +52,7 @@ public final class PrintoutItemRenderer extends ItemMapLikeRenderer {
         var pageData = stack.getOrDefault(ModRegistry.DataComponents.PRINTOUT.get(), PrintoutData.EMPTY);
 
         var pages = pageData.pages();
-        var book = ((PrintoutItem) stack.getItem()).getType() == PrintoutItem.Type.BOOK;
+        var book = stack.is(ModRegistry.Items.PRINTED_BOOK.get());
 
         double width = LINE_LENGTH * FONT_WIDTH + X_TEXT_MARGIN * 2;
         double height = LINES_PER_PAGE * FONT_HEIGHT + Y_TEXT_MARGIN * 2;
