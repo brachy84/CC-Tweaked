@@ -4,19 +4,18 @@
 
 package dan200.computercraft.shared.media.items;
 
-import dan200.computercraft.annotations.ForgeOverride;
 import dan200.computercraft.core.util.Colour;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.IColouredItem;
+import dan200.computercraft.shared.peripheral.diskdrive.DiskDriveBlock;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -47,9 +46,9 @@ public class DiskItem extends Item implements IColouredItem {
         }
     }
 
-    @ForgeOverride
-    public boolean doesSneakBypassUse(ItemStack stack, LevelReader world, BlockPos pos, Player player) {
-        return true;
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        return DiskDriveBlock.defaultUseItemOn(context);
     }
 
     public static int getDiskID(ItemStack stack) {
