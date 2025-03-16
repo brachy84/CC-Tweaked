@@ -694,7 +694,7 @@ public class TurtleAPI implements ILuaAPI {
      * This returns information about the currently equipped item, in the same form as
      * {@link #getItemDetail(ILuaContext, Optional, Optional)}.
      *
-     * @return Details about the currently equipped item, or {@code nil} if no upgrade is equipped.
+     * @return Information about the currently equipped item, or {@code nil} if no upgrade is equipped.
      * @see #equipLeft()
      * @cc.since 1.116.0
      */
@@ -710,7 +710,7 @@ public class TurtleAPI implements ILuaAPI {
      * This returns information about the currently equipped item, in the same form as
      * {@link #getItemDetail(ILuaContext, Optional, Optional)}.
      *
-     * @return Details about the currently equipped item, or {@code nil} if no upgrade is equipped.
+     * @return Information about the currently equipped item, or {@code nil} if no upgrade is equipped.
      * @see #equipRight()
      * @cc.since 1.116.0
      */
@@ -781,7 +781,7 @@ public class TurtleAPI implements ILuaAPI {
      *                 more information about the item at the cost of taking longer to run.
      * @return The command result.
      * @throws LuaException If the slot is out of range.
-     * @cc.treturn nil|table Information about the given slot, or {@code nil} if it is empty.
+     * @cc.treturn nil|table Information about the item in this slot, or {@code nil} if it is empty.
      * @cc.since 1.64
      * @cc.changed 1.90.0 Added detailed parameter.
      * @cc.usage Print the current slot, assuming it contains 13 dirt.
