@@ -77,6 +77,17 @@ public final class StringUtil {
      * @param chr The character to check.
      * @return Whether this character can be typed.
      */
+    public static boolean isTypableChar(byte chr) {
+        return isTypableChar(chr & 0xFF);
+    }
+
+    /**
+     * Check if a character is capable of being input and passed to a {@linkplain ComputerEvents#charTyped(ComputerEvents.Receiver, byte)
+     * "char" event}.
+     *
+     * @param chr The character to check.
+     * @return Whether this character can be typed.
+     */
     public static boolean isTypableChar(int chr) {
         return chr >= 0 && chr <= 255 && chr != 0 && chr != '\r' && chr != '\n';
     }

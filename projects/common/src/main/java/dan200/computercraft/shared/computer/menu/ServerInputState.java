@@ -74,7 +74,7 @@ public class ServerInputState<T extends AbstractContainerMenu & ComputerMenu> im
     }
 
     private static boolean isValidClipboard(ByteBuffer buffer) {
-        for (int i = buffer.remaining(), max = buffer.limit(); i < max; i++) {
+        for (int i = buffer.position(), max = buffer.limit(); i < max; i++) {
             if (!StringUtil.isTypableChar(buffer.get(i))) return false;
         }
         return true;
