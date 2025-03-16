@@ -954,6 +954,24 @@ class Turtle_Test {
     }
 
     /**
+     * Asserts items can be inserted into a turtle.
+     */
+    @GameTest
+    fun Can_insert_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil {
+            helper.assertContainerExactly(BlockPos(2, 2, 2), listOf(ItemStack(ModRegistry.Items.COMPUTER_NORMAL.get())))
+        }
+    }
+
+    /**
+     * Asserts items can be removed from a turtle.
+     */
+    @GameTest
+    fun Can_extract_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil { helper.assertContainerEmpty(BlockPos(2, 3, 2)) }
+    }
+
+    /**
      * Render turtles as an item.
      */
     @ClientGameTest

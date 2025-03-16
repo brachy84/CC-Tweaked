@@ -106,7 +106,6 @@ public class ComputerCraft {
         ServerChunkEvents.CHUNK_UNLOAD.register((l, c) -> CommonHooks.onServerChunkUnload(c));
 
         PlayerBlockBreakEvents.BEFORE.register(FabricCommonHooks::onBlockDestroy);
-        UseBlockCallback.EVENT.register(FabricCommonHooks::useOnBlock);
         UseBlockCallback.EVENT.register(CommonHooks::onUseBlock);
 
         LootTableEvents.MODIFY.register((id, tableBuilder, source, registries) -> {

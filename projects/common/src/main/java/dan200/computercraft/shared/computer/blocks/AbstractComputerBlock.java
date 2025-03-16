@@ -4,7 +4,6 @@
 
 package dan200.computercraft.shared.computer.blocks;
 
-import dan200.computercraft.annotations.ForgeOverride;
 import dan200.computercraft.shared.common.IBundledRedstoneBlock;
 import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
@@ -130,12 +129,6 @@ public abstract class AbstractComputerBlock<T extends AbstractComputerBlockEntit
     protected final void neighborChanged(BlockState state, Level world, BlockPos pos, Block neighbourBlock, BlockPos neighbourPos, boolean isMoving) {
         var be = world.getBlockEntity(pos);
         if (be instanceof AbstractComputerBlockEntity computer) computer.neighborChanged(neighbourPos);
-    }
-
-    @ForgeOverride
-    public final void onNeighborChange(BlockState state, LevelReader world, BlockPos pos, BlockPos neighbour) {
-        var be = world.getBlockEntity(pos);
-        if (be instanceof AbstractComputerBlockEntity computer) computer.neighborChanged(neighbour);
     }
 
     @Override

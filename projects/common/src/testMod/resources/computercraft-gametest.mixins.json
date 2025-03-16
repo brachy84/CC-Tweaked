@@ -12,6 +12,8 @@
         "GameTestSequenceAccessor",
         "GameTestSequenceMixin",
         "GameTestServerMixin",
+        "NbtUtilsMixin",
+        "StructureTemplateAccessor",
         "StructureTemplateManagerMixin",
         "TestCommandAccessor"
     ],

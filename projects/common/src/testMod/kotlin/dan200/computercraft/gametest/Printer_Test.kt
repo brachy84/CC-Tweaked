@@ -193,6 +193,25 @@ class Printer_Test {
     }
 
     /**
+     * Asserts items can be inserted into a printer.
+     */
+    @GameTest
+    fun Can_insert_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil {
+            helper.assertContainerExactly(BlockPos(1, 2, 2), listOf(ItemStack.EMPTY, ItemStack(Items.PAPER)))
+            helper.assertContainerExactly(BlockPos(3, 2, 2), listOf(ItemStack(Items.BLACK_DYE)))
+        }
+    }
+
+    /**
+     * Asserts items can be removed from a printer.
+     */
+    @GameTest
+    fun Can_extract_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil { helper.assertContainerEmpty(BlockPos(2, 3, 2)) }
+    }
+
+    /**
      * Loads a structure created on an older version of the game, and checks that data fixers have been applied.
      */
     @GameTest
