@@ -188,6 +188,25 @@ class Printer_Test {
         }
     }
 
+    /**
+     * Asserts items can be inserted into a printer.
+     */
+    @GameTest(required = false) // Allow on Forge for now, see #1951.
+    fun Can_insert_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil {
+            helper.assertContainerExactly(BlockPos(1, 2, 2), listOf(ItemStack.EMPTY, ItemStack(Items.PAPER)))
+            helper.assertContainerExactly(BlockPos(3, 2, 2), listOf(ItemStack(Items.BLACK_DYE)))
+        }
+    }
+
+    /**
+     * Asserts items can be removed from a printer.
+     */
+    @GameTest
+    fun Can_extract_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil { helper.assertContainerEmpty(BlockPos(2, 3, 2)) }
+    }
+
     private fun createPageOf(c: Char): Array<String> {
         val line = c.toString().repeat(PrintoutItem.LINE_MAX_LENGTH)
         return Array(PrintoutItem.LINES_PER_PAGE) { line }
