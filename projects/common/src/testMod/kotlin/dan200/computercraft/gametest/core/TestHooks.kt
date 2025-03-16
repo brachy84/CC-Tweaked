@@ -21,6 +21,7 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import net.minecraft.world.phys.Vec3
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -41,6 +42,9 @@ object TestHooks {
 
     @JvmStatic
     val sourceDir: Path = Paths.get(System.getProperty("cctest.sources")).normalize().toAbsolutePath()
+
+    @JvmStatic
+    var structureManager: StructureTemplateManager? = null
 
     @JvmStatic
     fun init() {
@@ -72,6 +76,8 @@ object TestHooks {
 
         LOG.info("Cleaning up after last run")
         GameTestRunner.clearAllTests(server.overworld(), BlockPos(0, -60, 0), GameTestTicker.SINGLETON, 200)
+
+        structureManager = server.structureManager
 
         ManagedComputers.reset()
 

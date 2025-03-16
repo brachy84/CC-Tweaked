@@ -54,7 +54,7 @@ class CCTestCommand {
             }))
             .then(literal("regen-structures").executes(context -> {
                 for (var function : GameTestRegistry.getAllTestFunctions()) {
-                    dispatcher.execute("test import " + function.getTestName(), context.getSource());
+                    dispatcher.execute("test import " + function.getStructureName(), context.getSource());
                     TestCommandAccessor.callExportTestStructure(context.getSource(), function.getStructureName());
                 }
                 return 0;
