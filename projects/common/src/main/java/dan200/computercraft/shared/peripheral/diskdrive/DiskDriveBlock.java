@@ -7,13 +7,11 @@ package dan200.computercraft.shared.peripheral.diskdrive;
 import com.mojang.serialization.MapCodec;
 import dan200.computercraft.shared.ModRegistry;
 import dan200.computercraft.shared.common.HorizontalContainerBlock;
-import dan200.computercraft.shared.platform.PlatformHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -23,7 +21,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
 public class DiskDriveBlock extends HorizontalContainerBlock {
@@ -50,19 +47,24 @@ public class DiskDriveBlock extends HorizontalContainerBlock {
         return CODEC;
     }
 
-    @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-        if (player.isCrouching() && level.getBlockEntity(pos) instanceof DiskDriveBlockEntity drive) {
-            // Try to put a disk into the drive
-            if (stack.isEmpty()) return InteractionResult.TRY_WITH_EMPTY_HAND;
-
-            if (!level.isClientSide && drive.getDiskStack().isEmpty() && PlatformHelper.get().getMedia(stack) != null) {
-                drive.setDiskStack(stack.split(1));
+    /**
+     * A default implementation of {@link Item#useOn(UseOnContext)} for items that can be placed into a drive.
+     *
+     * @param context The context of this item usage action.
+     * @return Whether the item was placed or not.
+     */
+    public static InteractionResult defaultUseItemOn(UseOnContext context) {
+        var level = context.getLevel();
+        var blockPos = context.getClickedPos();
+        var blockState = level.getBlockState(blockPos);
+        if (blockState.is(ModRegistry.Blocks.DISK_DRIVE.get()) && blockState.getValue(STATE) == DiskDriveState.EMPTY) {
+            if (!level.isClientSide && level.getBlockEntity(blockPos) instanceof DiskDriveBlockEntity drive && drive.getDiskStack().isEmpty()) {
+                drive.setDiskStack(context.getItemInHand().split(1));
             }
             return InteractionResult.SUCCESS;
         }
 
-        return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        return InteractionResult.PASS;
     }
 
     @Nullable

@@ -9,7 +9,7 @@ import dan200.computercraft.api.lua.LuaFunction;
 import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.core.util.StringUtil;
-import dan200.computercraft.shared.media.items.DiskItem;
+import dan200.computercraft.shared.ModRegistry;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Optional;
@@ -170,8 +170,8 @@ public class DiskDrivePeripheral implements IPeripheral {
      */
     @LuaFunction
     public final @Nullable Object @Nullable [] getDiskID() {
-        var disk = diskDrive.getMedia().stack();
-        return disk.getItem() instanceof DiskItem ? new Object[]{ DiskItem.getDiskID(disk) } : null;
+        var id = diskDrive.getMedia().stack().get(ModRegistry.DataComponents.DISK_ID.get());
+        return id != null ? new Object[]{ id.id() } : null;
     }
 
     @Override

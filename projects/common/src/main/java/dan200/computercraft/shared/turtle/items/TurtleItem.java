@@ -11,7 +11,6 @@ import dan200.computercraft.api.turtle.TurtleSide;
 import dan200.computercraft.api.upgrades.UpgradeData;
 import dan200.computercraft.impl.TurtleUpgrades;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.turtle.TurtleOverlay;
 import dan200.computercraft.shared.turtle.blocks.TurtleBlock;
 import net.minecraft.core.HolderLookup;
@@ -19,11 +18,12 @@ import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import org.jspecify.annotations.Nullable;
 
-public class TurtleItem extends ComputerItem {
+public class TurtleItem extends BlockItem {
     public TurtleItem(TurtleBlock block, Properties settings) {
         super(block, settings);
     }

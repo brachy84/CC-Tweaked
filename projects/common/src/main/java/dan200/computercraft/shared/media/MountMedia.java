@@ -8,9 +8,7 @@ import dan200.computercraft.api.ComputerCraftAPI;
 import dan200.computercraft.api.filesystem.Mount;
 import dan200.computercraft.api.media.IMedia;
 import dan200.computercraft.shared.ModRegistry;
-import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.config.ConfigSpec;
-import dan200.computercraft.shared.media.items.DiskItem;
 import dan200.computercraft.shared.util.DataComponentUtil;
 import dan200.computercraft.shared.util.NonNegativeId;
 import dan200.computercraft.shared.util.StorageCapacity;
@@ -27,12 +25,12 @@ import java.util.function.Supplier;
  */
 public final class MountMedia implements IMedia {
     /**
-     * A {@link MountMedia} implementation for {@linkplain ComputerItem computers}.
+     * A {@link MountMedia} implementation for {@linkplain ModRegistry.DataComponents#COMPUTER_ID computers}.
      */
     public static final IMedia COMPUTER = new MountMedia("computer", ModRegistry.DataComponents.COMPUTER_ID, false, ConfigSpec.computerSpaceLimit);
 
     /**
-     * A {@link MountMedia} implementation for {@linkplain DiskItem disks}.
+     * A {@link MountMedia} implementation for {@linkplain ModRegistry.Items#DISK disks}.
      */
     public static final IMedia DISK = new MountMedia("disk", ModRegistry.DataComponents.DISK_ID, true, ConfigSpec.floppySpaceLimit);
 

@@ -53,6 +53,8 @@ import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.ItemCapability;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.neoforged.neoforge.items.wrapper.InvWrapper;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
@@ -61,6 +63,7 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.function.BiFunction;
 
 @Mod(ComputerCraftAPI.MOD_ID)
@@ -147,6 +150,21 @@ public final class ComputerCraft {
         ModRegistry.registerPeripherals(new BlockComponentImpl<>(event, PeripheralCapability.get()));
         ModRegistry.registerWiredElements(new BlockComponentImpl<>(event, WiredElementCapability.get()));
         ModRegistry.registerMedia(new ItemComponentImpl<>(event, MediaCapability.get()));
+
+        // Register inventories for our block entities.
+        var unsidedContainers = List.of(
+            ModRegistry.BlockEntities.TURTLE_NORMAL,
+            ModRegistry.BlockEntities.TURTLE_ADVANCED,
+            ModRegistry.BlockEntities.DISK_DRIVE
+        );
+        for (var inv : unsidedContainers) {
+            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, inv.get(), (be, side) -> new InvWrapper(be));
+        }
+
+        event.registerBlockEntity(
+            Capabilities.ItemHandler.BLOCK, ModRegistry.BlockEntities.PRINTER.get(),
+            (be, side) -> side == null ? new InvWrapper(be) : new SidedInvWrapper(be, side)
+        );
     }
 
     private record BlockComponentImpl<T, C extends @Nullable Object>(

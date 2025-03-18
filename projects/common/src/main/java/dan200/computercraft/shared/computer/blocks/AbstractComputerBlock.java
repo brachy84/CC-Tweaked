@@ -9,8 +9,10 @@ import dan200.computercraft.shared.network.container.ComputerContainerData;
 import dan200.computercraft.shared.platform.PlatformHelper;
 import dan200.computercraft.shared.platform.RegistryEntry;
 import dan200.computercraft.shared.util.BlockEntityHelpers;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -65,12 +67,6 @@ public abstract class AbstractComputerBlock<T extends AbstractComputerBlockEntit
         return computer.getRedstoneOutput(localSide);
     }
 
-    private ItemStack getItem(AbstractComputerBlockEntity tile) {
-        var stack = new ItemStack(this);
-        stack.applyComponents(tile.collectComponents());
-        return stack;
-    }
-
     @Override
     protected int getSignal(BlockState state, BlockGetter world, BlockPos pos, Direction incomingSide) {
         return getDirectSignal(state, world, pos, incomingSide);
@@ -90,12 +86,11 @@ public abstract class AbstractComputerBlock<T extends AbstractComputerBlockEntit
 
     @Override
     public ItemStack getCloneItemStack(LevelReader world, BlockPos pos, BlockState state, boolean includeData) {
+        var stack = super.getCloneItemStack(world, pos, state, includeData);
         if (world.getBlockEntity(pos) instanceof AbstractComputerBlockEntity computer) {
-            var result = getItem(computer);
-            if (!result.isEmpty()) return result;
+            stack.applyComponents(computer.collectComponents());
         }
-
-        return super.getCloneItemStack(world, pos, state, includeData);
+        return stack;
     }
 
     @Override
@@ -121,7 +116,10 @@ public abstract class AbstractComputerBlock<T extends AbstractComputerBlockEntit
                 var serverComputer = computer.createServerComputer();
                 serverComputer.turnOn();
 
-                PlatformHelper.get().openMenu(player, computer.getName(), computer, new ComputerContainerData(serverComputer, getItem(computer)));
+                var stack = new ItemStack(this);
+                stack.applyComponents(Util.make(DataComponentMap.builder(), computer::collectSafeComponents).build());
+
+                PlatformHelper.get().openMenu(player, computer.getName(), computer, new ComputerContainerData(serverComputer, stack));
             }
             return InteractionResult.SUCCESS;
         }

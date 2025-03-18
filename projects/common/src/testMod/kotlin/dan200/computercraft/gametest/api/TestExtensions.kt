@@ -15,6 +15,7 @@ import dan200.computercraft.test.shared.ItemStackMatcher.isStack
 import net.minecraft.commands.arguments.blocks.BlockInput
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.NonNullList
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.*
 import net.minecraft.resources.ResourceLocation
@@ -25,6 +26,8 @@ import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.context.UseOnContext
+import net.minecraft.world.item.crafting.CraftingInput
+import net.minecraft.world.item.crafting.RecipeType
 import net.minecraft.world.level.GameType
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.BarrelBlockEntity
@@ -338,6 +341,34 @@ fun GameTestHelper.placeItemAt(stack: ItemStack, pos: BlockPos, direction: Direc
     val absolutePos = absolutePos(pos.relative(direction))
     val hit = BlockHitResult(Vec3.atCenterOf(absolutePos), direction, absolutePos, false)
     stack.useOn(UseOnContext(player, InteractionHand.MAIN_HAND, hit))
+}
+
+/**
+ * Assert a recipe is not craftable.
+ */
+fun GameTestHelper.assertNotCraftable(vararg items: ItemStack) {
+    val container = NonNullList.withSize(3 * 3, ItemStack.EMPTY)
+    for ((i, item) in items.withIndex()) container[i] = item
+    val input = CraftingInput.of(3, 3, container)
+
+    val recipe = level.server.recipeManager.getRecipeFor(RecipeType.CRAFTING, input, level)
+
+    if (recipe.isPresent) fail("Expected no recipe to match $items")
+}
+
+/**
+ * Attempt to craft an item.
+ */
+fun GameTestHelper.craftItem(vararg items: ItemStack): ItemStack {
+    val container = NonNullList.withSize(3 * 3, ItemStack.EMPTY)
+    for ((i, item) in items.withIndex()) container[i] = item
+    val input = CraftingInput.of(3, 3, container)
+
+    val recipe = level.server.recipeManager
+        .getRecipeFor(RecipeType.CRAFTING, input, level)
+        .orElseThrow { GameTestAssertException("No recipe matches $items") }
+
+    return recipe.value.assemble(input, level.registryAccess())
 }
 
 /**

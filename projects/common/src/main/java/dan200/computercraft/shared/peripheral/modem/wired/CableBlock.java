@@ -252,7 +252,7 @@ public class CableBlock extends Block implements SimpleWaterloggedBlock, EntityB
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean isMoving) {
+    protected final void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean isMoving) {
         if (level.getBlockEntity(pos) instanceof CableBlockEntity modem) modem.neighborChanged();
     }
 

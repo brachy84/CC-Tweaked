@@ -6,7 +6,7 @@ package dan200.computercraft.gametest
 
 import dan200.computercraft.api.ComputerCraftAPI
 import dan200.computercraft.api.ComputerCraftTags
-import dan200.computercraft.api.detail.BasicItemDetailProvider
+import dan200.computercraft.api.detail.ComponentDetailProvider
 import dan200.computercraft.api.detail.VanillaDetailRegistries
 import dan200.computercraft.api.lua.ObjectArguments
 import dan200.computercraft.api.turtle.ITurtleUpgrade
@@ -18,7 +18,7 @@ import dan200.computercraft.gametest.core.TestHooks
 import dan200.computercraft.mixin.gametest.GameTestHelperAccessor
 import dan200.computercraft.mixin.gametest.GameTestInfoAccessor
 import dan200.computercraft.shared.ModRegistry
-import dan200.computercraft.shared.media.items.PrintoutItem
+import dan200.computercraft.shared.media.items.PrintoutData
 import dan200.computercraft.shared.peripheral.modem.wired.CableBlock
 import dan200.computercraft.shared.peripheral.modem.wired.CableModemVariant
 import dan200.computercraft.shared.peripheral.monitor.MonitorBlock
@@ -455,16 +455,16 @@ class Turtle_Test {
         thenExecute {
             VanillaDetailRegistries.ITEM_STACK.addProvider(
                 object :
-                    BasicItemDetailProvider<PrintoutItem>("printout", PrintoutItem::class.java) {
-                    override fun provideDetails(data: MutableMap<in String, Any>, stack: ItemStack, item: PrintoutItem) {
-                        data["type"] = item.type.toString().lowercase()
+                    ComponentDetailProvider<PrintoutData>("printout", ModRegistry.DataComponents.PRINTOUT.get()) {
+                    override fun provideComponentDetails(data: MutableMap<in String, Any>, component: PrintoutData) {
+                        data["pages"] = component.pages()
                     }
                 },
             )
         }
         thenOnComputer {
             val details = getTurtleItemDetail(detailed = true)
-            assertEquals(mapOf("type" to "page"), details["printout"]) {
+            assertEquals(mapOf("pages" to 1), details["printout"]) {
                 "Printout information is returned (whole map is $details)"
             }
         }
@@ -953,6 +953,24 @@ class Turtle_Test {
             context.assertItemEntityCountIs(ModRegistry.Items.TURTLE_NORMAL.get(), 1)
             context.assertItemEntityCountIs(Items.BONE_BLOCK, 65)
         }
+    }
+
+    /**
+     * Asserts items can be inserted into a turtle.
+     */
+    @GameTest
+    fun Can_insert_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil {
+            helper.assertContainerExactly(BlockPos(2, 1, 2), listOf(ItemStack(ModRegistry.Items.COMPUTER_NORMAL.get())))
+        }
+    }
+
+    /**
+     * Asserts items can be removed from a turtle.
+     */
+    @GameTest
+    fun Can_extract_items(helper: GameTestHelper) = helper.sequence {
+        thenWaitUntil { helper.assertContainerEmpty(BlockPos(2, 2, 2)) }
     }
 
     /**

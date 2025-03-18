@@ -51,10 +51,10 @@ public abstract class ComponentDetailProvider<T> implements DetailProvider<DataC
      * This method is always called on the server thread, so it is safe to interact with the world here, but you should
      * take care to avoid long blocking operations as this will stall the server and other computers.
      *
-     * @param data The full details to be returned for this item stack. New properties should be added to this map.
-     * @param item The component to provide details for.
+     * @param data      The full details to be returned for this item stack. New properties should be added to this map.
+     * @param component The component to provide details for.
      */
-    public abstract void provideComponentDetails(Map<? super String, Object> data, T item);
+    public abstract void provideComponentDetails(Map<? super String, Object> data, T component);
 
     @Override
     public final void provideDetails(Map<? super String, Object> data, DataComponentHolder holder) {

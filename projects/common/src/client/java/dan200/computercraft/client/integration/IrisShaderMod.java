@@ -12,9 +12,9 @@ import dan200.computercraft.shared.platform.PlatformHelper;
 import net.irisshaders.iris.api.v0.IrisApi;
 import net.irisshaders.iris.api.v0.IrisTextVertexSink;
 import net.minecraft.client.renderer.LightTexture;
+import org.jspecify.annotations.Nullable;
 import org.lwjgl.system.MemoryUtil;
 
-import javax.annotation.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 

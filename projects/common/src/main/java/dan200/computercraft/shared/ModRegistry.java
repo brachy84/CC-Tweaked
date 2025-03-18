@@ -35,8 +35,6 @@ import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ServerComputer;
 import dan200.computercraft.shared.computer.inventory.ComputerMenuWithoutInventory;
-import dan200.computercraft.shared.computer.items.CommandComputerItem;
-import dan200.computercraft.shared.computer.items.ComputerItem;
 import dan200.computercraft.shared.computer.items.ServerComputerReference;
 import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.data.BlockNamedEntityLootCondition;
@@ -114,10 +112,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.DyedItemColor;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Recipe;
@@ -291,9 +286,9 @@ public final class ModRegistry {
             return register(parent.id().getPath(), p -> supplier.apply(parent.get(), p), properties().useBlockDescriptionPrefix());
         }
 
-        public static final RegistryEntry<ComputerItem> COMPUTER_NORMAL = ofBlock(Blocks.COMPUTER_NORMAL, ComputerItem::new);
-        public static final RegistryEntry<ComputerItem> COMPUTER_ADVANCED = ofBlock(Blocks.COMPUTER_ADVANCED, ComputerItem::new);
-        public static final RegistryEntry<ComputerItem> COMPUTER_COMMAND = ofBlock(Blocks.COMPUTER_COMMAND, CommandComputerItem::new);
+        public static final RegistryEntry<BlockItem> COMPUTER_NORMAL = ofBlock(Blocks.COMPUTER_NORMAL, BlockItem::new);
+        public static final RegistryEntry<BlockItem> COMPUTER_ADVANCED = ofBlock(Blocks.COMPUTER_ADVANCED, BlockItem::new);
+        public static final RegistryEntry<GameMasterBlockItem> COMPUTER_COMMAND = ofBlock(Blocks.COMPUTER_COMMAND, GameMasterBlockItem::new);
 
         public static final RegistryEntry<PocketComputerItem> POCKET_COMPUTER_NORMAL = register("pocket_computer_normal",
             p -> new PocketComputerItem(p, ComputerFamily.NORMAL), properties().stacksTo(1));
@@ -305,19 +300,19 @@ public final class ModRegistry {
 
         public static final RegistryEntry<DiskItem> DISK =
             register("disk", DiskItem::new, properties().stacksTo(1));
-        public static final RegistryEntry<TreasureDiskItem> TREASURE_DISK =
-            register("treasure_disk", TreasureDiskItem::new, properties().stacksTo(1));
+        public static final RegistryEntry<DiskItem> TREASURE_DISK =
+            register("treasure_disk", DiskItem::new, properties().stacksTo(1));
 
         private static Item.Properties printoutProperties() {
             return properties().stacksTo(1).component(DataComponents.PRINTOUT.get(), PrintoutData.EMPTY);
         }
 
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGE = register("printed_page",
-            p -> new PrintoutItem(p, PrintoutItem.Type.PAGE), Items::printoutProperties);
+            PrintoutItem::new, Items::printoutProperties);
         public static final RegistryEntry<PrintoutItem> PRINTED_PAGES = register("printed_pages",
-            p -> new PrintoutItem(p, PrintoutItem.Type.PAGES), Items::printoutProperties);
+            PrintoutItem::new, Items::printoutProperties);
         public static final RegistryEntry<PrintoutItem> PRINTED_BOOK = register("printed_book",
-            p -> new PrintoutItem(p, PrintoutItem.Type.BOOK), Items::printoutProperties);
+            PrintoutItem::new, Items::printoutProperties);
 
         public static final RegistryEntry<BlockItem> SPEAKER = ofBlock(Blocks.SPEAKER, BlockItem::new);
         public static final RegistryEntry<BlockItem> DISK_DRIVE = ofBlock(Blocks.DISK_DRIVE, BlockItem::new);
@@ -344,9 +339,6 @@ public final class ModRegistry {
 
         /**
          * The id of a computer.
-         *
-         * @see ComputerItem
-         * @see PocketComputerItem
          */
         public static final RegistryEntry<DataComponentType<NonNegativeId>> COMPUTER_ID = register("computer_id", b -> b
             .persistent(NonNegativeId.CODEC).networkSynchronized(NonNegativeId.STREAM_CODEC)
@@ -354,10 +346,6 @@ public final class ModRegistry {
 
         /**
          * The storage capacity of a computer or disk.
-         *
-         * @see ComputerItem
-         * @see PocketComputerItem
-         * @see DiskItem
          */
         public static final RegistryEntry<DataComponentType<StorageCapacity>> STORAGE_CAPACITY = register("storage_capacity", b -> b
             .persistent(StorageCapacity.CODEC).networkSynchronized(StorageCapacity.STREAM_CODEC)
@@ -426,9 +414,6 @@ public final class ModRegistry {
 
         /**
          * Information about a treasure disk's mount.
-         *
-         * @see TreasureDiskItem
-         * @see TreasureDisk
          */
         public static final RegistryEntry<DataComponentType<TreasureDisk>> TREASURE_DISK = register("treasure_disk", b -> b
             .persistent(TreasureDisk.CODEC).networkSynchronized(TreasureDisk.STREAM_CODEC)
@@ -436,8 +421,6 @@ public final class ModRegistry {
 
         /**
          * The id of a disk.
-         *
-         * @see DiskItem
          */
         public static final RegistryEntry<DataComponentType<NonNegativeId>> DISK_ID = register("disk_id", b -> b
             .persistent(NonNegativeId.CODEC).networkSynchronized(NonNegativeId.STREAM_CODEC)

@@ -22,6 +22,7 @@ import net.minecraft.world.level.LevelAccessor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.StructureBlockEntity
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager
 import net.minecraft.world.phys.Vec3
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -42,6 +43,9 @@ object TestHooks {
 
     @JvmStatic
     val sourceDir: Path = Paths.get(System.getProperty("cctest.sources")).normalize().toAbsolutePath()
+
+    @JvmStatic
+    var structureManager: StructureTemplateManager? = null
 
     @JvmStatic
     fun init() {
@@ -83,6 +87,8 @@ object TestHooks {
             val structure = level.getBlockEntity(pos) as StructureBlockEntity? ?: return@forEach
             StructureUtils.clearSpaceForStructure(StructureUtils.getStructureBoundingBox(structure), level)
         }
+
+        structureManager = server.structureManager
 
         ManagedComputers.reset()
 

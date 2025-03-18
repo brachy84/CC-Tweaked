@@ -7,9 +7,8 @@ package dan200.computercraft.mixin.client;
 import dan200.computercraft.client.ExtendedItemFrameRenderStateHolder;
 import dan200.computercraft.client.render.ExtendedItemFrameRenderState;
 import net.minecraft.client.renderer.entity.state.ItemFrameRenderState;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-
-import javax.annotation.Nullable;
 
 @Mixin(ItemFrameRenderState.class)
 class ItemFrameRenderStateMixin implements ExtendedItemFrameRenderStateHolder {
