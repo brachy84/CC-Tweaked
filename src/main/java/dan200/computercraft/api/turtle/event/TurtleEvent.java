@@ -12,20 +12,18 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 
 /**
- * A base class for all events concerning a turtle. This will only ever constructed and fired on the server side,
- * so sever specific methods on {@link ITurtleAccess} are safe to use.
- *
+ * A base class for all events concerning a turtle. This will only ever constructed and fired on the server side, so sever specific methods
+ * on {@link ITurtleAccess} are safe to use.
  * You should generally not need to subscribe to this event, preferring one of the more specific classes.
  *
  * @see TurtleActionEvent
  */
-public abstract class TurtleEvent extends Event
-{
+public abstract class TurtleEvent extends Event {
+
     private final ITurtleAccess turtle;
 
-    protected TurtleEvent( @Nonnull ITurtleAccess turtle )
-    {
-        Objects.requireNonNull( turtle, "turtle cannot be null" );
+    protected TurtleEvent(@Nonnull ITurtleAccess turtle) {
+        Objects.requireNonNull(turtle, "turtle cannot be null");
         this.turtle = turtle;
     }
 
@@ -35,8 +33,7 @@ public abstract class TurtleEvent extends Event
      * @return The access for this turtle.
      */
     @Nonnull
-    public ITurtleAccess getTurtle()
-    {
+    public ITurtleAccess getTurtle() {
         return turtle;
     }
 }

@@ -16,37 +16,28 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class PocketSpeaker extends AbstractPocketUpgrade
-{
-    public PocketSpeaker()
-    {
-        super(
-            new ResourceLocation( "computercraft", "speaker" ),
-            PeripheralItemFactory.create( PeripheralType.Speaker, null, 1 )
-        );
+public class PocketSpeaker extends AbstractPocketUpgrade {
+
+    public PocketSpeaker() {
+        super(new ResourceLocation("computercraft", "speaker"), PeripheralItemFactory.create(PeripheralType.Speaker, null, 1));
     }
 
     @Nullable
     @Override
-    public IPeripheral createPeripheral( @Nonnull IPocketAccess access )
-    {
+    public IPeripheral createPeripheral(@Nonnull IPocketAccess access) {
         return new PocketSpeakerPeripheral();
     }
 
     @Override
-    public void update( @Nonnull IPocketAccess access, @Nullable IPeripheral peripheral )
-    {
-        if( !(peripheral instanceof PocketSpeakerPeripheral) ) return;
-
-        PocketSpeakerPeripheral speaker = (PocketSpeakerPeripheral) peripheral;
+    public void update(@Nonnull IPocketAccess access, @Nullable IPeripheral peripheral) {
+        if (!(peripheral instanceof PocketSpeakerPeripheral speaker)) return;
 
         Entity entity = access.getValidEntity();
-        if( entity != null )
-        {
-            speaker.setLocation( entity.getEntityWorld(), entity.getPositionEyes( 1.0f ) );
+        if (entity != null) {
+            speaker.setLocation(entity.getEntityWorld(), entity.getPositionEyes(1.0f));
         }
 
         speaker.update();
-        access.setLight( speaker.madeSound( 20 ) ? 0x3320fc : -1 );
+        access.setLight(speaker.madeSound(20) ? 0x3320fc : -1);
     }
 }

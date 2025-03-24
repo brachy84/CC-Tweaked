@@ -18,202 +18,149 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-public class FileSystemWrapperMount implements IFileSystem
-{
+public class FileSystemWrapperMount implements IFileSystem {
+
     private final FileSystem m_filesystem;
 
-    public FileSystemWrapperMount( FileSystem filesystem )
-    {
+    public FileSystemWrapperMount(FileSystem filesystem) {
         this.m_filesystem = filesystem;
     }
 
     @Override
-    public void makeDirectory( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            m_filesystem.makeDir( path );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public void makeDirectory(@Nonnull String path) throws IOException {
+        try {
+            m_filesystem.makeDir(path);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public void delete( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            m_filesystem.delete( path );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public void delete(@Nonnull String path) throws IOException {
+        try {
+            m_filesystem.delete(path);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Nonnull
     @Override
-    public ReadableByteChannel openChannelForRead( @Nonnull String path ) throws IOException
-    {
-        try
-        {
+    public ReadableByteChannel openChannelForRead(@Nonnull String path) throws IOException {
+        try {
             // FIXME: Think of a better way of implementing this, so closing this will close on the computer.
-            return m_filesystem.openForRead( path, Function.identity() ).get();
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+            return m_filesystem.openForRead(path, Function.identity()).get();
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Nonnull
     @Override
-    public WritableByteChannel openChannelForWrite( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            return m_filesystem.openForWrite( path, false, Function.identity() ).get();
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public WritableByteChannel openChannelForWrite(@Nonnull String path) throws IOException {
+        try {
+            return m_filesystem.openForWrite(path, false, Function.identity()).get();
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Nonnull
     @Override
-    public WritableByteChannel openChannelForAppend( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            return m_filesystem.openForWrite( path, true, Function.identity() ).get();
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public WritableByteChannel openChannelForAppend(@Nonnull String path) throws IOException {
+        try {
+            return m_filesystem.openForWrite(path, true, Function.identity()).get();
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public InputStream openForRead( @Nonnull String path ) throws IOException
-    {
-        return Channels.newInputStream( openChannelForRead( path ) );
+    public InputStream openForRead(@Nonnull String path) throws IOException {
+        return Channels.newInputStream(openChannelForRead(path));
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public OutputStream openForWrite( @Nonnull String path ) throws IOException
-    {
-        return Channels.newOutputStream( openChannelForWrite( path ) );
+    public OutputStream openForWrite(@Nonnull String path) throws IOException {
+        return Channels.newOutputStream(openChannelForWrite(path));
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public OutputStream openForAppend( @Nonnull String path ) throws IOException
-    {
-        return Channels.newOutputStream( openChannelForAppend( path ) );
+    public OutputStream openForAppend(@Nonnull String path) throws IOException {
+        return Channels.newOutputStream(openChannelForAppend(path));
     }
 
     @Override
-    public long getRemainingSpace() throws IOException
-    {
-        try
-        {
-            return m_filesystem.getFreeSpace( "/" );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public long getRemainingSpace() throws IOException {
+        try {
+            return m_filesystem.getFreeSpace("/");
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public boolean exists( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            return m_filesystem.exists( path );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public boolean exists(@Nonnull String path) throws IOException {
+        try {
+            return m_filesystem.exists(path);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public boolean isDirectory( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            return m_filesystem.exists( path );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public boolean isDirectory(@Nonnull String path) throws IOException {
+        try {
+            return m_filesystem.exists(path);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public void list( @Nonnull String path, @Nonnull List<String> contents ) throws IOException
-    {
-        try
-        {
-            Collections.addAll( contents, m_filesystem.list( path ) );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public void list(@Nonnull String path, @Nonnull List<String> contents) throws IOException {
+        try {
+            Collections.addAll(contents, m_filesystem.list(path));
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public long getSize( @Nonnull String path ) throws IOException
-    {
-        try
-        {
-            return m_filesystem.getSize( path );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public long getSize(@Nonnull String path) throws IOException {
+        try {
+            return m_filesystem.getSize(path);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public String combine( String path, String child )
-    {
-        return m_filesystem.combine( path, child );
+    public String combine(String path, String child) {
+        return m_filesystem.combine(path, child);
     }
 
     @Override
-    public void copy( String from, String to ) throws IOException
-    {
-        try
-        {
-            m_filesystem.copy( from, to );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public void copy(String from, String to) throws IOException {
+        try {
+            m_filesystem.copy(from, to);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 
     @Override
-    public void move( String from, String to ) throws IOException
-    {
-        try
-        {
-            m_filesystem.move( from, to );
-        }
-        catch( FileSystemException e )
-        {
-            throw new IOException( e.getMessage() );
+    public void move(String from, String to) throws IOException {
+        try {
+            m_filesystem.move(from, to);
+        } catch (FileSystemException e) {
+            throw new IOException(e.getMessage());
         }
     }
 }

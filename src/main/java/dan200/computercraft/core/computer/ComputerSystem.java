@@ -23,35 +23,31 @@ import javax.annotation.Nullable;
  * @see ILuaAPIFactory
  * @see ApiWrapper
  */
-public class ComputerSystem extends ComputerAccess implements IComputerSystem
-{
+public class ComputerSystem extends ComputerAccess implements IComputerSystem {
+
     private final IAPIEnvironment environment;
 
-    ComputerSystem( IAPIEnvironment environment )
-    {
-        super( environment );
+    ComputerSystem(IAPIEnvironment environment) {
+        super(environment);
         this.environment = environment;
     }
 
     @Nonnull
     @Override
-    public String getAttachmentName()
-    {
+    public String getAttachmentName() {
         return "computer";
     }
 
     @Nullable
     @Override
-    public IFileSystem getFileSystem()
-    {
+    public IFileSystem getFileSystem() {
         FileSystem fs = environment.getFileSystem();
         return fs == null ? null : fs.getMountWrapper();
     }
 
     @Nullable
     @Override
-    public String getLabel()
-    {
+    public String getLabel() {
         return environment.getLabel();
     }
 }

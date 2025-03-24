@@ -18,42 +18,38 @@ import javax.annotation.Nonnull;
  * @see dan200.computercraft.shared.network.client
  * @see dan200.computercraft.shared.network.server
  */
-public interface NetworkMessage extends IMessage
-{
+public interface NetworkMessage extends IMessage {
+
     /**
      * Write this packet to a buffer.
-     *
      * This may be called on any thread, so this should be a pure operation.
      *
      * @param buf The buffer to write data to.
      */
-    void toBytes( @Nonnull PacketBuffer buf );
+    void toBytes(@Nonnull PacketBuffer buf);
 
     /**
      * Read this packet from a buffer.
-     *
      * This may be called on any thread, so this should be a pure operation.
      *
      * @param buf The buffer to read data from.
      */
-    void fromBytes( @Nonnull PacketBuffer buf );
+    void fromBytes(@Nonnull PacketBuffer buf);
 
     /**
      * Handle this {@link NetworkMessage}.
      *
      * @param context The context with which to handle this message
      */
-    void handle( MessageContext context );
+    void handle(MessageContext context);
 
     @Override
-    default void fromBytes( ByteBuf buf )
-    {
-        fromBytes( new PacketBuffer( buf ) );
+    default void fromBytes(ByteBuf buf) {
+        fromBytes(new PacketBuffer(buf));
     }
 
     @Override
-    default void toBytes( ByteBuf buf )
-    {
-        toBytes( new PacketBuffer( buf ) );
+    default void toBytes(ByteBuf buf) {
+        toBytes(new PacketBuffer(buf));
     }
 }

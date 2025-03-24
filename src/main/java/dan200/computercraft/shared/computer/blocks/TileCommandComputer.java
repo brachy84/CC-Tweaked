@@ -26,85 +26,73 @@ import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TileCommandComputer extends TileComputer
-{
-    public class CommandSender extends CommandBlockBaseLogic
-    {
-        private Map<Integer, String> m_outputTable;
+public class TileCommandComputer extends TileComputer {
 
-        public CommandSender()
-        {
+    public class CommandSender extends CommandBlockBaseLogic {
+
+        private final Map<Integer, String> m_outputTable;
+
+        public CommandSender() {
             m_outputTable = new HashMap<>();
         }
 
-        public void clearOutput()
-        {
+        public void clearOutput() {
             m_outputTable.clear();
         }
 
-        public Map<Integer, String> getOutput()
-        {
+        public Map<Integer, String> getOutput() {
             return m_outputTable;
         }
 
-        public Map<Integer, String> copyOutput()
-        {
-            return new HashMap<>( m_outputTable );
+        public Map<Integer, String> copyOutput() {
+            return new HashMap<>(m_outputTable);
         }
 
         // ICommandSender
 
         @Nonnull
         @Override
-        public ITextComponent getDisplayName()
-        {
+        public ITextComponent getDisplayName() {
             String label = getLabel();
-            return new TextComponentString( label != null ? label : "@" );
+            return new TextComponentString(label != null ? label : "@");
         }
 
         @Override
-        public void sendMessage( @Nonnull ITextComponent chatComponent )
-        {
-            m_outputTable.put( m_outputTable.size() + 1, chatComponent.getUnformattedText() );
+        public void sendMessage(@Nonnull ITextComponent chatComponent) {
+            m_outputTable.put(m_outputTable.size() + 1, chatComponent.getUnformattedText());
         }
 
         @Override
-        public boolean canUseCommand( int level, String command )
-        {
+        public boolean canUseCommand(int level, String command) {
             return level <= 2;
         }
 
         @Nonnull
         @Override
-        public BlockPos getPosition()
-        {
+        public BlockPos getPosition() {
             return getPos();
         }
 
         @Nonnull
         @Override
-        public Vec3d getPositionVector()
-        {
+        public Vec3d getPositionVector() {
             BlockPos pos = getPosition();
-            return new Vec3d( pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5 );
+            return new Vec3d(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         }
 
         @Nonnull
         @Override
-        public World getEntityWorld()
-        {
+        public World getEntityWorld() {
             return getWorld();
         }
 
         @Override
-        public MinecraftServer getServer()
-        {
+        public MinecraftServer getServer() {
             return getWorld().getMinecraftServer();
         }
 
         @Override
-        public Entity getCommandSenderEntity()
-        {
+        public Entity getCommandSenderEntity() {
             return null;
         }
 
@@ -112,77 +100,64 @@ public class TileCommandComputer extends TileComputer
         // The only reason we extend it at all is so that "gameRule commandBlockOutput" applies to us
 
         @Override
-        public void updateCommand()
-        {
+        public void updateCommand() {
         }
 
         @Override
-        public int getCommandBlockType()
-        {
+        public int getCommandBlockType() {
             return 0;
         }
 
         @Override
-        public void fillInInfo( @Nonnull ByteBuf buf )
-        {
+        public void fillInInfo(@Nonnull ByteBuf buf) {
         }
     }
 
-    private CommandSender m_commandSender;
+    private final CommandSender m_commandSender;
 
-    public TileCommandComputer()
-    {
+    public TileCommandComputer() {
         m_commandSender = new CommandSender();
     }
 
     @Override
-    public EnumFacing getDirection()
-    {
+    public EnumFacing getDirection() {
         IBlockState state = getBlockState();
-        return state.getValue( BlockCommandComputer.Properties.FACING );
+        return state.getValue(BlockCommandComputer.Properties.FACING);
     }
 
     @Override
-    public void setDirection( EnumFacing dir )
-    {
-        if( dir.getAxis() == EnumFacing.Axis.Y )
-        {
+    public void setDirection(EnumFacing dir) {
+        if (dir.getAxis() == EnumFacing.Axis.Y) {
             dir = EnumFacing.NORTH;
         }
-        setBlockState( getBlockState().withProperty( BlockCommandComputer.Properties.FACING, dir ) );
+        setBlockState(getBlockState().withProperty(BlockCommandComputer.Properties.FACING, dir));
         updateInput();
     }
 
-    public CommandSender getCommandSender()
-    {
+    public CommandSender getCommandSender() {
         return m_commandSender;
     }
 
     @Override
-    protected ServerComputer createComputer( int instanceID, int id )
-    {
-        ServerComputer computer = super.createComputer( instanceID, id );
-        computer.addAPI( new CommandAPI( this ) );
+    protected ServerComputer createComputer(int instanceID, int id) {
+        ServerComputer computer = super.createComputer(instanceID, id);
+        computer.addAPI(new CommandAPI(this));
         return computer;
     }
 
     @Override
-    public boolean isUsable( EntityPlayer player, boolean ignoreRange )
-    {
-        return isUsable( player ) && super.isUsable( player, ignoreRange );
+    public boolean isUsable(EntityPlayer player, boolean ignoreRange) {
+        return isUsable(player) && super.isUsable(player, ignoreRange);
     }
 
-    public static boolean isUsable( EntityPlayer player )
-    {
+    public static boolean isUsable(EntityPlayer player) {
         MinecraftServer server = player.getServer();
-        if( server == null || !server.isCommandBlockEnabled() )
-        {
-            player.sendMessage( new TextComponentTranslation( "advMode.notEnabled" ) );
+        if (server == null || !server.isCommandBlockEnabled()) {
+            player.sendMessage(new TextComponentTranslation("advMode.notEnabled"));
             return false;
-        }
-        else if( ComputerCraft.commandRequireCreative ? !player.canUseCommandBlock() : !server.getPlayerList().canSendCommands( player.getGameProfile() ) )
-        {
-            player.sendMessage( new TextComponentTranslation( "advMode.notAllowed" ) );
+        } else if (ComputerCraft.commandRequireCreative ? !player.canUseCommandBlock() :
+                   !server.getPlayerList().canSendCommands(player.getGameProfile())) {
+            player.sendMessage(new TextComponentTranslation("advMode.notAllowed"));
             return false;
         }
 

@@ -16,47 +16,48 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public final class PocketUpgrades
-{
+public final class PocketUpgrades {
+
     private static final Map<String, IPocketUpgrade> upgrades = new HashMap<>();
     private static final IdentityHashMap<IPocketUpgrade, String> upgradeOwners = new IdentityHashMap<>();
 
-    private PocketUpgrades() {}
+    private PocketUpgrades() {
+    }
 
-    public static void register( @Nonnull IPocketUpgrade upgrade )
-    {
-        Objects.requireNonNull( upgrade, "upgrade cannot be null" );
+    public static void register(@Nonnull IPocketUpgrade upgrade) {
+        Objects.requireNonNull(upgrade, "upgrade cannot be null");
 
         String id = upgrade.getUpgradeID().toString();
-        IPocketUpgrade existing = upgrades.get( id );
-        if( existing != null )
-        {
-            throw new IllegalStateException( "Error registering '" + upgrade.getUnlocalisedAdjective() + " pocket computer'. UpgradeID '" + id + "' is already registered by '" + existing.getUnlocalisedAdjective() + " pocket computer'" );
+        IPocketUpgrade existing = upgrades.get(id);
+        if (existing != null) {
+            throw new IllegalStateException("Error registering '" +
+                                                upgrade.getUnlocalisedAdjective() +
+                                                " pocket computer'. UpgradeID '" +
+                                                id +
+                                                "' is already registered by '" +
+                                                existing.getUnlocalisedAdjective() +
+                                                " pocket computer'");
         }
 
-        upgrades.put( id, upgrade );
+        upgrades.put(id, upgrade);
 
         ModContainer mc = Loader.instance().activeModContainer();
-        if( mc != null && mc.getModId() != null ) upgradeOwners.put( upgrade, mc.getModId() );
+        if (mc != null && mc.getModId() != null) upgradeOwners.put(upgrade, mc.getModId());
     }
 
-    public static IPocketUpgrade get( String id )
-    {
+    public static IPocketUpgrade get(String id) {
         // Fix a typo in the advanced modem upgrade's name. I'm sorry, I realise this is horrible.
-        if( id.equals( "computercraft:advanved_modem" ) ) id = "computercraft:advanced_modem";
+        if (id.equals("computercraft:advanved_modem")) id = "computercraft:advanced_modem";
 
-        return upgrades.get( id );
+        return upgrades.get(id);
     }
 
-    public static IPocketUpgrade get( @Nonnull ItemStack stack )
-    {
-        if( stack.isEmpty() ) return null;
+    public static IPocketUpgrade get(@Nonnull ItemStack stack) {
+        if (stack.isEmpty()) return null;
 
-        for( IPocketUpgrade upgrade : upgrades.values() )
-        {
+        for (IPocketUpgrade upgrade : upgrades.values()) {
             ItemStack craftingStack = upgrade.getCraftingItem();
-            if( !craftingStack.isEmpty() && InventoryUtil.areItemsSimilar( stack, craftingStack ) )
-            {
+            if (!craftingStack.isEmpty() && InventoryUtil.areItemsSimilar(stack, craftingStack)) {
                 return upgrade;
             }
         }
@@ -65,22 +66,19 @@ public final class PocketUpgrades
     }
 
     @Nullable
-    public static String getOwner( IPocketUpgrade upgrade )
-    {
-        return upgradeOwners.get( upgrade );
+    public static String getOwner(IPocketUpgrade upgrade) {
+        return upgradeOwners.get(upgrade);
     }
 
-    public static Iterable<IPocketUpgrade> getVanillaUpgrades()
-    {
+    public static Iterable<IPocketUpgrade> getVanillaUpgrades() {
         List<IPocketUpgrade> vanilla = new ArrayList<>();
-        vanilla.add( ComputerCraft.PocketUpgrades.wirelessModem );
-        vanilla.add( ComputerCraft.PocketUpgrades.advancedModem );
-        vanilla.add( ComputerCraft.PocketUpgrades.speaker );
+        vanilla.add(ComputerCraft.PocketUpgrades.wirelessModem);
+        vanilla.add(ComputerCraft.PocketUpgrades.advancedModem);
+        vanilla.add(ComputerCraft.PocketUpgrades.speaker);
         return vanilla;
     }
 
-    public static Iterable<IPocketUpgrade> getUpgrades()
-    {
-        return Collections.unmodifiableCollection( upgrades.values() );
+    public static Iterable<IPocketUpgrade> getUpgrades() {
+        return Collections.unmodifiableCollection(upgrades.values());
     }
 }

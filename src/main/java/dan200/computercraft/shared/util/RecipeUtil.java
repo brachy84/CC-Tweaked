@@ -18,43 +18,38 @@ import net.minecraftforge.common.crafting.JsonContext;
 import java.util.Map;
 import java.util.Set;
 
-public final class RecipeUtil
-{
-    private RecipeUtil() {}
+public final class RecipeUtil {
 
-    public static CraftingHelper.ShapedPrimer getPrimer( JsonContext context, JsonObject json )
-    {
+    private RecipeUtil() {
+    }
+
+    public static CraftingHelper.ShapedPrimer getPrimer(JsonContext context, JsonObject json) {
         Map<Character, Ingredient> ingMap = Maps.newHashMap();
-        for( Map.Entry<String, JsonElement> entry : JsonUtils.getJsonObject( json, "key" ).entrySet() )
-        {
-            if( entry.getKey().length() != 1 )
-            {
-                throw new JsonSyntaxException( "Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only)." );
+        for (Map.Entry<String, JsonElement> entry : JsonUtils.getJsonObject(json, "key").entrySet()) {
+            if (entry.getKey().length() != 1) {
+                throw new JsonSyntaxException(
+                    "Invalid key entry: '" + entry.getKey() + "' is an invalid symbol (must be 1 character only).");
             }
-            if( " ".equals( entry.getKey() ) )
-            {
-                throw new JsonSyntaxException( "Invalid key entry: ' ' is a reserved symbol." );
+            if (" ".equals(entry.getKey())) {
+                throw new JsonSyntaxException("Invalid key entry: ' ' is a reserved symbol.");
             }
 
-            ingMap.put( entry.getKey().charAt( 0 ), CraftingHelper.getIngredient( entry.getValue(), context ) );
+            ingMap.put(entry.getKey().charAt(0), CraftingHelper.getIngredient(entry.getValue(), context));
         }
 
-        ingMap.put( ' ', Ingredient.EMPTY );
+        ingMap.put(' ', Ingredient.EMPTY);
 
-        JsonArray patternJ = JsonUtils.getJsonArray( json, "pattern" );
+        JsonArray patternJ = JsonUtils.getJsonArray(json, "pattern");
 
-        if( patternJ.size() == 0 )
-        {
-            throw new JsonSyntaxException( "Invalid pattern: empty pattern not allowed" );
+        if (patternJ.size() == 0) {
+            throw new JsonSyntaxException("Invalid pattern: empty pattern not allowed");
         }
 
         String[] pattern = new String[patternJ.size()];
-        for( int x = 0; x < pattern.length; x++ )
-        {
-            String line = JsonUtils.getString( patternJ.get( x ), "pattern[" + x + "]" );
-            if( x > 0 && pattern[0].length() != line.length() )
-            {
-                throw new JsonSyntaxException( "Invalid pattern: each row must  be the same width" );
+        for (int x = 0; x < pattern.length; x++) {
+            String line = JsonUtils.getString(patternJ.get(x), "pattern[" + x + "]");
+            if (x > 0 && pattern[0].length() != line.length()) {
+                throw new JsonSyntaxException("Invalid pattern: each row must  be the same width");
             }
             pattern[x] = line;
         }
@@ -63,56 +58,46 @@ public final class RecipeUtil
         primer.width = pattern[0].length();
         primer.height = pattern.length;
         primer.mirrored = false;
-        primer.input = NonNullList.withSize( primer.width * primer.height, Ingredient.EMPTY );
+        primer.input = NonNullList.withSize(primer.width * primer.height, Ingredient.EMPTY);
 
-        Set<Character> keys = Sets.newHashSet( ingMap.keySet() );
-        keys.remove( ' ' );
+        Set<Character> keys = Sets.newHashSet(ingMap.keySet());
+        keys.remove(' ');
 
         int x = 0;
-        for( String line : pattern )
-        {
-            for( char chr : line.toCharArray() )
-            {
-                Ingredient ing = ingMap.get( chr );
-                if( ing == null )
-                {
-                    throw new JsonSyntaxException( "Pattern references symbol '" + chr + "' but it's not defined in the key" );
+        for (String line : pattern) {
+            for (char chr : line.toCharArray()) {
+                Ingredient ing = ingMap.get(chr);
+                if (ing == null) {
+                    throw new JsonSyntaxException("Pattern references symbol '" + chr + "' but it's not defined in the key");
                 }
-                primer.input.set( x++, ing );
-                keys.remove( chr );
+                primer.input.set(x++, ing);
+                keys.remove(chr);
             }
         }
 
-        if( !keys.isEmpty() )
-        {
-            throw new JsonSyntaxException( "Key defines symbols that aren't used in pattern: " + keys );
+        if (!keys.isEmpty()) {
+            throw new JsonSyntaxException("Key defines symbols that aren't used in pattern: " + keys);
         }
 
         return primer;
     }
 
-    public static NonNullList<Ingredient> getIngredients( JsonContext context, JsonObject json )
-    {
+    public static NonNullList<Ingredient> getIngredients(JsonContext context, JsonObject json) {
         NonNullList<Ingredient> ingredients = NonNullList.create();
-        for( JsonElement ele : JsonUtils.getJsonArray( json, "ingredients" ) )
-        {
-            ingredients.add( CraftingHelper.getIngredient( ele, context ) );
+        for (JsonElement ele : JsonUtils.getJsonArray(json, "ingredients")) {
+            ingredients.add(CraftingHelper.getIngredient(ele, context));
         }
 
-        if( ingredients.isEmpty() ) throw new JsonParseException( "No ingredients for recipe" );
+        if (ingredients.isEmpty()) throw new JsonParseException("No ingredients for recipe");
         return ingredients;
     }
 
-    public static ComputerFamily getFamily( JsonObject json, String name )
-    {
-        String familyName = JsonUtils.getString( json, name );
-        try
-        {
-            return ComputerFamily.valueOf( familyName );
-        }
-        catch( IllegalArgumentException e )
-        {
-            throw new JsonSyntaxException( "Unknown computer family '" + familyName + "' for field " + name );
+    public static ComputerFamily getFamily(JsonObject json, String name) {
+        String familyName = JsonUtils.getString(json, name);
+        try {
+            return ComputerFamily.valueOf(familyName);
+        } catch (IllegalArgumentException e) {
+            throw new JsonSyntaxException("Unknown computer family '" + familyName + "' for field " + name);
         }
     }
 }

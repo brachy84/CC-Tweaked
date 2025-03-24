@@ -22,36 +22,32 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
-public class ComputerCraftProxyClient extends ComputerCraftProxyCommon
-{
+public class ComputerCraftProxyClient extends ComputerCraftProxyCommon {
+
     @Override
-    public void preInit()
-    {
+    public void preInit() {
         super.preInit();
 
         // Register any client-specific commands
-        ClientCommandHandler.instance.registerCommand( CommandCopy.INSTANCE );
+        ClientCommandHandler.instance.registerCommand(CommandCopy.INSTANCE);
     }
 
     @Override
-    public void init()
-    {
+    public void init() {
         super.init();
 
         // Setup renderers
-        ClientRegistry.bindTileEntitySpecialRenderer( TileMonitor.class, new TileEntityMonitorRenderer() );
-        ClientRegistry.bindTileEntitySpecialRenderer( TileCable.class, new TileEntityCableRenderer() );
-        ClientRegistry.bindTileEntitySpecialRenderer( TileTurtle.class, new TileEntityTurtleRenderer() );
+        ClientRegistry.bindTileEntitySpecialRenderer(TileMonitor.class, new TileEntityMonitorRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileCable.class, new TileEntityCableRenderer());
+        ClientRegistry.bindTileEntitySpecialRenderer(TileTurtle.class, new TileEntityTurtleRenderer());
     }
 
-    @Mod.EventBusSubscriber( modid = ComputerCraft.MOD_ID, value = Side.CLIENT )
-    public static final class ForgeHandlers
-    {
+    @Mod.EventBusSubscriber(modid = ComputerCraft.MOD_ID, value = Side.CLIENT)
+    public static final class ForgeHandlers {
+
         @SubscribeEvent
-        public static void onWorldUnload( WorldEvent.Unload event )
-        {
-            if( event.getWorld().isRemote )
-            {
+        public static void onWorldUnload(WorldEvent.Unload event) {
+            if (event.getWorld().isRemote) {
                 ClientMonitor.destroyAll();
             }
         }

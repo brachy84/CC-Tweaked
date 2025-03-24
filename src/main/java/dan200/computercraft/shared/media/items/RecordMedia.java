@@ -16,29 +16,25 @@ import javax.annotation.Nonnull;
 /**
  * An implementation of IMedia for ItemRecords.
  */
-public final class RecordMedia implements IMedia
-{
+public final class RecordMedia implements IMedia {
+
     public static final RecordMedia INSTANCE = new RecordMedia();
 
-    private RecordMedia()
-    {
+    private RecordMedia() {
     }
 
     @Override
-    public String getLabel( @Nonnull ItemStack stack )
-    {
-        return getAudioTitle( stack );
+    public String getLabel(@Nonnull ItemStack stack) {
+        return getAudioTitle(stack);
     }
 
     @Override
-    public String getAudioTitle( @Nonnull ItemStack stack )
-    {
-        return RecordUtil.getRecordInfo( stack );
+    public String getAudioTitle(@Nonnull ItemStack stack) {
+        return RecordUtil.getRecordInfo(stack);
     }
 
     @Override
-    public SoundEvent getAudio( @Nonnull ItemStack stack )
-    {
+    public SoundEvent getAudio(@Nonnull ItemStack stack) {
         ItemRecord itemRecord = (ItemRecord) stack.getItem();
         return itemRecord.sound;
     }

@@ -18,24 +18,23 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 import javax.annotation.Nonnull;
 
-public final class RecordUtil
-{
-    private RecordUtil() {}
+public final class RecordUtil {
 
-    public static void playRecord( SoundEvent record, String recordInfo, World world, BlockPos pos )
-    {
-        IMessage packet = record != null ? new PlayRecordClientMessage( pos, record, recordInfo ) : new PlayRecordClientMessage( pos );
-
-        NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint( world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64 );
-        NetworkHandler.sendToAllAround( packet, point );
+    private RecordUtil() {
     }
 
-    public static String getRecordInfo( @Nonnull ItemStack recordStack )
-    {
-        Item item = recordStack.getItem();
-        if( !(item instanceof ItemRecord) ) return null;
+    public static void playRecord(SoundEvent record, String recordInfo, World world, BlockPos pos) {
+        IMessage packet = record != null ? new PlayRecordClientMessage(pos, record, recordInfo) : new PlayRecordClientMessage(pos);
 
-        ItemRecord record = (ItemRecord) item;
-        return StringUtil.translate( record.displayName );
+        NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(),
+                                                                            pos.getZ(), 64);
+        NetworkHandler.sendToAllAround(packet, point);
+    }
+
+    public static String getRecordInfo(@Nonnull ItemStack recordStack) {
+        Item item = recordStack.getItem();
+        if (!(item instanceof ItemRecord record)) return null;
+
+        return StringUtil.translate(record.displayName);
     }
 }

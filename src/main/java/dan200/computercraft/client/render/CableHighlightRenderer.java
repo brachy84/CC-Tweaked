@@ -27,39 +27,37 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.opengl.GL11;
 
-@Mod.EventBusSubscriber( modid = ComputerCraft.MOD_ID, value = Side.CLIENT )
-public final class CableHighlightRenderer
-{
+@Mod.EventBusSubscriber(modid = ComputerCraft.MOD_ID, value = Side.CLIENT)
+public final class CableHighlightRenderer {
+
     private static final float EXPAND = 0.002f;
     private static final double MIN = CableBounds.MIN - EXPAND;
     private static final double MAX = CableBounds.MAX + EXPAND;
 
-    private CableHighlightRenderer()
-    {
+    private CableHighlightRenderer() {
     }
 
     @SubscribeEvent
-    public static void drawHighlight( DrawBlockHighlightEvent event )
-    {
-        if( event.getTarget().typeOfHit != RayTraceResult.Type.BLOCK ) return;
+    public static void drawHighlight(DrawBlockHighlightEvent event) {
+        if (event.getTarget().typeOfHit != RayTraceResult.Type.BLOCK) return;
 
         BlockPos pos = event.getTarget().getBlockPos();
         World world = event.getPlayer().getEntityWorld();
 
-        IBlockState state = world.getBlockState( pos );
-        if( state.getBlock() != ComputerCraft.Blocks.cable ) return;
+        IBlockState state = world.getBlockState(pos);
+        if (state.getBlock() != ComputerCraft.Blocks.cable) return;
 
-        state = state.getActualState( world, pos );
+        state = state.getActualState(world, pos);
 
-        event.setCanceled( true );
-        PeripheralType type = BlockCable.getPeripheralType( state );
+        event.setCanceled(true);
+        PeripheralType type = BlockCable.getPeripheralType(state);
 
         GlStateManager.enableBlend();
-        GlStateManager.tryBlendFuncSeparate( GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0 );
-        GlStateManager.color( 0.0f, 0.0f, 0.0f, 0.4f );
-        GL11.glLineWidth( 2.0F );
+        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0);
+        GlStateManager.color(0.0f, 0.0f, 0.0f, 0.4f);
+        GL11.glLineWidth(2.0F);
         GlStateManager.disableTexture2D();
-        GlStateManager.depthMask( false );
+        GlStateManager.depthMask(false);
         GlStateManager.pushMatrix();
 
         {
@@ -68,101 +66,94 @@ public final class CableHighlightRenderer
             double y = player.lastTickPosY + (player.posY - player.lastTickPosY) * event.getPartialTicks();
             double z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * event.getPartialTicks();
 
-            GlStateManager.translate( -x + pos.getX(), -y + pos.getY(), -z + pos.getZ() );
+            GlStateManager.translate(-x + pos.getX(), -y + pos.getY(), -z + pos.getZ());
         }
 
-        if( type != PeripheralType.Cable && WorldUtil.isVecInsideInclusive( CableBounds.getModemBounds( state ), event.getTarget().hitVec.subtract( pos.getX(), pos.getY(), pos.getZ() ) ) )
-        {
-            RenderGlobal.drawSelectionBoundingBox( CableBounds.getModemBounds( state ), 0, 0, 0, 0.4f );
-        }
-        else
-        {
+        if (type != PeripheralType.Cable &&
+            WorldUtil.isVecInsideInclusive(CableBounds.getModemBounds(state),
+                                           event.getTarget().hitVec.subtract(pos.getX(), pos.getY(), pos.getZ()))) {
+            RenderGlobal.drawSelectionBoundingBox(CableBounds.getModemBounds(state), 0, 0, 0, 0.4f);
+        } else {
             int flags = 0;
 
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder buffer = tessellator.getBuffer();
 
-            for( EnumFacing facing : EnumFacing.VALUES )
-            {
-                if( BlockCable.doesConnectVisually( state, world, pos, facing ) )
-                {
+            for (EnumFacing facing : EnumFacing.VALUES) {
+                if (BlockCable.doesConnectVisually(state, world, pos, facing)) {
                     flags |= 1 << facing.ordinal();
 
 
-                    switch( facing.getAxis() )
-                    {
-                        case X:
-                        {
+                    switch (facing.getAxis()) {
+                        case X: {
                             double offset = facing == EnumFacing.WEST ? -EXPAND : 1 + EXPAND;
                             double centre = facing == EnumFacing.WEST ? MIN : MAX;
 
-                            buffer.begin( GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION );
-                            buffer.pos( offset, MIN, MIN ).endVertex();
-                            buffer.pos( offset, MAX, MIN ).endVertex();
-                            buffer.pos( offset, MAX, MAX ).endVertex();
-                            buffer.pos( offset, MIN, MAX ).endVertex();
-                            buffer.pos( offset, MIN, MIN ).endVertex();
+                            buffer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+                            buffer.pos(offset, MIN, MIN).endVertex();
+                            buffer.pos(offset, MAX, MIN).endVertex();
+                            buffer.pos(offset, MAX, MAX).endVertex();
+                            buffer.pos(offset, MIN, MAX).endVertex();
+                            buffer.pos(offset, MIN, MIN).endVertex();
                             tessellator.draw();
 
-                            buffer.begin( GL11.GL_LINES, DefaultVertexFormats.POSITION );
-                            buffer.pos( offset, MIN, MIN ).endVertex();
-                            buffer.pos( centre, MIN, MIN ).endVertex();
-                            buffer.pos( offset, MAX, MIN ).endVertex();
-                            buffer.pos( centre, MAX, MIN ).endVertex();
-                            buffer.pos( offset, MAX, MAX ).endVertex();
-                            buffer.pos( centre, MAX, MAX ).endVertex();
-                            buffer.pos( offset, MIN, MAX ).endVertex();
-                            buffer.pos( centre, MIN, MAX ).endVertex();
+                            buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+                            buffer.pos(offset, MIN, MIN).endVertex();
+                            buffer.pos(centre, MIN, MIN).endVertex();
+                            buffer.pos(offset, MAX, MIN).endVertex();
+                            buffer.pos(centre, MAX, MIN).endVertex();
+                            buffer.pos(offset, MAX, MAX).endVertex();
+                            buffer.pos(centre, MAX, MAX).endVertex();
+                            buffer.pos(offset, MIN, MAX).endVertex();
+                            buffer.pos(centre, MIN, MAX).endVertex();
                             tessellator.draw();
                             break;
                         }
-                        case Y:
-                        {
+                        case Y: {
                             double offset = facing == EnumFacing.DOWN ? -EXPAND : 1 + EXPAND;
                             double centre = facing == EnumFacing.DOWN ? MIN : MAX;
 
-                            buffer.begin( GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION );
-                            buffer.pos( MIN, offset, MIN ).endVertex();
-                            buffer.pos( MAX, offset, MIN ).endVertex();
-                            buffer.pos( MAX, offset, MAX ).endVertex();
-                            buffer.pos( MIN, offset, MAX ).endVertex();
-                            buffer.pos( MIN, offset, MIN ).endVertex();
+                            buffer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+                            buffer.pos(MIN, offset, MIN).endVertex();
+                            buffer.pos(MAX, offset, MIN).endVertex();
+                            buffer.pos(MAX, offset, MAX).endVertex();
+                            buffer.pos(MIN, offset, MAX).endVertex();
+                            buffer.pos(MIN, offset, MIN).endVertex();
                             tessellator.draw();
 
-                            buffer.begin( GL11.GL_LINES, DefaultVertexFormats.POSITION );
-                            buffer.pos( MIN, offset, MIN ).endVertex();
-                            buffer.pos( MIN, centre, MIN ).endVertex();
-                            buffer.pos( MAX, offset, MIN ).endVertex();
-                            buffer.pos( MAX, centre, MIN ).endVertex();
-                            buffer.pos( MAX, offset, MAX ).endVertex();
-                            buffer.pos( MAX, centre, MAX ).endVertex();
-                            buffer.pos( MIN, offset, MAX ).endVertex();
-                            buffer.pos( MIN, centre, MAX ).endVertex();
+                            buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+                            buffer.pos(MIN, offset, MIN).endVertex();
+                            buffer.pos(MIN, centre, MIN).endVertex();
+                            buffer.pos(MAX, offset, MIN).endVertex();
+                            buffer.pos(MAX, centre, MIN).endVertex();
+                            buffer.pos(MAX, offset, MAX).endVertex();
+                            buffer.pos(MAX, centre, MAX).endVertex();
+                            buffer.pos(MIN, offset, MAX).endVertex();
+                            buffer.pos(MIN, centre, MAX).endVertex();
                             tessellator.draw();
                             break;
                         }
-                        case Z:
-                        {
+                        case Z: {
                             double offset = facing == EnumFacing.NORTH ? -EXPAND : 1 + EXPAND;
                             double centre = facing == EnumFacing.NORTH ? MIN : MAX;
 
-                            buffer.begin( GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION );
-                            buffer.pos( MIN, MIN, offset ).endVertex();
-                            buffer.pos( MAX, MIN, offset ).endVertex();
-                            buffer.pos( MAX, MAX, offset ).endVertex();
-                            buffer.pos( MIN, MAX, offset ).endVertex();
-                            buffer.pos( MIN, MIN, offset ).endVertex();
+                            buffer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION);
+                            buffer.pos(MIN, MIN, offset).endVertex();
+                            buffer.pos(MAX, MIN, offset).endVertex();
+                            buffer.pos(MAX, MAX, offset).endVertex();
+                            buffer.pos(MIN, MAX, offset).endVertex();
+                            buffer.pos(MIN, MIN, offset).endVertex();
                             tessellator.draw();
 
-                            buffer.begin( GL11.GL_LINES, DefaultVertexFormats.POSITION );
-                            buffer.pos( MIN, MIN, offset ).endVertex();
-                            buffer.pos( MIN, MIN, centre ).endVertex();
-                            buffer.pos( MAX, MIN, offset ).endVertex();
-                            buffer.pos( MAX, MIN, centre ).endVertex();
-                            buffer.pos( MAX, MAX, offset ).endVertex();
-                            buffer.pos( MAX, MAX, centre ).endVertex();
-                            buffer.pos( MIN, MAX, offset ).endVertex();
-                            buffer.pos( MIN, MAX, centre ).endVertex();
+                            buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+                            buffer.pos(MIN, MIN, offset).endVertex();
+                            buffer.pos(MIN, MIN, centre).endVertex();
+                            buffer.pos(MAX, MIN, offset).endVertex();
+                            buffer.pos(MAX, MIN, centre).endVertex();
+                            buffer.pos(MAX, MAX, offset).endVertex();
+                            buffer.pos(MAX, MAX, centre).endVertex();
+                            buffer.pos(MIN, MAX, offset).endVertex();
+                            buffer.pos(MIN, MAX, centre).endVertex();
                             tessellator.draw();
                             break;
                         }
@@ -170,51 +161,49 @@ public final class CableHighlightRenderer
                 }
             }
 
-            buffer.begin( GL11.GL_LINES, DefaultVertexFormats.POSITION );
+            buffer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
 
-            draw( buffer, flags, EnumFacing.WEST, EnumFacing.DOWN, EnumFacing.Axis.Z );
-            draw( buffer, flags, EnumFacing.WEST, EnumFacing.UP, EnumFacing.Axis.Z );
-            draw( buffer, flags, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.Axis.Z );
-            draw( buffer, flags, EnumFacing.EAST, EnumFacing.UP, EnumFacing.Axis.Z );
+            draw(buffer, flags, EnumFacing.WEST, EnumFacing.DOWN, EnumFacing.Axis.Z);
+            draw(buffer, flags, EnumFacing.WEST, EnumFacing.UP, EnumFacing.Axis.Z);
+            draw(buffer, flags, EnumFacing.EAST, EnumFacing.DOWN, EnumFacing.Axis.Z);
+            draw(buffer, flags, EnumFacing.EAST, EnumFacing.UP, EnumFacing.Axis.Z);
 
-            draw( buffer, flags, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.Axis.Y );
-            draw( buffer, flags, EnumFacing.WEST, EnumFacing.SOUTH, EnumFacing.Axis.Y );
-            draw( buffer, flags, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.Axis.Y );
-            draw( buffer, flags, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.Axis.Y );
+            draw(buffer, flags, EnumFacing.WEST, EnumFacing.NORTH, EnumFacing.Axis.Y);
+            draw(buffer, flags, EnumFacing.WEST, EnumFacing.SOUTH, EnumFacing.Axis.Y);
+            draw(buffer, flags, EnumFacing.EAST, EnumFacing.NORTH, EnumFacing.Axis.Y);
+            draw(buffer, flags, EnumFacing.EAST, EnumFacing.SOUTH, EnumFacing.Axis.Y);
 
-            draw( buffer, flags, EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.Axis.X );
-            draw( buffer, flags, EnumFacing.DOWN, EnumFacing.SOUTH, EnumFacing.Axis.X );
-            draw( buffer, flags, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.Axis.X );
-            draw( buffer, flags, EnumFacing.UP, EnumFacing.SOUTH, EnumFacing.Axis.X );
+            draw(buffer, flags, EnumFacing.DOWN, EnumFacing.NORTH, EnumFacing.Axis.X);
+            draw(buffer, flags, EnumFacing.DOWN, EnumFacing.SOUTH, EnumFacing.Axis.X);
+            draw(buffer, flags, EnumFacing.UP, EnumFacing.NORTH, EnumFacing.Axis.X);
+            draw(buffer, flags, EnumFacing.UP, EnumFacing.SOUTH, EnumFacing.Axis.X);
 
             tessellator.draw();
         }
 
         GlStateManager.popMatrix();
-        GlStateManager.depthMask( true );
+        GlStateManager.depthMask(true);
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
     }
 
-    private static void draw( BufferBuilder buffer, int flags, EnumFacing a, EnumFacing b, EnumFacing.Axis other )
-    {
-        if( ((flags >> a.ordinal()) & 1) != ((flags >> b.ordinal()) & 1) ) return;
+    private static void draw(BufferBuilder buffer, int flags, EnumFacing a, EnumFacing b, EnumFacing.Axis other) {
+        if (((flags >> a.ordinal()) & 1) != ((flags >> b.ordinal()) & 1)) return;
 
         double offA = a.getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? MIN : MAX;
         double offB = b.getAxisDirection() == EnumFacing.AxisDirection.NEGATIVE ? MIN : MAX;
-        switch( other )
-        {
+        switch (other) {
             case X:
-                buffer.pos( MIN, offA, offB ).endVertex();
-                buffer.pos( MAX, offA, offB ).endVertex();
+                buffer.pos(MIN, offA, offB).endVertex();
+                buffer.pos(MAX, offA, offB).endVertex();
                 break;
             case Y:
-                buffer.pos( offA, MIN, offB ).endVertex();
-                buffer.pos( offA, MAX, offB ).endVertex();
+                buffer.pos(offA, MIN, offB).endVertex();
+                buffer.pos(offA, MAX, offB).endVertex();
                 break;
             case Z:
-                buffer.pos( offA, offB, MIN ).endVertex();
-                buffer.pos( offA, offB, MAX ).endVertex();
+                buffer.pos(offA, offB, MIN).endVertex();
+                buffer.pos(offA, offB, MAX).endVertex();
                 break;
         }
     }

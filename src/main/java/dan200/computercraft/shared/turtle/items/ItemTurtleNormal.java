@@ -19,32 +19,30 @@ import net.minecraftforge.common.util.Constants;
 
 import javax.annotation.Nonnull;
 
-public class ItemTurtleNormal extends ItemTurtleBase
-{
-    public ItemTurtleNormal( Block block )
-    {
-        super( block );
-        setTranslationKey( "computercraft:turtle" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
+public class ItemTurtleNormal extends ItemTurtleBase {
+
+    public ItemTurtleNormal(Block block) {
+        super(block);
+        setTranslationKey("computercraft:turtle");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
     }
 
-    public ItemStack create( int id, String label, int colour, ITurtleUpgrade leftUpgrade, ITurtleUpgrade rightUpgrade, int fuelLevel, ResourceLocation overlay )
-    {
-        ItemStack stack = new ItemStack( this, 1, 0 );
+    public ItemStack create(int id, String label, int colour, ITurtleUpgrade leftUpgrade, ITurtleUpgrade rightUpgrade, int fuelLevel,
+                            ResourceLocation overlay) {
+        ItemStack stack = new ItemStack(this, 1, 0);
         NBTTagCompound nbt = new NBTTagCompound();
-        if( leftUpgrade != null ) nbt.setString( "leftUpgrade", leftUpgrade.getUpgradeID().toString() );
-        if( rightUpgrade != null ) nbt.setString( "rightUpgrade", rightUpgrade.getUpgradeID().toString() );
-        if( id >= 0 ) nbt.setInteger( "computerID", id );
-        if( fuelLevel > 0 ) nbt.setInteger( "fuelLevel", fuelLevel );
-        if( colour != -1 ) nbt.setInteger( "colour", colour );
-        if( overlay != null )
-        {
-            nbt.setString( "overlay_mod", overlay.getNamespace() );
-            nbt.setString( "overlay_path", overlay.getPath() );
+        if (leftUpgrade != null) nbt.setString("leftUpgrade", leftUpgrade.getUpgradeID().toString());
+        if (rightUpgrade != null) nbt.setString("rightUpgrade", rightUpgrade.getUpgradeID().toString());
+        if (id >= 0) nbt.setInteger("computerID", id);
+        if (fuelLevel > 0) nbt.setInteger("fuelLevel", fuelLevel);
+        if (colour != -1) nbt.setInteger("colour", colour);
+        if (overlay != null) {
+            nbt.setString("overlay_mod", overlay.getNamespace());
+            nbt.setString("overlay_path", overlay.getPath());
         }
-        stack.setTagCompound( nbt );
+        stack.setTagCompound(nbt);
 
-        if( label != null ) stack.setStackDisplayName( label );
+        if (label != null) stack.setStackDisplayName(label);
 
         return stack;
     }
@@ -52,41 +50,33 @@ public class ItemTurtleNormal extends ItemTurtleBase
     // IComputerItem implementation
 
     @Override
-    public int getComputerID( @Nonnull ItemStack stack )
-    {
+    public int getComputerID(@Nonnull ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
-        return nbt != null && nbt.hasKey( "computerID" ) ? nbt.getInteger( "computerID" ) : -1;
+        return nbt != null && nbt.hasKey("computerID") ? nbt.getInteger("computerID") : -1;
     }
 
     @Override
-    public ComputerFamily getFamily()
-    {
+    public ComputerFamily getFamily() {
         return ComputerFamily.Normal;
     }
 
     // ITurtleItem implementation
 
     @Override
-    public ITurtleUpgrade getUpgrade( @Nonnull ItemStack stack, @Nonnull TurtleSide side )
-    {
+    public ITurtleUpgrade getUpgrade(@Nonnull ItemStack stack, @Nonnull TurtleSide side) {
         NBTTagCompound nbt = stack.getTagCompound();
-        if( nbt == null ) return null;
-        switch( side )
-        {
+        if (nbt == null) return null;
+        switch (side) {
             case Left:
-                if( nbt.hasKey( "leftUpgrade" ) )
-                {
-                    return nbt.getTagId( "leftUpgrade" ) == Constants.NBT.TAG_STRING
-                        ? TurtleUpgrades.get( nbt.getString( "leftUpgrade" ) )
-                        : TurtleUpgrades.get( nbt.getShort( "leftUpgrade" ) );
+                if (nbt.hasKey("leftUpgrade")) {
+                    return nbt.getTagId("leftUpgrade") == Constants.NBT.TAG_STRING ? TurtleUpgrades.get(nbt.getString("leftUpgrade")) :
+                           TurtleUpgrades.get(nbt.getShort("leftUpgrade"));
                 }
                 break;
             case Right:
-                if( nbt.hasKey( "rightUpgrade" ) )
-                {
-                    return nbt.getTagId( "rightUpgrade" ) == Constants.NBT.TAG_STRING
-                        ? TurtleUpgrades.get( nbt.getString( "rightUpgrade" ) )
-                        : TurtleUpgrades.get( nbt.getShort( "rightUpgrade" ) );
+                if (nbt.hasKey("rightUpgrade")) {
+                    return nbt.getTagId("rightUpgrade") == Constants.NBT.TAG_STRING ? TurtleUpgrades.get(nbt.getString("rightUpgrade")) :
+                           TurtleUpgrades.get(nbt.getShort("rightUpgrade"));
                 }
                 break;
         }
@@ -94,29 +84,25 @@ public class ItemTurtleNormal extends ItemTurtleBase
     }
 
     @Override
-    public int getColour( @Nonnull ItemStack stack )
-    {
+    public int getColour(@Nonnull ItemStack stack) {
         NBTTagCompound tag = stack.getTagCompound();
-        return tag == null ? -1 : ColourUtils.getHexColour( tag );
+        return tag == null ? -1 : ColourUtils.getHexColour(tag);
     }
 
     @Override
-    public ResourceLocation getOverlay( @Nonnull ItemStack stack )
-    {
+    public ResourceLocation getOverlay(@Nonnull ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
-        if( nbt != null && nbt.hasKey( "overlay_mod" ) && nbt.hasKey( "overlay_path" ) )
-        {
-            String overlayMod = nbt.getString( "overlay_mod" );
-            String overlayPath = nbt.getString( "overlay_path" );
-            return new ResourceLocation( overlayMod, overlayPath );
+        if (nbt != null && nbt.hasKey("overlay_mod") && nbt.hasKey("overlay_path")) {
+            String overlayMod = nbt.getString("overlay_mod");
+            String overlayPath = nbt.getString("overlay_path");
+            return new ResourceLocation(overlayMod, overlayPath);
         }
         return null;
     }
 
     @Override
-    public int getFuelLevel( @Nonnull ItemStack stack )
-    {
+    public int getFuelLevel(@Nonnull ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
-        return nbt != null && nbt.hasKey( "fuelLevel" ) ? nbt.getInteger( "fuelLevel" ) : 0;
+        return nbt != null && nbt.hasKey("fuelLevel") ? nbt.getInteger("fuelLevel") : 0;
     }
 }

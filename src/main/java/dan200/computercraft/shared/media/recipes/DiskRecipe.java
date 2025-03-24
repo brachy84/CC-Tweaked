@@ -22,35 +22,27 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 
-public class DiskRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
-{
-    private final Ingredient paper = new OreIngredient( "paper" );
-    private final Ingredient redstone = new OreIngredient( "dustRedstone" );
+public class DiskRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+
+    private final Ingredient paper = new OreIngredient("paper");
+    private final Ingredient redstone = new OreIngredient("dustRedstone");
 
     @Override
-    public boolean matches( @Nonnull InventoryCrafting inv, @Nonnull World world )
-    {
+    public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World world) {
         boolean paperFound = false;
         boolean redstoneFound = false;
 
-        for( int i = 0; i < inv.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inv.getStackInSlot( i );
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
 
-            if( !stack.isEmpty() )
-            {
-                if( paper.apply( stack ) )
-                {
-                    if( paperFound ) return false;
+            if (!stack.isEmpty()) {
+                if (paper.apply(stack)) {
+                    if (paperFound) return false;
                     paperFound = true;
-                }
-                else if( redstone.apply( stack ) )
-                {
-                    if( redstoneFound ) return false;
+                } else if (redstone.apply(stack)) {
+                    if (redstoneFound) return false;
                     redstoneFound = true;
-                }
-                else if( ColourUtils.getStackColour( stack ) < 0 )
-                {
+                } else if (ColourUtils.getStackColour(stack) < 0) {
                     return false;
                 }
             }
@@ -61,53 +53,46 @@ public class DiskRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRe
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult( @Nonnull InventoryCrafting inv )
-    {
+    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inv) {
         ColourTracker tracker = new ColourTracker();
 
-        for( int i = 0; i < inv.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inv.getStackInSlot( i );
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
 
-            if( stack.isEmpty() ) continue;
+            if (stack.isEmpty()) continue;
 
-            if( !paper.apply( stack ) && !redstone.apply( stack ) )
-            {
-                int index = ColourUtils.getStackColour( stack );
-                if( index < 0 ) continue;
+            if (!paper.apply(stack) && !redstone.apply(stack)) {
+                int index = ColourUtils.getStackColour(stack);
+                if (index < 0) continue;
 
                 Colour colour = Colour.values()[index];
-                tracker.addColour( colour.getR(), colour.getG(), colour.getB() );
+                tracker.addColour(colour.getR(), colour.getG(), colour.getB());
             }
         }
 
-        return ItemDiskLegacy.createFromIDAndColour( -1, null, tracker.hasColour() ? tracker.getColour() : Colour.Blue.getHex() );
+        return ItemDiskLegacy.createFromIDAndColour(-1, null, tracker.hasColour() ? tracker.getColour() : Colour.Blue.getHex());
     }
 
     @Override
-    public boolean canFit( int x, int y )
-    {
+    public boolean canFit(int x, int y) {
         return x >= 2 && y >= 2;
     }
 
     @Override
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ItemStack getRecipeOutput()
-    {
-        return ItemDiskLegacy.createFromIDAndColour( -1, null, Colour.Blue.getHex() );
+    public ItemStack getRecipeOutput() {
+        return ItemDiskLegacy.createFromIDAndColour(-1, null, Colour.Blue.getHex());
     }
 
-    public static class Factory implements IRecipeFactory
-    {
+    public static class Factory implements IRecipeFactory {
+
         @Override
-        public IRecipe parse( JsonContext jsonContext, JsonObject jsonObject )
-        {
+        public IRecipe parse(JsonContext jsonContext, JsonObject jsonObject) {
             return new DiskRecipe();
         }
     }

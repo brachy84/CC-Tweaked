@@ -14,30 +14,28 @@ import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.EnumSet;
 
-public final class RedstoneUtil
-{
-    private RedstoneUtil() {}
+public final class RedstoneUtil {
 
-    @Deprecated
-    public static int getRedstoneOutput( World world, BlockPos pos, EnumFacing side )
-    {
-        return world.getRedstonePower( pos, side.getOpposite() );
+    private RedstoneUtil() {
     }
 
     @Deprecated
-    public static int getBundledRedstoneOutput( World world, BlockPos pos, EnumFacing side )
-    {
-        return BundledRedstone.getOutput( world, pos, side );
+    public static int getRedstoneOutput(World world, BlockPos pos, EnumFacing side) {
+        return world.getRedstonePower(pos, side.getOpposite());
     }
 
-    public static void propagateRedstoneOutput( World world, BlockPos pos, EnumFacing side )
-    {
+    @Deprecated
+    public static int getBundledRedstoneOutput(World world, BlockPos pos, EnumFacing side) {
+        return BundledRedstone.getOutput(world, pos, side);
+    }
+
+    public static void propagateRedstoneOutput(World world, BlockPos pos, EnumFacing side) {
         // Propagate ordinary output. See BlockRedstoneDiode.notifyNeighbors
-        IBlockState block = world.getBlockState( pos );
-        if( ForgeEventFactory.onNeighborNotify( world, pos, block, EnumSet.of( side ), false ).isCanceled() ) return;
+        IBlockState block = world.getBlockState(pos);
+        if (ForgeEventFactory.onNeighborNotify(world, pos, block, EnumSet.of(side), false).isCanceled()) return;
 
-        BlockPos neighbourPos = pos.offset( side );
-        world.neighborChanged( neighbourPos, block.getBlock(), pos );
-        world.notifyNeighborsOfStateExcept( neighbourPos, block.getBlock(), side.getOpposite() );
+        BlockPos neighbourPos = pos.offset(side);
+        world.neighborChanged(neighbourPos, block.getBlock(), pos);
+        world.notifyNeighborsOfStateExcept(neighbourPos, block.getBlock(), side.getOpposite());
     }
 }

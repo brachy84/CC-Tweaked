@@ -25,135 +25,112 @@ import net.minecraftforge.common.MinecraftForge;
 import javax.annotation.Nonnull;
 import java.util.List;
 
-public class TurtleMoveCommand implements ITurtleCommand
-{
+public class TurtleMoveCommand implements ITurtleCommand {
+
     private final MoveDirection m_direction;
 
-    public TurtleMoveCommand( MoveDirection direction )
-    {
+    public TurtleMoveCommand(MoveDirection direction) {
         m_direction = direction;
     }
 
     @Nonnull
     @Override
-    public TurtleCommandResult execute( @Nonnull ITurtleAccess turtle )
-    {
+    public TurtleCommandResult execute(@Nonnull ITurtleAccess turtle) {
         // Get world direction from direction
-        EnumFacing direction = m_direction.toWorldDir( turtle );
+        EnumFacing direction = m_direction.toWorldDir(turtle);
 
         // Check if we can move
         World oldWorld = turtle.getWorld();
         BlockPos oldPosition = turtle.getPosition();
-        BlockPos newPosition = oldPosition.offset( direction );
+        BlockPos newPosition = oldPosition.offset(direction);
 
-        TurtlePlayer turtlePlayer = TurtlePlaceCommand.createPlayer( turtle, oldPosition, direction );
-        TurtleCommandResult canEnterResult = canEnter( turtlePlayer, oldWorld, newPosition );
-        if( !canEnterResult.isSuccess() )
-        {
+        TurtlePlayer turtlePlayer = TurtlePlaceCommand.createPlayer(turtle, oldPosition, direction);
+        TurtleCommandResult canEnterResult = canEnter(turtlePlayer, oldWorld, newPosition);
+        if (!canEnterResult.isSuccess()) {
             return canEnterResult;
         }
 
         // Check existing block is air or replaceable
-        IBlockState state = oldWorld.getBlockState( newPosition );
+        IBlockState state = oldWorld.getBlockState(newPosition);
         Block block = state.getBlock();
-        if( !oldWorld.isAirBlock( newPosition ) &&
-            !WorldUtil.isLiquidBlock( oldWorld, newPosition ) &&
-            !block.isReplaceable( oldWorld, newPosition ) )
-        {
-            return TurtleCommandResult.failure( "Movement obstructed" );
+        if (!oldWorld.isAirBlock(newPosition) &&
+            !WorldUtil.isLiquidBlock(oldWorld, newPosition) &&
+            !block.isReplaceable(oldWorld, newPosition)) {
+            return TurtleCommandResult.failure("Movement obstructed");
         }
 
         // Check there isn't anything in the way
-        AxisAlignedBB aabb = state.getBoundingBox( oldWorld, oldPosition );
-        aabb = aabb.offset(
-            newPosition.getX(),
-            newPosition.getY(),
-            newPosition.getZ()
-        );
+        AxisAlignedBB aabb = state.getBoundingBox(oldWorld, oldPosition);
+        aabb = aabb.offset(newPosition.getX(), newPosition.getY(), newPosition.getZ());
 
-        if( !oldWorld.checkNoEntityCollision( aabb ) )
-        {
-            if( !ComputerCraft.turtlesCanPush || m_direction == MoveDirection.Up || m_direction == MoveDirection.Down )
-            {
-                return TurtleCommandResult.failure( "Movement obstructed" );
+        if (!oldWorld.checkNoEntityCollision(aabb)) {
+            if (!ComputerCraft.turtlesCanPush || m_direction == MoveDirection.Up || m_direction == MoveDirection.Down) {
+                return TurtleCommandResult.failure("Movement obstructed");
             }
 
             // Check there is space for all the pushable entities to be pushed
-            List<Entity> list = oldWorld.getEntitiesWithinAABB( Entity.class, aabb, x -> x != null && !x.isDead && x.preventEntitySpawning );
-            for( Entity entity : list )
-            {
+            List<Entity> list = oldWorld.getEntitiesWithinAABB(Entity.class, aabb, x -> x != null && !x.isDead && x.preventEntitySpawning);
+            for (Entity entity : list) {
                 AxisAlignedBB entityBB = entity.getEntityBoundingBox();
-                if( entityBB == null ) entityBB = entity.getCollisionBoundingBox();
-                if( entityBB == null ) continue;
+                if (entityBB == null) entityBB = entity.getCollisionBoundingBox();
+                if (entityBB == null) continue;
 
-                AxisAlignedBB pushedBB = entityBB.offset(
-                    direction.getXOffset(),
-                    direction.getYOffset(),
-                    direction.getZOffset()
-                );
-                if( !oldWorld.getCollisionBoxes( null, pushedBB ).isEmpty() )
-                {
-                    return TurtleCommandResult.failure( "Movement obstructed" );
+                AxisAlignedBB pushedBB = entityBB.offset(direction.getXOffset(), direction.getYOffset(), direction.getZOffset());
+                if (!oldWorld.getCollisionBoxes(null, pushedBB).isEmpty()) {
+                    return TurtleCommandResult.failure("Movement obstructed");
                 }
             }
         }
 
-        TurtleBlockEvent.Move moveEvent = new TurtleBlockEvent.Move( turtle, turtlePlayer, oldWorld, newPosition );
-        if( MinecraftForge.EVENT_BUS.post( moveEvent ) )
-        {
-            return TurtleCommandResult.failure( moveEvent.getFailureMessage() );
+        TurtleBlockEvent.Move moveEvent = new TurtleBlockEvent.Move(turtle, turtlePlayer, oldWorld, newPosition);
+        if (MinecraftForge.EVENT_BUS.post(moveEvent)) {
+            return TurtleCommandResult.failure(moveEvent.getFailureMessage());
         }
 
         // Check fuel level
-        if( turtle.isFuelNeeded() && turtle.getFuelLevel() < 1 )
-        {
-            return TurtleCommandResult.failure( "Out of fuel" );
+        if (turtle.isFuelNeeded() && turtle.getFuelLevel() < 1) {
+            return TurtleCommandResult.failure("Out of fuel");
         }
 
         // Move
-        if( !turtle.teleportTo( oldWorld, newPosition ) ) return TurtleCommandResult.failure( "Movement failed" );
+        if (!turtle.teleportTo(oldWorld, newPosition)) return TurtleCommandResult.failure("Movement failed");
 
         // Consume fuel
-        turtle.consumeFuel( 1 );
+        turtle.consumeFuel(1);
 
         // Animate
-        switch( m_direction )
-        {
+        switch (m_direction) {
             case Forward:
             default:
-                turtle.playAnimation( TurtleAnimation.MoveForward );
+                turtle.playAnimation(TurtleAnimation.MoveForward);
                 break;
             case Back:
-                turtle.playAnimation( TurtleAnimation.MoveBack );
+                turtle.playAnimation(TurtleAnimation.MoveBack);
                 break;
             case Up:
-                turtle.playAnimation( TurtleAnimation.MoveUp );
+                turtle.playAnimation(TurtleAnimation.MoveUp);
                 break;
             case Down:
-                turtle.playAnimation( TurtleAnimation.MoveDown );
+                turtle.playAnimation(TurtleAnimation.MoveDown);
                 break;
         }
         return TurtleCommandResult.success();
     }
 
-    private static TurtleCommandResult canEnter( TurtlePlayer turtlePlayer, World world, BlockPos position )
-    {
-        if( world.isOutsideBuildHeight( position ) )
-        {
-            return TurtleCommandResult.failure( position.getY() < 0 ? "Too low to move" : "Too high to move" );
+    private static TurtleCommandResult canEnter(TurtlePlayer turtlePlayer, World world, BlockPos position) {
+        if (world.isOutsideBuildHeight(position)) {
+            return TurtleCommandResult.failure(position.getY() < 0 ? "Too low to move" : "Too high to move");
         }
-        if( !world.isValid( position ) ) return TurtleCommandResult.failure( "Cannot leave the world" );
+        if (!world.isValid(position)) return TurtleCommandResult.failure("Cannot leave the world");
 
         // Check spawn protection
-        if( ComputerCraft.turtlesObeyBlockProtection && !TurtlePermissions.isBlockEnterable( world, position, turtlePlayer ) )
-        {
-            return TurtleCommandResult.failure( "Cannot enter protected area" );
+        if (ComputerCraft.turtlesObeyBlockProtection && !TurtlePermissions.isBlockEnterable(world, position, turtlePlayer)) {
+            return TurtleCommandResult.failure("Cannot enter protected area");
         }
 
-        if( !world.isBlockLoaded( position ) ) return TurtleCommandResult.failure( "Cannot leave loaded world" );
-        if( !world.getWorldBorder().contains( position ) )
-        {
-            return TurtleCommandResult.failure( "Cannot pass the world border" );
+        if (!world.isBlockLoaded(position)) return TurtleCommandResult.failure("Cannot leave loaded world");
+        if (!world.getWorldBorder().contains(position)) {
+            return TurtleCommandResult.failure("Cannot pass the world border");
         }
 
         return TurtleCommandResult.success();

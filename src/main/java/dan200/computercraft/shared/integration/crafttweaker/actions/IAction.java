@@ -10,22 +10,19 @@ import java.util.Optional;
 /**
  * An extension of {@link IAction} with a single validation function, rather than two.
  */
-public interface IAction extends crafttweaker.IAction
-{
-    default Optional<String> getValidationProblem()
-    {
+public interface IAction extends crafttweaker.IAction {
+
+    default Optional<String> getValidationProblem() {
         return Optional.empty();
     }
 
     @Override
-    default boolean validate()
-    {
+    default boolean validate() {
         return !getValidationProblem().isPresent();
     }
 
     @Override
-    default String describeInvalid()
-    {
-        return getValidationProblem().orElse( "No problems found." );
+    default String describeInvalid() {
+        return getValidationProblem().orElse("No problems found.");
     }
 }

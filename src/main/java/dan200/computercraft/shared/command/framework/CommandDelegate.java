@@ -21,76 +21,63 @@ import java.util.List;
 /**
  * {@link ICommand} which delegates to a {@link ISubCommand}.
  */
-public class CommandDelegate implements ICommand
-{
+public class CommandDelegate implements ICommand {
+
     private final ISubCommand command;
 
-    public CommandDelegate( ISubCommand command )
-    {
+    public CommandDelegate(ISubCommand command) {
         this.command = command;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return command.getName();
     }
 
     @Nonnull
     @Override
-    public String getUsage( @Nonnull ICommandSender sender )
-    {
-        return new CommandContext( sender.getServer(), sender, command ).getFullUsage();
+    public String getUsage(@Nonnull ICommandSender sender) {
+        return new CommandContext(sender.getServer(), sender, command).getFullUsage();
     }
 
     @Nonnull
     @Override
-    public List<String> getAliases()
-    {
+    public List<String> getAliases() {
         return Collections.emptyList();
     }
 
     @Override
-    public void execute( @Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args ) throws CommandException
-    {
-        try
-        {
-            command.execute( new CommandContext( server, sender, command ), Arrays.asList( args ) );
-        }
-        catch( CommandException e )
-        {
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
+        try {
+            command.execute(new CommandContext(server, sender, command), Arrays.asList(args));
+        } catch (CommandException e) {
             throw e;
-        }
-        catch( Throwable e )
-        {
-            ComputerCraft.log.error( "Unhandled exception in command", e );
-            throw new CommandException( "commands.computercraft.generic.exception", e.toString() );
+        } catch (Throwable e) {
+            ComputerCraft.log.error("Unhandled exception in command", e);
+            throw new CommandException("commands.computercraft.generic.exception", e.toString());
         }
     }
 
     @Nonnull
     @Override
-    public List<String> getTabCompletions( @Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args, @Nullable BlockPos pos )
-    {
-        return command.getCompletion( new CommandContext( server, sender, command ), Arrays.asList( args ) );
+    public List<String> getTabCompletions(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args,
+                                          @Nullable BlockPos pos) {
+        return command.getCompletion(new CommandContext(server, sender, command), Arrays.asList(args));
     }
 
     @Override
-    public boolean checkPermission( @Nonnull MinecraftServer server, @Nonnull ICommandSender sender )
-    {
-        return command.checkPermission( new CommandContext( server, sender, command ) );
+    public boolean checkPermission(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender) {
+        return command.checkPermission(new CommandContext(server, sender, command));
     }
 
     @Override
-    public boolean isUsernameIndex( @Nonnull String[] args, int index )
-    {
+    public boolean isUsernameIndex(@Nonnull String[] args, int index) {
         return false;
     }
 
     @Override
-    public int compareTo( @Nonnull ICommand o )
-    {
-        return getName().compareTo( o.getName() );
+    public int compareTo(@Nonnull ICommand o) {
+        return getName().compareTo(o.getName());
     }
 }

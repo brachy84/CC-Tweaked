@@ -12,39 +12,34 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.Nullable;
 
-public class ServerTableFormatter implements TableFormatter
-{
+public class ServerTableFormatter implements TableFormatter {
+
     private final ICommandSender source;
 
-    public ServerTableFormatter( ICommandSender source )
-    {
+    public ServerTableFormatter(ICommandSender source) {
         this.source = source;
     }
 
     @Override
     @Nullable
-    public ITextComponent getPadding( ITextComponent component, int width )
-    {
-        int extraWidth = width - getWidth( component );
-        if( extraWidth <= 0 ) return null;
-        return new TextComponentString( StringUtils.repeat( ' ', extraWidth ) );
+    public ITextComponent getPadding(ITextComponent component, int width) {
+        int extraWidth = width - getWidth(component);
+        if (extraWidth <= 0) return null;
+        return new TextComponentString(StringUtils.repeat(' ', extraWidth));
     }
 
     @Override
-    public int getColumnPadding()
-    {
+    public int getColumnPadding() {
         return 1;
     }
 
     @Override
-    public int getWidth( ITextComponent component )
-    {
+    public int getWidth(ITextComponent component) {
         return component.getUnformattedText().length();
     }
 
     @Override
-    public void writeLine( int id, ITextComponent component )
-    {
-        source.sendMessage( component );
+    public void writeLine(int id, ITextComponent component) {
+        source.sendMessage(component);
     }
 }

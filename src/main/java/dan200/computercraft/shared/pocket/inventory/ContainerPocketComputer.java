@@ -17,35 +17,30 @@ import net.minecraft.util.EnumHand;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ContainerPocketComputer extends ContainerHeldItem implements IContainerComputer
-{
-    private final InputState input = new InputState( this );
+public class ContainerPocketComputer extends ContainerHeldItem implements IContainerComputer {
 
-    public ContainerPocketComputer( EntityPlayer player, EnumHand hand )
-    {
-        super( player, hand );
+    private final InputState input = new InputState(this);
+
+    public ContainerPocketComputer(EntityPlayer player, EnumHand hand) {
+        super(player, hand);
     }
 
     @Nullable
     @Override
-    public IComputer getComputer()
-    {
+    public IComputer getComputer() {
         ItemStack stack = getStack();
-        return !stack.isEmpty() && stack.getItem() instanceof ItemPocketComputer
-            ? ItemPocketComputer.getServerComputer( stack ) : null;
+        return !stack.isEmpty() && stack.getItem() instanceof ItemPocketComputer ? ItemPocketComputer.getServerComputer(stack) : null;
     }
 
     @Nonnull
     @Override
-    public InputState getInput()
-    {
+    public InputState getInput() {
         return input;
     }
 
     @Override
-    public void onContainerClosed( EntityPlayer player )
-    {
-        super.onContainerClosed( player );
+    public void onContainerClosed(EntityPlayer player) {
+        super.onContainerClosed(player);
         input.close();
     }
 }

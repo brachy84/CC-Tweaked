@@ -9,16 +9,14 @@ import dan200.computercraft.shared.peripheral.PeripheralType;
 import dan200.computercraft.shared.peripheral.common.ItemPeripheralBase;
 import net.minecraft.block.Block;
 
-public class ItemWiredModemFull extends ItemPeripheralBase
-{
-    public ItemWiredModemFull( Block block )
-    {
-        super( block );
+public class ItemWiredModemFull extends ItemPeripheralBase {
+
+    public ItemWiredModemFull(Block block) {
+        super(block);
     }
 
     @Override
-    public PeripheralType getPeripheralType( int damage )
-    {
+    public PeripheralType getPeripheralType(int damage) {
         return PeripheralType.WiredModemFull;
     }
 }

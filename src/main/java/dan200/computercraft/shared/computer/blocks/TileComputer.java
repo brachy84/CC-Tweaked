@@ -17,40 +17,29 @@ import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
 
-public class TileComputer extends TileComputerBase
-{
+public class TileComputer extends TileComputerBase {
+
     private static final String TAG_STATE = "state";
 
     private ComputerProxy m_proxy;
     private ComputerState state = ComputerState.Off;
 
     @Override
-    protected ServerComputer createComputer( int instanceID, int id )
-    {
+    protected ServerComputer createComputer(int instanceID, int id) {
         ComputerFamily family = getFamily();
-        ServerComputer computer = new ServerComputer(
-            getWorld(),
-            id,
-            label,
-            instanceID,
-            family,
-            ComputerCraft.terminalWidth_computer,
-            ComputerCraft.terminalHeight_computer
-        );
-        computer.setPosition( getPos() );
+        ServerComputer computer = new ServerComputer(getWorld(), id, label, instanceID, family, ComputerCraft.terminalWidth_computer,
+                                                     ComputerCraft.terminalHeight_computer);
+        computer.setPosition(getPos());
         return computer;
     }
 
     @Override
-    public ComputerProxy createProxy()
-    {
-        if( m_proxy == null )
-        {
-            m_proxy = new ComputerProxy()
-            {
+    public ComputerProxy createProxy() {
+        if (m_proxy == null) {
+            m_proxy = new ComputerProxy() {
+
                 @Override
-                protected TileComputerBase getTile()
-                {
+                protected TileComputerBase getTile() {
                     return TileComputer.this;
                 }
             };
@@ -59,37 +48,31 @@ public class TileComputer extends TileComputerBase
     }
 
     @Override
-    public void openGUI( EntityPlayer player )
-    {
-        Containers.openComputerGUI( player, this );
+    public void openGUI(EntityPlayer player) {
+        Containers.openComputerGUI(player, this);
     }
 
     @Override
-    protected void writeDescription( @Nonnull NBTTagCompound nbt )
-    {
-        super.writeDescription( nbt );
-        nbt.setInteger( TAG_STATE, state.ordinal() );
+    protected void writeDescription(@Nonnull NBTTagCompound nbt) {
+        super.writeDescription(nbt);
+        nbt.setInteger(TAG_STATE, state.ordinal());
     }
 
     @Override
-    protected final void readDescription( @Nonnull NBTTagCompound nbt )
-    {
-        super.readDescription( nbt );
-        state = ComputerState.valueOf( nbt.getInteger( TAG_STATE ) );
+    protected final void readDescription(@Nonnull NBTTagCompound nbt) {
+        super.readDescription(nbt);
+        state = ComputerState.valueOf(nbt.getInteger(TAG_STATE));
         updateBlock();
     }
 
-    public boolean isUsableByPlayer( EntityPlayer player )
-    {
-        return isUsable( player, false );
+    public boolean isUsableByPlayer(EntityPlayer player) {
+        return isUsable(player, false);
     }
 
     @Override
-    public void update()
-    {
+    public void update() {
         super.update();
-        if( !world.isRemote )
-        {
+        if (!world.isRemote) {
             ServerComputer computer = getServerComputer();
             state = computer == null ? ComputerState.Off : computer.getState();
         }
@@ -98,32 +81,28 @@ public class TileComputer extends TileComputerBase
     // IDirectionalTile
 
     @Override
-    public EnumFacing getDirection()
-    {
+    public EnumFacing getDirection() {
         IBlockState state = getBlockState();
-        return state.getValue( BlockComputer.Properties.FACING );
+        return state.getValue(BlockComputer.Properties.FACING);
     }
 
     @Override
-    public void setDirection( EnumFacing dir )
-    {
-        if( dir.getAxis() == EnumFacing.Axis.Y ) dir = EnumFacing.NORTH;
-        setBlockState( getBlockState().withProperty( BlockComputer.Properties.FACING, dir ) );
+    public void setDirection(EnumFacing dir) {
+        if (dir.getAxis() == EnumFacing.Axis.Y) dir = EnumFacing.NORTH;
+        setBlockState(getBlockState().withProperty(BlockComputer.Properties.FACING, dir));
         updateInput();
     }
 
     @Override
-    protected ComputerSide remapLocalSide( ComputerSide localSide )
-    {
+    protected ComputerSide remapLocalSide(ComputerSide localSide) {
         // For legacy reasons, computers invert the meaning of "left" and "right". A computer's front is facing
         // towards you, but a turtle's front is facing the other way.
-        if( localSide == ComputerSide.RIGHT ) return ComputerSide.LEFT;
-        if( localSide == ComputerSide.LEFT ) return ComputerSide.RIGHT;
+        if (localSide == ComputerSide.RIGHT) return ComputerSide.LEFT;
+        if (localSide == ComputerSide.LEFT) return ComputerSide.RIGHT;
         return localSide;
     }
 
-    public ComputerState getState()
-    {
+    public ComputerState getState() {
         return state;
     }
 }

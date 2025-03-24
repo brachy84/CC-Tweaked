@@ -17,24 +17,21 @@ import javax.annotation.Nonnull;
 /**
  * Represents a recipe which converts a computer from one form into another.
  */
-public abstract class ComputerConvertRecipe extends ShapedRecipes
-{
-    public ComputerConvertRecipe( String group, @Nonnull CraftingHelper.ShapedPrimer primer, @Nonnull ItemStack result )
-    {
-        super( group, primer.width, primer.height, primer.input, result );
+public abstract class ComputerConvertRecipe extends ShapedRecipes {
+
+    public ComputerConvertRecipe(String group, @Nonnull CraftingHelper.ShapedPrimer primer, @Nonnull ItemStack result) {
+        super(group, primer.width, primer.height, primer.input, result);
     }
 
     @Nonnull
-    protected abstract ItemStack convert( @Nonnull IComputerItem item, @Nonnull ItemStack stack );
+    protected abstract ItemStack convert(@Nonnull IComputerItem item, @Nonnull ItemStack stack);
 
     @Override
-    public boolean matches( @Nonnull InventoryCrafting inventory, @Nonnull World world )
-    {
-        if( !super.matches( inventory, world ) ) return false;
+    public boolean matches(@Nonnull InventoryCrafting inventory, @Nonnull World world) {
+        if (!super.matches(inventory, world)) return false;
 
-        for( int i = 0; i < inventory.getSizeInventory(); i++ )
-        {
-            if( inventory.getStackInSlot( i ).getItem() instanceof IComputerItem ) return true;
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            if (inventory.getStackInSlot(i).getItem() instanceof IComputerItem) return true;
         }
 
         return false;
@@ -42,13 +39,11 @@ public abstract class ComputerConvertRecipe extends ShapedRecipes
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult( @Nonnull InventoryCrafting inventory )
-    {
+    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inventory) {
         // Find our computer item and convert it.
-        for( int i = 0; i < inventory.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inventory.getStackInSlot( i );
-            if( stack.getItem() instanceof IComputerItem ) return convert( (IComputerItem) stack.getItem(), stack );
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (stack.getItem() instanceof IComputerItem) return convert((IComputerItem) stack.getItem(), stack);
         }
 
         return ItemStack.EMPTY;

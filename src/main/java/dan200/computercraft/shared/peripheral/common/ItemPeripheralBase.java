@@ -16,46 +16,42 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public abstract class ItemPeripheralBase extends ItemBlock implements IPeripheralItem
-{
-    protected ItemPeripheralBase( Block block )
-    {
-        super( block );
-        setMaxStackSize( 64 );
+public abstract class ItemPeripheralBase extends ItemBlock implements IPeripheralItem {
+
+    protected ItemPeripheralBase(Block block) {
+        super(block);
+        setMaxStackSize(64);
     }
 
-    public abstract PeripheralType getPeripheralType( int damage );
+    public abstract PeripheralType getPeripheralType(int damage);
 
     @Override
-    public final int getMetadata( int damage )
-    {
+    public final int getMetadata(int damage) {
         return damage;
     }
 
     @Override
-    public boolean canPlaceBlockOnSide( World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side, EntityPlayer player, @Nonnull ItemStack stack ) // canPlaceItemBlockOnSide
+    public boolean canPlaceBlockOnSide(World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side, EntityPlayer player,
+                                       @Nonnull ItemStack stack) // canPlaceItemBlockOnSide
     {
-        PeripheralType type = getPeripheralType( stack );
-        switch( type )
-        {
+        PeripheralType type = getPeripheralType(stack);
+        switch (type) {
             case WirelessModem:
             case WiredModem:
             case AdvancedModem:
-                return world.isSideSolid( pos, side );
+                return world.isSideSolid(pos, side);
             case Cable:
                 return true;
             default:
-                return super.canPlaceBlockOnSide( world, pos, side, player, stack );
+                return super.canPlaceBlockOnSide(world, pos, side, player, stack);
         }
     }
 
     @Nonnull
     @Override
-    public String getTranslationKey( @Nonnull ItemStack stack )
-    {
-        PeripheralType type = getPeripheralType( stack );
-        switch( type )
-        {
+    public String getTranslationKey(@Nonnull ItemStack stack) {
+        PeripheralType type = getPeripheralType(stack);
+        switch (type) {
             case DiskDrive:
             default:
                 return "tile.computercraft:drive";
@@ -82,8 +78,7 @@ public abstract class ItemPeripheralBase extends ItemBlock implements IPeriphera
     }
 
     @Override
-    public final PeripheralType getPeripheralType( @Nonnull ItemStack stack )
-    {
-        return getPeripheralType( stack.getItemDamage() );
+    public final PeripheralType getPeripheralType(@Nonnull ItemStack stack) {
+        return getPeripheralType(stack.getItemDamage());
     }
 }

@@ -18,26 +18,23 @@ import java.nio.channels.SeekableByteChannel;
 import static dan200.computercraft.api.lua.ArgumentHelper.optLong;
 import static dan200.computercraft.api.lua.ArgumentHelper.optString;
 
-public abstract class HandleGeneric implements ILuaObject
-{
+public abstract class HandleGeneric implements ILuaObject {
+
     private Closeable m_closable;
     private boolean m_open = true;
 
-    protected HandleGeneric( @Nonnull Closeable closable )
-    {
+    protected HandleGeneric(@Nonnull Closeable closable) {
         m_closable = closable;
     }
 
-    protected void checkOpen() throws LuaException
-    {
-        if( !m_open ) throw new LuaException( "attempt to use a closed file" );
+    protected void checkOpen() throws LuaException {
+        if (!m_open) throw new LuaException("attempt to use a closed file");
     }
 
-    protected final void close()
-    {
+    protected final void close() {
         m_open = false;
 
-        IoUtil.closeQuietly( m_closable );
+        IoUtil.closeQuietly(m_closable);
         m_closable = null;
     }
 
@@ -50,51 +47,39 @@ public abstract class HandleGeneric implements ILuaObject
      * @throws LuaException If the arguments were invalid
      * @see <a href="https://www.lua.org/manual/5.1/manual.html#pdf-file:seek">{@code file:seek} in the Lua manual.</a>
      */
-    protected static Object[] handleSeek( SeekableByteChannel channel, Object[] args ) throws LuaException
-    {
-        try
-        {
-            String whence = optString( args, 0, "cur" );
-            long offset = optLong( args, 1, 0 );
-            switch( whence )
-            {
+    protected static Object[] handleSeek(SeekableByteChannel channel, Object[] args) throws LuaException {
+        try {
+            String whence = optString(args, 0, "cur");
+            long offset = optLong(args, 1, 0);
+            switch (whence) {
                 case "set":
-                    channel.position( offset );
+                    channel.position(offset);
                     break;
                 case "cur":
-                    channel.position( channel.position() + offset );
+                    channel.position(channel.position() + offset);
                     break;
                 case "end":
-                    channel.position( channel.size() + offset );
+                    channel.position(channel.size() + offset);
                     break;
                 default:
-                    throw new LuaException( "bad argument #1 to 'seek' (invalid option '" + whence + "'" );
+                    throw new LuaException("bad argument #1 to 'seek' (invalid option '" + whence + "'");
             }
 
-            return new Object[] { channel.position() };
-        }
-        catch( IllegalArgumentException e )
-        {
-            return new Object[] { false, "Position is negative" };
-        }
-        catch( IOException e )
-        {
+            return new Object[]{channel.position()};
+        } catch (IllegalArgumentException e) {
+            return new Object[]{false, "Position is negative"};
+        } catch (IOException e) {
             return null;
         }
     }
 
-    protected static SeekableByteChannel asSeekable( Channel channel )
-    {
-        if( !(channel instanceof SeekableByteChannel) ) return null;
+    protected static SeekableByteChannel asSeekable(Channel channel) {
+        if (!(channel instanceof SeekableByteChannel seekable)) return null;
 
-        SeekableByteChannel seekable = (SeekableByteChannel) channel;
-        try
-        {
-            seekable.position( seekable.position() );
+        try {
+            seekable.position(seekable.position());
             return seekable;
-        }
-        catch( IOException | UnsupportedOperationException e )
-        {
+        } catch (IOException | UnsupportedOperationException e) {
             return null;
         }
     }

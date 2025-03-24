@@ -37,87 +37,80 @@ import java.util.HashMap;
 import java.util.Map;
 
 @MCMPAddon
-public class MCMPIntegration implements IMCMPAddon
-{
-    private static final ResourceLocation CAPABILITY_KEY = new ResourceLocation( ComputerCraft.MOD_ID, "mcmultipart" );
+public class MCMPIntegration implements IMCMPAddon {
+
+    private static final ResourceLocation CAPABILITY_KEY = new ResourceLocation(ComputerCraft.MOD_ID, "mcmultipart");
 
     static final Map<Block, IMultipart> multipartMap = new HashMap<>();
 
-    private static void register( IMultipartRegistry registry, Block block, IMultipart multipart )
-    {
-        registry.registerPartWrapper( block, multipart );
-        multipartMap.put( block, multipart );
+    private static void register(IMultipartRegistry registry, Block block, IMultipart multipart) {
+        registry.registerPartWrapper(block, multipart);
+        multipartMap.put(block, multipart);
     }
 
     @Override
-    public void registerParts( IMultipartRegistry registry )
-    {
+    public void registerParts(IMultipartRegistry registry) {
         // Setup all parts
-        register( registry, ComputerCraft.Blocks.peripheral, new PartPeripheral() );
-        register( registry, ComputerCraft.Blocks.advancedModem, new PartAdvancedModem() );
+        register(registry, ComputerCraft.Blocks.peripheral, new PartPeripheral());
+        register(registry, ComputerCraft.Blocks.advancedModem, new PartAdvancedModem());
 
         // Subscribe to capability events
-        MinecraftForge.EVENT_BUS.register( MCMPIntegration.class );
+        MinecraftForge.EVENT_BUS.register(MCMPIntegration.class);
 
         // Register a peripheral provider
-        ComputerCraftAPI.registerPeripheralProvider( ( world, pos, side ) ->
-        {
-            TileEntity tile = world.getTileEntity( pos );
-            if( tile == null || !tile.hasCapability( MCMPCapabilities.MULTIPART_CONTAINER, null ) ) return null;
-            IMultipartContainer container = tile.getCapability( MCMPCapabilities.MULTIPART_CONTAINER, null );
-            if( container == null ) return null;
+        ComputerCraftAPI.registerPeripheralProvider((world, pos, side) -> {
+            TileEntity tile = world.getTileEntity(pos);
+            if (tile == null || !tile.hasCapability(MCMPCapabilities.MULTIPART_CONTAINER, null)) return null;
+            IMultipartContainer container = tile.getCapability(MCMPCapabilities.MULTIPART_CONTAINER, null);
+            if (container == null) return null;
 
-            IMultipartTile multipart = container.getPartTile( EnumFaceSlot.fromFace( side ) ).orElse( null );
-            if( multipart == null ) return null;
-            if( multipart instanceof IPeripheral ) return (IPeripheral) multipart;
-            if( multipart instanceof IPeripheralTile ) return ((IPeripheralTile) multipart).getPeripheral( side );
+            IMultipartTile multipart = container.getPartTile(EnumFaceSlot.fromFace(side)).orElse(null);
+            if (multipart == null) return null;
+            if (multipart instanceof IPeripheral) return (IPeripheral) multipart;
+            if (multipart instanceof IPeripheralTile) return ((IPeripheralTile) multipart).getPeripheral(side);
 
             TileEntity underlying = multipart.getTileEntity();
-            if( underlying instanceof IPeripheral ) return (IPeripheral) underlying;
-            if( underlying instanceof IPeripheralTile ) return ((IPeripheralTile) underlying).getPeripheral( side );
+            if (underlying instanceof IPeripheral) return (IPeripheral) underlying;
+            if (underlying instanceof IPeripheralTile) return ((IPeripheralTile) underlying).getPeripheral(side);
 
             return null;
-        } );
+        });
     }
 
     @SubscribeEvent
-    public static void attach( AttachCapabilitiesEvent<TileEntity> event )
-    {
+    public static void attach(AttachCapabilitiesEvent<TileEntity> event) {
         TileEntity tile = event.getObject();
-        if( tile instanceof TileAdvancedModem || tile instanceof TileWirelessModem
-            || tile instanceof TilePeripheralBase || tile instanceof TileMonitor )
-        {
+        if (tile instanceof TileAdvancedModem ||
+            tile instanceof TileWirelessModem ||
+            tile instanceof TilePeripheralBase ||
+            tile instanceof TileMonitor) {
             // We need to attach to modems (obviously), but also any other tile created by BlockPeripheral. Otherwise
             // IMultipart.convertToMultipartTile will error.
-            event.addCapability( CAPABILITY_KEY, new BasicMultipart( tile ) );
+            event.addCapability(CAPABILITY_KEY, new BasicMultipart(tile));
         }
     }
 
-    private static final class BasicMultipart implements ICapabilityProvider
-    {
+    private static final class BasicMultipart implements ICapabilityProvider {
+
         private final TileEntity tile;
         private IMultipartTile wrapped;
 
-        private BasicMultipart( TileEntity tile )
-        {
+        private BasicMultipart(TileEntity tile) {
             this.tile = tile;
         }
 
         @Override
-        public boolean hasCapability( @Nonnull Capability<?> capability, @Nullable EnumFacing facing )
-        {
+        public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing facing) {
             return capability == MCMPCapabilities.MULTIPART_TILE;
         }
 
         @Nullable
         @Override
-        public <T> T getCapability( @Nonnull Capability<T> capability, @Nullable EnumFacing facing )
-        {
-            if( capability == MCMPCapabilities.MULTIPART_TILE )
-            {
+        public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing facing) {
+            if (capability == MCMPCapabilities.MULTIPART_TILE) {
                 IMultipartTile wrapped = this.wrapped;
-                if( wrapped == null ) wrapped = this.wrapped = IMultipartTile.wrap( tile );
-                return MCMPCapabilities.MULTIPART_TILE.cast( wrapped );
+                if (wrapped == null) wrapped = this.wrapped = IMultipartTile.wrap(tile);
+                return MCMPCapabilities.MULTIPART_TILE.cast(wrapped);
             }
 
             return null;

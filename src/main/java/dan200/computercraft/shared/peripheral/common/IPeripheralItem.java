@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public interface IPeripheralItem
-{
-    PeripheralType getPeripheralType( @Nonnull ItemStack stack );
+public interface IPeripheralItem {
+
+    PeripheralType getPeripheralType(@Nonnull ItemStack stack);
 }

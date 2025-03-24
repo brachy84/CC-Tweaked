@@ -11,39 +11,33 @@ import net.minecraft.network.PacketBuffer;
 
 import javax.annotation.Nonnull;
 
-public class ComputerActionServerMessage extends ComputerServerMessage
-{
+public class ComputerActionServerMessage extends ComputerServerMessage {
+
     private Action action;
 
-    public ComputerActionServerMessage( int instanceId, Action action )
-    {
-        super( instanceId );
+    public ComputerActionServerMessage(int instanceId, Action action) {
+        super(instanceId);
         this.action = action;
     }
 
-    public ComputerActionServerMessage()
-    {
+    public ComputerActionServerMessage() {
     }
 
     @Override
-    public void toBytes( @Nonnull PacketBuffer buf )
-    {
-        super.toBytes( buf );
-        buf.writeEnumValue( action );
+    public void toBytes(@Nonnull PacketBuffer buf) {
+        super.toBytes(buf);
+        buf.writeEnumValue(action);
     }
 
     @Override
-    public void fromBytes( @Nonnull PacketBuffer buf )
-    {
-        super.fromBytes( buf );
-        action = buf.readEnumValue( Action.class );
+    public void fromBytes(@Nonnull PacketBuffer buf) {
+        super.fromBytes(buf);
+        action = buf.readEnumValue(Action.class);
     }
 
     @Override
-    protected void handle( @Nonnull ServerComputer computer, @Nonnull IContainerComputer container )
-    {
-        switch( action )
-        {
+    protected void handle(@Nonnull ServerComputer computer, @Nonnull IContainerComputer container) {
+        switch (action) {
             case TURN_ON:
                 computer.turnOn();
                 break;
@@ -56,10 +50,7 @@ public class ComputerActionServerMessage extends ComputerServerMessage
         }
     }
 
-    public enum Action
-    {
-        TURN_ON,
-        SHUTDOWN,
-        REBOOT
+    public enum Action {
+        TURN_ON, SHUTDOWN, REBOOT
     }
 }

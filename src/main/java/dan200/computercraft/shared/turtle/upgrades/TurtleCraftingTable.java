@@ -23,52 +23,42 @@ import org.apache.commons.lang3.tuple.Pair;
 import javax.annotation.Nonnull;
 import javax.vecmath.Matrix4f;
 
-public class TurtleCraftingTable extends AbstractTurtleUpgrade
-{
-    @SideOnly( Side.CLIENT )
-    private ModelResourceLocation m_leftModel;
+public class TurtleCraftingTable extends AbstractTurtleUpgrade {
 
-    @SideOnly( Side.CLIENT )
-    private ModelResourceLocation m_rightModel;
+    @SideOnly(Side.CLIENT) private ModelResourceLocation m_leftModel;
 
-    public TurtleCraftingTable( ResourceLocation id, int legacyId )
-    {
-        super( id, legacyId, TurtleUpgradeType.Peripheral, Blocks.CRAFTING_TABLE );
+    @SideOnly(Side.CLIENT) private ModelResourceLocation m_rightModel;
+
+    public TurtleCraftingTable(ResourceLocation id, int legacyId) {
+        super(id, legacyId, TurtleUpgradeType.Peripheral, Blocks.CRAFTING_TABLE);
     }
 
     @Override
-    public IPeripheral createPeripheral( @Nonnull ITurtleAccess turtle, @Nonnull TurtleSide side )
-    {
-        return new CraftingTablePeripheral( turtle );
+    public IPeripheral createPeripheral(@Nonnull ITurtleAccess turtle, @Nonnull TurtleSide side) {
+        return new CraftingTablePeripheral(turtle);
     }
 
-    @SideOnly( Side.CLIENT )
-    private void loadModelLocations()
-    {
-        if( m_leftModel == null )
-        {
-            m_leftModel = new ModelResourceLocation( "computercraft:turtle_crafting_table_left", "inventory" );
-            m_rightModel = new ModelResourceLocation( "computercraft:turtle_crafting_table_right", "inventory" );
+    @SideOnly(Side.CLIENT)
+    private void loadModelLocations() {
+        if (m_leftModel == null) {
+            m_leftModel = new ModelResourceLocation("computercraft:turtle_crafting_table_left", "inventory");
+            m_rightModel = new ModelResourceLocation("computercraft:turtle_crafting_table_right", "inventory");
         }
     }
 
     @Nonnull
     @Override
-    @SideOnly( Side.CLIENT )
-    public Pair<IBakedModel, Matrix4f> getModel( ITurtleAccess turtle, @Nonnull TurtleSide side )
-    {
+    @SideOnly(Side.CLIENT)
+    public Pair<IBakedModel, Matrix4f> getModel(ITurtleAccess turtle, @Nonnull TurtleSide side) {
         loadModelLocations();
 
         Matrix4f transform = null;
         Minecraft mc = Minecraft.getMinecraft();
         ModelManager modelManager = mc.getRenderItem().getItemModelMesher().getModelManager();
-        if( side == TurtleSide.Left )
-        {
-            return Pair.of( modelManager.getModel( m_leftModel ), transform );
-        }
-        else
-        {
-            return Pair.of( modelManager.getModel( m_rightModel ), transform );
+        if (side == TurtleSide.Left) {
+            return Pair.of(modelManager.getModel(m_leftModel), transform);
+        } else {
+            return Pair.of(modelManager.getModel(m_rightModel), transform);
         }
     }
 }

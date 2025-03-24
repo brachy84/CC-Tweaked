@@ -20,47 +20,41 @@ import net.minecraftforge.common.crafting.JsonContext;
 
 import javax.annotation.Nonnull;
 
-public class ImpostorRecipe extends ShapedRecipes
-{
-    public ImpostorRecipe( @Nonnull String group, int width, int height, NonNullList<Ingredient> ingredients, @Nonnull ItemStack result )
-    {
-        super( group, width, height, ingredients, result );
+public class ImpostorRecipe extends ShapedRecipes {
+
+    public ImpostorRecipe(@Nonnull String group, int width, int height, NonNullList<Ingredient> ingredients, @Nonnull ItemStack result) {
+        super(group, width, height, ingredients, result);
     }
 
-    public ImpostorRecipe( @Nonnull String group, int width, int height, ItemStack[] ingredients, @Nonnull ItemStack result )
-    {
-        super( group, width, height, convert( ingredients ), result );
+    public ImpostorRecipe(@Nonnull String group, int width, int height, ItemStack[] ingredients, @Nonnull ItemStack result) {
+        super(group, width, height, convert(ingredients), result);
     }
 
-    private static NonNullList<Ingredient> convert( ItemStack[] items )
-    {
-        NonNullList<Ingredient> ingredients = NonNullList.withSize( items.length, Ingredient.EMPTY );
-        for( int i = 0; i < items.length; i++ ) ingredients.set( i, Ingredient.fromStacks( items[i] ) );
+    private static NonNullList<Ingredient> convert(ItemStack[] items) {
+        NonNullList<Ingredient> ingredients = NonNullList.withSize(items.length, Ingredient.EMPTY);
+        for (int i = 0; i < items.length; i++) ingredients.set(i, Ingredient.fromStacks(items[i]));
         return ingredients;
     }
 
     @Override
-    public boolean matches( @Nonnull InventoryCrafting inv, World world )
-    {
+    public boolean matches(@Nonnull InventoryCrafting inv, World world) {
         return false;
     }
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult( @Nonnull InventoryCrafting inventory )
-    {
+    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inventory) {
         return ItemStack.EMPTY;
     }
 
-    public static class Factory implements IRecipeFactory
-    {
+    public static class Factory implements IRecipeFactory {
+
         @Override
-        public IRecipe parse( JsonContext ctx, JsonObject json )
-        {
-            String group = JsonUtils.getString( json, "group", "" );
-            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer( ctx, json );
-            ItemStack result = CraftingHelper.getItemStack( JsonUtils.getJsonObject( json, "result" ), ctx );
-            return new ImpostorRecipe( group, primer.width, primer.height, primer.input, result );
+        public IRecipe parse(JsonContext ctx, JsonObject json) {
+            String group = JsonUtils.getString(json, "group", "");
+            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer(ctx, json);
+            ItemStack result = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), ctx);
+            return new ImpostorRecipe(group, primer.width, primer.height, primer.input, result);
         }
     }
 }

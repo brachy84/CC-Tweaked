@@ -22,27 +22,23 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class TurtleShovel extends TurtleTool
-{
-    public TurtleShovel( ResourceLocation id, int legacyId, String adjective, Item item )
-    {
-        super( id, legacyId, adjective, item );
+public class TurtleShovel extends TurtleTool {
+
+    public TurtleShovel(ResourceLocation id, int legacyId, String adjective, Item item) {
+        super(id, legacyId, adjective, item);
     }
 
-    public TurtleShovel( ResourceLocation id, int legacyId, Item item )
-    {
-        super( id, legacyId, item );
+    public TurtleShovel(ResourceLocation id, int legacyId, Item item) {
+        super(id, legacyId, item);
     }
 
-    public TurtleShovel( ResourceLocation id, ItemStack craftItem, ItemStack toolItem )
-    {
-        super( id, craftItem, toolItem );
+    public TurtleShovel(ResourceLocation id, ItemStack craftItem, ItemStack toolItem) {
+        super(id, craftItem, toolItem);
     }
 
     @Override
-    protected boolean canBreakBlock( IBlockState state, World world, BlockPos pos, TurtlePlayer player )
-    {
-        if( !super.canBreakBlock( state, world, pos, player ) ) return false;
+    protected boolean canBreakBlock(IBlockState state, World world, BlockPos pos, TurtlePlayer player) {
+        if (!super.canBreakBlock(state, world, pos, player)) return false;
 
         Material material = state.getMaterial();
         return material == Material.GROUND ||
@@ -60,17 +56,15 @@ public class TurtleShovel extends TurtleTool
 
     @Nonnull
     @Override
-    public TurtleCommandResult useTool( @Nonnull ITurtleAccess turtle, @Nonnull TurtleSide side, @Nonnull TurtleVerb verb, @Nonnull EnumFacing direction )
-    {
-        if( verb == TurtleVerb.Dig )
-        {
+    public TurtleCommandResult useTool(@Nonnull ITurtleAccess turtle, @Nonnull TurtleSide side, @Nonnull TurtleVerb verb,
+                                       @Nonnull EnumFacing direction) {
+        if (verb == TurtleVerb.Dig) {
             ItemStack shovel = item.copy();
-            ItemStack remainder = TurtlePlaceCommand.deploy( shovel, turtle, direction, null, null );
-            if( remainder != shovel )
-            {
+            ItemStack remainder = TurtlePlaceCommand.deploy(shovel, turtle, direction, null, null);
+            if (remainder != shovel) {
                 return TurtleCommandResult.success();
             }
         }
-        return super.useTool( turtle, side, verb, direction );
+        return super.useTool(turtle, side, verb, direction);
     }
 }

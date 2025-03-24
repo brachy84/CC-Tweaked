@@ -9,14 +9,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.common.util.FakePlayer;
 
-public final class CommandUtils
-{
-    private CommandUtils() {}
+public final class CommandUtils {
 
-    public static boolean isPlayer( ICommandSender sender )
-    {
-        return sender instanceof EntityPlayerMP
-            && !(sender instanceof FakePlayer)
-            && ((EntityPlayerMP) sender).connection != null;
+    private CommandUtils() {
+    }
+
+    public static boolean isPlayer(ICommandSender sender) {
+        return sender instanceof EntityPlayerMP && !(sender instanceof FakePlayer) && ((EntityPlayerMP) sender).connection != null;
     }
 }

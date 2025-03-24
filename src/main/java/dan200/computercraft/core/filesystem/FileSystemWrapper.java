@@ -13,40 +13,34 @@ import java.lang.ref.WeakReference;
 
 /**
  * An alternative closeable implementation that will free up resources in the filesystem.
- *
- * The {@link FileSystem} maps weak references of this to its underlying object. If the wrapper has been disposed of
- * (say, the Lua object referencing it has gone), then the wrapped object will be closed by the filesystem.
- *
+ * The {@link FileSystem} maps weak references of this to its underlying object. If the wrapper has been disposed of (say, the Lua object
+ * referencing it has gone), then the wrapped object will be closed by the filesystem.
  * Closing this will stop the filesystem tracking it, reducing the current descriptor count.
- *
- * In an ideal world, we'd just wrap the closeable. However, as we do some {@code instanceof} checks
- * on the stream, it's not really possible as it'd require numerous instances.
+ * In an ideal world, we'd just wrap the closeable. However, as we do some {@code instanceof} checks on the stream, it's not really possible
+ * as it'd require numerous instances.
  *
  * @param <T> The type of writer or channel to wrap.
  */
-public class FileSystemWrapper<T extends Closeable> implements Closeable
-{
+public class FileSystemWrapper<T extends Closeable> implements Closeable {
+
     private final FileSystem fileSystem;
     private final ChannelWrapper<T> closeable;
     final WeakReference<FileSystemWrapper<?>> self;
 
-    FileSystemWrapper( FileSystem fileSystem, ChannelWrapper<T> closeable, ReferenceQueue<FileSystemWrapper<?>> queue )
-    {
+    FileSystemWrapper(FileSystem fileSystem, ChannelWrapper<T> closeable, ReferenceQueue<FileSystemWrapper<?>> queue) {
         this.fileSystem = fileSystem;
         this.closeable = closeable;
-        self = new WeakReference<>( this, queue );
+        self = new WeakReference<>(this, queue);
     }
 
     @Override
-    public void close() throws IOException
-    {
-        fileSystem.removeFile( this );
+    public void close() throws IOException {
+        fileSystem.removeFile(this);
         closeable.close();
     }
 
     @Nonnull
-    public T get()
-    {
+    public T get() {
         return closeable.get();
     }
 }

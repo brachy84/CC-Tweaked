@@ -14,35 +14,30 @@ import net.minecraftforge.fml.client.config.GuiConfig;
 
 import java.util.Set;
 
-public class GuiConfigCC extends GuiConfig
-{
-    public GuiConfigCC( GuiScreen parentScreen )
-    {
-        super( parentScreen, Config.getConfigElements(), ComputerCraft.MOD_ID, false, false, "CC: Tweaked" );
+public class GuiConfigCC extends GuiConfig {
+
+    public GuiConfigCC(GuiScreen parentScreen) {
+        super(parentScreen, Config.getConfigElements(), ComputerCraft.MOD_ID, false, false, "CC: Tweaked");
     }
 
-    public static class Factory implements IModGuiFactory
-    {
+    public static class Factory implements IModGuiFactory {
+
         @Override
-        public void initialize( Minecraft minecraft )
-        {
+        public void initialize(Minecraft minecraft) {
         }
 
         @Override
-        public boolean hasConfigGui()
-        {
+        public boolean hasConfigGui() {
             return true;
         }
 
         @Override
-        public GuiScreen createConfigGui( GuiScreen parentScreen )
-        {
-            return new GuiConfigCC( parentScreen );
+        public GuiScreen createConfigGui(GuiScreen parentScreen) {
+            return new GuiConfigCC(parentScreen);
         }
 
         @Override
-        public Set<RuntimeOptionCategoryElement> runtimeGuiCategories()
-        {
+        public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() {
             return null;
         }
     }

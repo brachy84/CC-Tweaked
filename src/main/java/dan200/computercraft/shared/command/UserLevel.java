@@ -13,8 +13,7 @@ import net.minecraft.server.MinecraftServer;
 /**
  * The level a user must be at in order to execute a command.
  */
-public enum UserLevel
-{
+public enum UserLevel {
     /**
      * Only can be used by the owner of the server: namely the server console or the player in SSP.
      */
@@ -35,10 +34,8 @@ public enum UserLevel
      */
     ANYONE;
 
-    public int toLevel()
-    {
-        switch( this )
-        {
+    public int toLevel() {
+        switch (this) {
             case OWNER:
                 return 4;
             case OP:
@@ -50,20 +47,19 @@ public enum UserLevel
         }
     }
 
-    public boolean canExecute( CommandContext context )
-    {
-        if( this == ANYONE ) return true;
+    public boolean canExecute(CommandContext context) {
+        if (this == ANYONE) return true;
 
         // We *always* allow level 0 stuff, even if the
         MinecraftServer server = context.getServer();
         ICommandSender sender = context.getSender();
 
-        if( server.isSinglePlayer() && sender instanceof EntityPlayerMP &&
-            ((EntityPlayerMP) sender).getGameProfile().getName().equalsIgnoreCase( server.getServerOwner() ) )
-        {
-            if( this == OWNER || this == OWNER_OP ) return true;
+        if (server.isSinglePlayer() &&
+            sender instanceof EntityPlayerMP &&
+            ((EntityPlayerMP) sender).getGameProfile().getName().equalsIgnoreCase(server.getServerOwner())) {
+            if (this == OWNER || this == OWNER_OP) return true;
         }
 
-        return sender.canUseCommand( toLevel(), context.getRootCommand() );
+        return sender.canUseCommand(toLevel(), context.getRootCommand());
     }
 }

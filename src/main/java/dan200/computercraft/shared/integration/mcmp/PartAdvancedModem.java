@@ -18,23 +18,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class PartAdvancedModem implements IMultipart
-{
+public class PartAdvancedModem implements IMultipart {
+
     @Override
-    public IPartSlot getSlotForPlacement( World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ, EntityLivingBase placer )
-    {
-        return EnumFaceSlot.fromFace( state.getValue( BlockAdvancedModem.FACING ) );
+    public IPartSlot getSlotForPlacement(World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY,
+                                         float hitZ, EntityLivingBase placer) {
+        return EnumFaceSlot.fromFace(state.getValue(BlockAdvancedModem.FACING));
     }
 
     @Override
-    public IPartSlot getSlotFromWorld( IBlockAccess world, BlockPos pos, IBlockState state )
-    {
-        return EnumFaceSlot.fromFace( state.getValue( BlockAdvancedModem.FACING ) );
+    public IPartSlot getSlotFromWorld(IBlockAccess world, BlockPos pos, IBlockState state) {
+        return EnumFaceSlot.fromFace(state.getValue(BlockAdvancedModem.FACING));
     }
 
     @Override
-    public Block getBlock()
-    {
+    public Block getBlock() {
         return ComputerCraft.Blocks.advancedModem;
     }
 }

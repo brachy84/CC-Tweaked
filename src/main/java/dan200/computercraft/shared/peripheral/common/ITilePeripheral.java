@@ -10,16 +10,14 @@ import dan200.computercraft.shared.peripheral.PeripheralType;
 /**
  * The tile for {@link BlockPeripheral}.
  */
-public interface ITilePeripheral
-{
+public interface ITilePeripheral {
+
     PeripheralType getPeripheralType();
 
-    default String getLabel()
-    {
+    default String getLabel() {
         return null;
     }
 
-    default void setLabel( String label )
-    {
+    default void setLabel(String label) {
     }
 }

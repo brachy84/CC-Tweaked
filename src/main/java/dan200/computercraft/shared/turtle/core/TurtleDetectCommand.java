@@ -15,29 +15,26 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class TurtleDetectCommand implements ITurtleCommand
-{
+public class TurtleDetectCommand implements ITurtleCommand {
+
     private final InteractDirection m_direction;
 
-    public TurtleDetectCommand( InteractDirection direction )
-    {
+    public TurtleDetectCommand(InteractDirection direction) {
         m_direction = direction;
     }
 
     @Nonnull
     @Override
-    public TurtleCommandResult execute( @Nonnull ITurtleAccess turtle )
-    {
+    public TurtleCommandResult execute(@Nonnull ITurtleAccess turtle) {
         // Get world direction from direction
-        EnumFacing direction = m_direction.toWorldDir( turtle );
+        EnumFacing direction = m_direction.toWorldDir(turtle);
 
         // Check if thing in front is air or not
         World world = turtle.getWorld();
         BlockPos oldPosition = turtle.getPosition();
-        BlockPos newPosition = oldPosition.offset( direction );
+        BlockPos newPosition = oldPosition.offset(direction);
 
-        if( !WorldUtil.isLiquidBlock( world, newPosition ) && !world.isAirBlock( newPosition ) )
-        {
+        if (!WorldUtil.isLiquidBlock(world, newPosition) && !world.isAirBlock(newPosition)) {
             return TurtleCommandResult.success();
         }
 

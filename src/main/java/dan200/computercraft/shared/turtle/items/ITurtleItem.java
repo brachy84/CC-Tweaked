@@ -15,13 +15,13 @@ import net.minecraft.util.ResourceLocation;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface ITurtleItem extends IComputerItem, IColouredItem
-{
-    @Nullable
-    ITurtleUpgrade getUpgrade( @Nonnull ItemStack stack, @Nonnull TurtleSide side );
-
-    int getFuelLevel( @Nonnull ItemStack stack );
+public interface ITurtleItem extends IComputerItem, IColouredItem {
 
     @Nullable
-    ResourceLocation getOverlay( @Nonnull ItemStack stack );
+    ITurtleUpgrade getUpgrade(@Nonnull ItemStack stack, @Nonnull TurtleSide side);
+
+    int getFuelLevel(@Nonnull ItemStack stack);
+
+    @Nullable
+    ResourceLocation getOverlay(@Nonnull ItemStack stack);
 }

@@ -14,12 +14,10 @@ import javax.annotation.Nullable;
 
 /**
  * A {@link net.minecraft.tileentity.TileEntity} which may act as a peripheral.
- *
- * If you need more complex capabilities (such as handling TEs not belonging to your mod), you should use
- * {@link IPeripheralProvider}.
+ * If you need more complex capabilities (such as handling TEs not belonging to your mod), you should use {@link IPeripheralProvider}.
  */
-public interface IPeripheralTile
-{
+public interface IPeripheralTile {
+
     /**
      * Get the peripheral on the given {@code side}.
      *
@@ -28,5 +26,5 @@ public interface IPeripheralTile
      * @see IPeripheralProvider#getPeripheral(World, BlockPos, EnumFacing)
      */
     @Nullable
-    IPeripheral getPeripheral( @Nonnull EnumFacing side );
+    IPeripheral getPeripheral(@Nonnull EnumFacing side);
 }

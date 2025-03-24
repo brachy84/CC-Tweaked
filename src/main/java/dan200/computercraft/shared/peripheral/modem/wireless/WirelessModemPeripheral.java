@@ -12,44 +12,35 @@ import dan200.computercraft.shared.peripheral.modem.ModemState;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public abstract class WirelessModemPeripheral extends ModemPeripheral
-{
-    private boolean m_advanced;
+public abstract class WirelessModemPeripheral extends ModemPeripheral {
 
-    public WirelessModemPeripheral( ModemState state, boolean advanced )
-    {
-        super( state );
+    private final boolean m_advanced;
+
+    public WirelessModemPeripheral(ModemState state, boolean advanced) {
+        super(state);
         m_advanced = advanced;
     }
 
     @Override
-    public boolean isInterdimensional()
-    {
+    public boolean isInterdimensional() {
         return m_advanced;
     }
 
     @Override
-    public double getRange()
-    {
-        if( m_advanced )
-        {
+    public double getRange() {
+        if (m_advanced) {
             return Integer.MAX_VALUE;
-        }
-        else
-        {
+        } else {
             World world = getWorld();
-            if( world != null )
-            {
+            if (world != null) {
                 Vec3d position = getPosition();
                 double minRange = ComputerCraft.modem_range;
                 double maxRange = ComputerCraft.modem_highAltitudeRange;
-                if( world.isRaining() && world.isThundering() )
-                {
+                if (world.isRaining() && world.isThundering()) {
                     minRange = ComputerCraft.modem_rangeDuringStorm;
                     maxRange = ComputerCraft.modem_highAltitudeRangeDuringStorm;
                 }
-                if( position.y > 96.0 && maxRange > minRange )
-                {
+                if (position.y > 96.0 && maxRange > minRange) {
                     return minRange + (position.y - 96.0) * ((maxRange - minRange) / ((world.getHeight() - 1) - 96.0));
                 }
                 return minRange;
@@ -59,8 +50,7 @@ public abstract class WirelessModemPeripheral extends ModemPeripheral
     }
 
     @Override
-    protected IPacketNetwork getNetwork()
-    {
+    protected IPacketNetwork getNetwork() {
         return WirelessNetwork.getUniversal();
     }
 }

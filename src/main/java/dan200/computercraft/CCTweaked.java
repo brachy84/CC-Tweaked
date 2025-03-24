@@ -12,18 +12,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import java.util.Map;
 
 /**
- * A stub mod for CC: Tweaked. This doesn't have any functionality (everything of note is done in
- * {@link ComputerCraft}), but people may depend on this if they require CC: Tweaked functionality.
+ * A stub mod for CC: Tweaked. This doesn't have any functionality (everything of note is done in {@link ComputerCraft}), but people may
+ * depend on this if they require CC: Tweaked functionality.
  */
-@Mod(
-    modid = "cctweaked", name = ComputerCraft.NAME, version = ComputerCraft.VERSION,
-    acceptableRemoteVersions = "*"
-)
-public class CCTweaked
-{
+@Mod(modid = "cctweaked", name = ComputerCraft.NAME, version = ComputerCraft.VERSION, acceptableRemoteVersions = "*")
+public class CCTweaked {
+
     @NetworkCheckHandler
-    public boolean onNetworkConnect( Map<String, String> mods, Side side )
-    {
+    public boolean onNetworkConnect(Map<String, String> mods, Side side) {
         return true;
     }
 }

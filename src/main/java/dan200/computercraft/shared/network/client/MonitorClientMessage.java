@@ -17,44 +17,39 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
 
-public class MonitorClientMessage implements NetworkMessage
-{
+public class MonitorClientMessage implements NetworkMessage {
+
     private BlockPos pos;
     private TerminalState state;
 
-    public MonitorClientMessage( BlockPos pos, TerminalState state )
-    {
+    public MonitorClientMessage(BlockPos pos, TerminalState state) {
         this.pos = pos;
         this.state = state;
     }
 
-    public MonitorClientMessage()
-    {
+    public MonitorClientMessage() {
     }
 
     @Override
-    public void toBytes( @Nonnull PacketBuffer buf )
-    {
-        buf.writeBlockPos( pos );
-        state.write( buf );
+    public void toBytes(@Nonnull PacketBuffer buf) {
+        buf.writeBlockPos(pos);
+        state.write(buf);
     }
 
     @Override
-    public void fromBytes( @Nonnull PacketBuffer buf )
-    {
+    public void fromBytes(@Nonnull PacketBuffer buf) {
         pos = buf.readBlockPos();
-        state = new TerminalState( buf );
+        state = new TerminalState(buf);
     }
 
     @Override
-    public void handle( MessageContext context )
-    {
+    public void handle(MessageContext context) {
         EntityPlayerSP player = Minecraft.getMinecraft().player;
-        if( player == null || player.world == null ) return;
+        if (player == null || player.world == null) return;
 
-        TileEntity te = player.world.getTileEntity( pos );
-        if( !(te instanceof TileMonitor) ) return;
+        TileEntity te = player.world.getTileEntity(pos);
+        if (!(te instanceof TileMonitor)) return;
 
-        ((TileMonitor) te).read( state );
+        ((TileMonitor) te).read(state);
     }
 }

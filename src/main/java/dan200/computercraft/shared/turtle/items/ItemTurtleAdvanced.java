@@ -9,20 +9,18 @@ import dan200.computercraft.ComputerCraft;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import net.minecraft.block.Block;
 
-public class ItemTurtleAdvanced extends ItemTurtleNormal
-{
-    public ItemTurtleAdvanced( Block block )
-    {
-        super( block );
-        setTranslationKey( "computercraft:advanced_turtle" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
+public class ItemTurtleAdvanced extends ItemTurtleNormal {
+
+    public ItemTurtleAdvanced(Block block) {
+        super(block);
+        setTranslationKey("computercraft:advanced_turtle");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
     }
 
     // IComputerItem implementation
 
     @Override
-    public ComputerFamily getFamily()
-    {
+    public ComputerFamily getFamily() {
         return ComputerFamily.Advanced;
     }
 }

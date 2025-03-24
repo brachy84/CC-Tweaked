@@ -16,19 +16,17 @@ import javax.annotation.Nonnull;
 
 /**
  * A base class for {@link ITurtleUpgrade}s.
- *
  * One does not have to use this, but it does provide a convenient template.
  */
-public abstract class AbstractTurtleUpgrade implements ITurtleUpgrade
-{
+public abstract class AbstractTurtleUpgrade implements ITurtleUpgrade {
+
     private final ResourceLocation id;
     private final int legacyId;
     private final TurtleUpgradeType type;
     private final String adjective;
     private final ItemStack stack;
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, ItemStack stack )
-    {
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, ItemStack stack) {
         this.id = id;
         this.legacyId = legacyId;
         this.type = type;
@@ -36,62 +34,52 @@ public abstract class AbstractTurtleUpgrade implements ITurtleUpgrade
         this.stack = stack;
     }
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, Item item )
-    {
-        this( id, legacyId, type, adjective, new ItemStack( item ) );
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, Item item) {
+        this(id, legacyId, type, adjective, new ItemStack(item));
     }
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, Block block )
-    {
-        this( id, legacyId, type, adjective, new ItemStack( block ) );
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, String adjective, Block block) {
+        this(id, legacyId, type, adjective, new ItemStack(block));
     }
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, ItemStack stack )
-    {
-        this( id, legacyId, type, "upgrade." + id + ".adjective", stack );
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, ItemStack stack) {
+        this(id, legacyId, type, "upgrade." + id + ".adjective", stack);
     }
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, Item item )
-    {
-        this( id, legacyId, type, new ItemStack( item ) );
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, Item item) {
+        this(id, legacyId, type, new ItemStack(item));
     }
 
-    protected AbstractTurtleUpgrade( ResourceLocation id, int legacyId, TurtleUpgradeType type, Block block )
-    {
-        this( id, legacyId, type, new ItemStack( block ) );
+    protected AbstractTurtleUpgrade(ResourceLocation id, int legacyId, TurtleUpgradeType type, Block block) {
+        this(id, legacyId, type, new ItemStack(block));
     }
 
     @Nonnull
     @Override
-    public final ResourceLocation getUpgradeID()
-    {
+    public final ResourceLocation getUpgradeID() {
         return id;
     }
 
     @Override
-    public final int getLegacyUpgradeID()
-    {
+    public final int getLegacyUpgradeID() {
         return legacyId;
     }
 
     @Nonnull
     @Override
-    public final String getUnlocalisedAdjective()
-    {
+    public final String getUnlocalisedAdjective() {
         return adjective;
     }
 
     @Nonnull
     @Override
-    public final TurtleUpgradeType getType()
-    {
+    public final TurtleUpgradeType getType() {
         return type;
     }
 
     @Nonnull
     @Override
-    public final ItemStack getCraftingItem()
-    {
+    public final ItemStack getCraftingItem() {
         return stack;
     }
 }

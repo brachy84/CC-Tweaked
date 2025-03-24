@@ -14,41 +14,32 @@ import net.minecraft.inventory.Container;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ContainerViewComputer extends Container implements IContainerComputer
-{
-    private final IComputer computer;
-    private final InputState input = new InputState( this );
+public class ContainerViewComputer extends Container implements IContainerComputer {
 
-    public ContainerViewComputer( IComputer computer )
-    {
+    private final IComputer computer;
+    private final InputState input = new InputState(this);
+
+    public ContainerViewComputer(IComputer computer) {
         this.computer = computer;
     }
 
     @Nullable
     @Override
-    public IComputer getComputer()
-    {
+    public IComputer getComputer() {
         return computer;
     }
 
     @Override
-    public boolean canInteractWith( @Nonnull EntityPlayer player )
-    {
-        if( computer instanceof ServerComputer )
-        {
-            ServerComputer serverComputer = (ServerComputer) computer;
+    public boolean canInteractWith(@Nonnull EntityPlayer player) {
+        if (computer instanceof ServerComputer serverComputer) {
 
             // If this computer no longer exists then discard it.
-            if( ComputerCraft.serverComputerRegistry.get( serverComputer.getInstanceID() ) != serverComputer )
-            {
+            if (ComputerCraft.serverComputerRegistry.get(serverComputer.getInstanceID()) != serverComputer) {
                 return false;
             }
 
             // If we're a command computer then ensure we're in creative
-            if( serverComputer.getFamily() == ComputerFamily.Command && !TileCommandComputer.isUsable( player ) )
-            {
-                return false;
-            }
+            return serverComputer.getFamily() != ComputerFamily.Command || TileCommandComputer.isUsable(player);
         }
 
         return true;
@@ -56,15 +47,13 @@ public class ContainerViewComputer extends Container implements IContainerComput
 
     @Nonnull
     @Override
-    public InputState getInput()
-    {
+    public InputState getInput() {
         return input;
     }
 
     @Override
-    public void onContainerClosed( EntityPlayer player )
-    {
-        super.onContainerClosed( player );
+    public void onContainerClosed(EntityPlayer player) {
+        super.onContainerClosed(player);
         input.close();
     }
 }

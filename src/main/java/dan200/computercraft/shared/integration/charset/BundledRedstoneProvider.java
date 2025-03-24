@@ -15,19 +15,18 @@ import javax.annotation.Nonnull;
 
 import static dan200.computercraft.shared.integration.charset.IntegrationCharset.CAPABILITY_EMITTER;
 
-public class BundledRedstoneProvider implements IBundledRedstoneProvider
-{
-    @Override
-    public int getBundledRedstoneOutput( @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side )
-    {
-        TileEntity tile = world.getTileEntity( pos );
-        if( tile == null || !tile.hasCapability( CAPABILITY_EMITTER, side ) ) return -1;
+public class BundledRedstoneProvider implements IBundledRedstoneProvider {
 
-        byte[] signal = tile.getCapability( CAPABILITY_EMITTER, side ).getBundledSignal();
-        if( signal == null ) return -1;
+    @Override
+    public int getBundledRedstoneOutput(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
+        TileEntity tile = world.getTileEntity(pos);
+        if (tile == null || !tile.hasCapability(CAPABILITY_EMITTER, side)) return -1;
+
+        byte[] signal = tile.getCapability(CAPABILITY_EMITTER, side).getBundledSignal();
+        if (signal == null) return -1;
 
         int flag = 0;
-        for( int i = 0; i < signal.length; i++ ) flag |= signal[i] > 0 ? 1 << i : 0;
+        for (int i = 0; i < signal.length; i++) flag |= signal[i] > 0 ? 1 << i : 0;
         return flag;
     }
 }

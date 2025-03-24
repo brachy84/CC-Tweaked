@@ -9,11 +9,8 @@ import net.minecraft.util.IStringSerializable;
 
 import javax.annotation.Nonnull;
 
-public enum ComputerState implements IStringSerializable
-{
-    Off( "off" ),
-    On( "on" ),
-    Blinking( "blinking" );
+public enum ComputerState implements IStringSerializable {
+    Off("off"), On("on"), Blinking("blinking");
 
     private static final ComputerState[] VALUES = ComputerState.values();
 
@@ -22,26 +19,22 @@ public enum ComputerState implements IStringSerializable
 
     private final String name;
 
-    ComputerState( String name )
-    {
+    ComputerState(String name) {
         this.name = name;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return name;
     }
 
-    public static ComputerState valueOf( int ordinal )
-    {
+    public static ComputerState valueOf(int ordinal) {
         return ordinal < 0 || ordinal >= VALUES.length ? ComputerState.Off : VALUES[ordinal];
     }
 }

@@ -7,16 +7,14 @@ package dan200.computercraft.shared.peripheral.modem.wireless;
 
 import net.minecraft.util.EnumFacing;
 
-public class TileAdvancedModem extends TileWirelessModemBase
-{
-    public TileAdvancedModem()
-    {
-        super( true );
+public class TileAdvancedModem extends TileWirelessModemBase {
+
+    public TileAdvancedModem() {
+        super(true);
     }
 
     @Override
-    protected EnumFacing getDirection()
-    {
-        return getBlockState().getValue( BlockAdvancedModem.FACING );
+    protected EnumFacing getDirection() {
+        return getBlockState().getValue(BlockAdvancedModem.FACING);
     }
 }

@@ -28,9 +28,9 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 
-class RecipeResolver implements IRecipeRegistryPlugin
-{
-    static final ComputerFamily[] MAIN_FAMILIES = new ComputerFamily[] { ComputerFamily.Normal, ComputerFamily.Advanced };
+class RecipeResolver implements IRecipeRegistryPlugin {
+
+    static final ComputerFamily[] MAIN_FAMILIES = new ComputerFamily[]{ComputerFamily.Normal, ComputerFamily.Advanced};
 
     private final Map<Item, List<UpgradeInfo>> upgradeItemLookup = new HashMap<>();
     private final List<UpgradeInfo> pocketUpgrades = new ArrayList<>();
@@ -40,44 +40,39 @@ class RecipeResolver implements IRecipeRegistryPlugin
     /**
      * Build a cache of items which are used for turtle and pocket computer upgrades.
      */
-    private void setupCache()
-    {
-        if( initialised ) return;
+    private void setupCache() {
+        if (initialised) return;
         initialised = true;
 
-        for( ITurtleUpgrade upgrade : TurtleUpgrades.getUpgrades() )
-        {
+        for (ITurtleUpgrade upgrade : TurtleUpgrades.getUpgrades()) {
             ItemStack stack = upgrade.getCraftingItem();
-            if( stack.isEmpty() ) continue;
+            if (stack.isEmpty()) continue;
 
-            UpgradeInfo info = new UpgradeInfo( stack, upgrade );
-            upgradeItemLookup.computeIfAbsent( stack.getItem(), k -> new ArrayList<>( 1 ) ).add( info );
-            turtleUpgrades.add( info );
+            UpgradeInfo info = new UpgradeInfo(stack, upgrade);
+            upgradeItemLookup.computeIfAbsent(stack.getItem(), k -> new ArrayList<>(1)).add(info);
+            turtleUpgrades.add(info);
         }
 
-        for( IPocketUpgrade upgrade : PocketUpgrades.getUpgrades() )
-        {
+        for (IPocketUpgrade upgrade : PocketUpgrades.getUpgrades()) {
             ItemStack stack = upgrade.getCraftingItem();
-            if( stack.isEmpty() ) continue;
+            if (stack.isEmpty()) continue;
 
-            UpgradeInfo info = new UpgradeInfo( stack, upgrade );
-            upgradeItemLookup.computeIfAbsent( stack.getItem(), k -> new ArrayList<>( 1 ) ).add( info );
-            pocketUpgrades.add( info );
+            UpgradeInfo info = new UpgradeInfo(stack, upgrade);
+            upgradeItemLookup.computeIfAbsent(stack.getItem(), k -> new ArrayList<>(1)).add(info);
+            pocketUpgrades.add(info);
         }
     }
 
-    private boolean hasUpgrade( @Nonnull ItemStack stack )
-    {
-        if( stack.isEmpty() ) return false;
+    private boolean hasUpgrade(@Nonnull ItemStack stack) {
+        if (stack.isEmpty()) return false;
 
         setupCache();
-        List<UpgradeInfo> upgrades = upgradeItemLookup.get( stack.getItem() );
-        if( upgrades == null ) return false;
+        List<UpgradeInfo> upgrades = upgradeItemLookup.get(stack.getItem());
+        if (upgrades == null) return false;
 
-        for( UpgradeInfo upgrade : upgrades )
-        {
+        for (UpgradeInfo upgrade : upgrades) {
             ItemStack craftingStack = upgrade.stack;
-            if( !craftingStack.isEmpty() && InventoryUtil.areItemsSimilar( stack, craftingStack ) ) return true;
+            if (!craftingStack.isEmpty() && InventoryUtil.areItemsSimilar(stack, craftingStack)) return true;
         }
 
         return false;
@@ -85,23 +80,17 @@ class RecipeResolver implements IRecipeRegistryPlugin
 
     @Nonnull
     @Override
-    public <V> List<String> getRecipeCategoryUids( @Nonnull IFocus<V> focus )
-    {
+    public <V> List<String> getRecipeCategoryUids(@Nonnull IFocus<V> focus) {
         V value = focus.getValue();
-        if( !(value instanceof ItemStack) ) return Collections.emptyList();
+        if (!(value instanceof ItemStack stack)) return Collections.emptyList();
 
-        ItemStack stack = (ItemStack) value;
-        switch( focus.getMode() )
-        {
+        switch (focus.getMode()) {
             case INPUT:
-                return stack.getItem() instanceof ITurtleItem || stack.getItem() instanceof ItemPocketComputer ||
-                    hasUpgrade( stack )
-                    ? Collections.singletonList( VanillaRecipeCategoryUid.CRAFTING )
-                    : Collections.emptyList();
+                return stack.getItem() instanceof ITurtleItem || stack.getItem() instanceof ItemPocketComputer || hasUpgrade(stack) ?
+                       Collections.singletonList(VanillaRecipeCategoryUid.CRAFTING) : Collections.emptyList();
             case OUTPUT:
-                return stack.getItem() instanceof ITurtleItem || stack.getItem() instanceof ItemPocketComputer
-                    ? Collections.singletonList( VanillaRecipeCategoryUid.CRAFTING )
-                    : Collections.emptyList();
+                return stack.getItem() instanceof ITurtleItem || stack.getItem() instanceof ItemPocketComputer ?
+                       Collections.singletonList(VanillaRecipeCategoryUid.CRAFTING) : Collections.emptyList();
             default:
                 return Collections.emptyList();
         }
@@ -109,20 +98,16 @@ class RecipeResolver implements IRecipeRegistryPlugin
 
     @Nonnull
     @Override
-    public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers( @Nonnull IRecipeCategory<T> recipeCategory, @Nonnull IFocus<V> focus )
-    {
-        if( !(focus.getValue() instanceof ItemStack) || !recipeCategory.getUid().equals( VanillaRecipeCategoryUid.CRAFTING ) )
-        {
+    public <T extends IRecipeWrapper, V> List<T> getRecipeWrappers(@Nonnull IRecipeCategory<T> recipeCategory, @Nonnull IFocus<V> focus) {
+        if (!(focus.getValue() instanceof ItemStack stack) || !recipeCategory.getUid().equals(VanillaRecipeCategoryUid.CRAFTING)) {
             return Collections.emptyList();
         }
 
-        ItemStack stack = (ItemStack) focus.getValue();
-        switch( focus.getMode() )
-        {
+        switch (focus.getMode()) {
             case INPUT:
-                return cast( findRecipesWithInput( stack ) );
+                return cast(findRecipesWithInput(stack));
             case OUTPUT:
-                return cast( findRecipesWithOutput( stack ) );
+                return cast(findRecipesWithOutput(stack));
             default:
                 return Collections.emptyList();
         }
@@ -130,83 +115,64 @@ class RecipeResolver implements IRecipeRegistryPlugin
 
     @Nonnull
     @Override
-    public <T extends IRecipeWrapper> List<T> getRecipeWrappers( @Nonnull IRecipeCategory<T> recipeCategory )
-    {
+    public <T extends IRecipeWrapper> List<T> getRecipeWrappers(@Nonnull IRecipeCategory<T> recipeCategory) {
         return Collections.emptyList();
     }
 
     @Nonnull
-    private List<Shaped> findRecipesWithInput( @Nonnull ItemStack stack )
-    {
+    private List<Shaped> findRecipesWithInput(@Nonnull ItemStack stack) {
         setupCache();
 
-        if( stack.getItem() instanceof ITurtleItem )
-        {
+        if (stack.getItem() instanceof ITurtleItem item) {
             // Suggest possible upgrades which can be applied to this turtle
-            ITurtleItem item = (ITurtleItem) stack.getItem();
-            ITurtleUpgrade left = item.getUpgrade( stack, TurtleSide.Left );
-            ITurtleUpgrade right = item.getUpgrade( stack, TurtleSide.Right );
-            if( left != null && right != null ) return Collections.emptyList();
+            ITurtleUpgrade left = item.getUpgrade(stack, TurtleSide.Left);
+            ITurtleUpgrade right = item.getUpgrade(stack, TurtleSide.Right);
+            if (left != null && right != null) return Collections.emptyList();
 
             List<Shaped> recipes = new ArrayList<>();
-            for( UpgradeInfo upgrade : turtleUpgrades )
-            {
+            for (UpgradeInfo upgrade : turtleUpgrades) {
                 // The turtle is facing towards us, so upgrades on the left are actually crafted on the right.
-                if( left == null )
-                {
-                    recipes.add( horizontal( asList( stack, upgrade.stack ), turtleWith( stack, upgrade.turtle, right ) ) );
+                if (left == null) {
+                    recipes.add(horizontal(asList(stack, upgrade.stack), turtleWith(stack, upgrade.turtle, right)));
                 }
 
-                if( right == null )
-                {
-                    recipes.add( horizontal( asList( upgrade.stack, stack ), turtleWith( stack, left, upgrade.turtle ) ) );
+                if (right == null) {
+                    recipes.add(horizontal(asList(upgrade.stack, stack), turtleWith(stack, left, upgrade.turtle)));
                 }
             }
 
-            return cast( recipes );
-        }
-        else if( stack.getItem() instanceof ItemPocketComputer )
-        {
+            return cast(recipes);
+        } else if (stack.getItem() instanceof ItemPocketComputer item) {
             // Suggest possible upgrades which can be applied to this turtle
-            ItemPocketComputer item = (ItemPocketComputer) stack.getItem();
-            IPocketUpgrade back = item.getUpgrade( stack );
-            if( back != null ) return Collections.emptyList();
+            IPocketUpgrade back = item.getUpgrade(stack);
+            if (back != null) return Collections.emptyList();
 
             List<Shaped> recipes = new ArrayList<>();
-            for( UpgradeInfo upgrade : pocketUpgrades )
-            {
-                recipes.add( vertical( asList( stack, upgrade.stack ), pocketWith( stack, upgrade.pocket ) ) );
+            for (UpgradeInfo upgrade : pocketUpgrades) {
+                recipes.add(vertical(asList(stack, upgrade.stack), pocketWith(stack, upgrade.pocket)));
             }
 
             return recipes;
-        }
-        else
-        {
-            List<UpgradeInfo> upgrades = upgradeItemLookup.get( stack.getItem() );
-            if( upgrades == null ) return Collections.emptyList();
+        } else {
+            List<UpgradeInfo> upgrades = upgradeItemLookup.get(stack.getItem());
+            if (upgrades == null) return Collections.emptyList();
 
             List<Shaped> recipes = null;
             boolean multiple = false;
-            for( UpgradeInfo upgrade : upgrades )
-            {
+            for (UpgradeInfo upgrade : upgrades) {
                 ItemStack craftingStack = upgrade.stack;
-                if( craftingStack.isEmpty() || !InventoryUtil.areItemsSimilar( stack, craftingStack ) )
-                {
+                if (craftingStack.isEmpty() || !InventoryUtil.areItemsSimilar(stack, craftingStack)) {
                     continue;
                 }
 
-                if( recipes == null )
-                {
+                if (recipes == null) {
                     recipes = upgrade.getRecipes();
-                }
-                else
-                {
-                    if( !multiple )
-                    {
+                } else {
+                    if (!multiple) {
                         multiple = true;
-                        recipes = new ArrayList<>( recipes );
+                        recipes = new ArrayList<>(recipes);
                     }
-                    recipes.addAll( upgrade.getRecipes() );
+                    recipes.addAll(upgrade.getRecipes());
                 }
             }
 
@@ -215,92 +181,71 @@ class RecipeResolver implements IRecipeRegistryPlugin
     }
 
     @Nonnull
-    private static List<Shaped> findRecipesWithOutput( @Nonnull ItemStack stack )
-    {
+    private static List<Shaped> findRecipesWithOutput(@Nonnull ItemStack stack) {
         // Find which upgrade this item currently has, an so how we could build it.
-        if( stack.getItem() instanceof ITurtleItem )
-        {
-            ITurtleItem item = (ITurtleItem) stack.getItem();
-            List<IRecipeWrapper> recipes = new ArrayList<>( 0 );
+        if (stack.getItem() instanceof ITurtleItem item) {
+            List<IRecipeWrapper> recipes = new ArrayList<>(0);
 
-            ITurtleUpgrade left = item.getUpgrade( stack, TurtleSide.Left );
-            ITurtleUpgrade right = item.getUpgrade( stack, TurtleSide.Right );
+            ITurtleUpgrade left = item.getUpgrade(stack, TurtleSide.Left);
+            ITurtleUpgrade right = item.getUpgrade(stack, TurtleSide.Right);
 
             // The turtle is facing towards us, so upgrades on the left are actually crafted on the right.
-            if( left != null )
-            {
-                recipes.add( horizontal( asList( turtleWith( stack, null, right ), left.getCraftingItem() ), stack ) );
+            if (left != null) {
+                recipes.add(horizontal(asList(turtleWith(stack, null, right), left.getCraftingItem()), stack));
             }
 
-            if( right != null )
-            {
-                recipes.add( horizontal( asList( right.getCraftingItem(), turtleWith( stack, left, null ) ), stack ) );
+            if (right != null) {
+                recipes.add(horizontal(asList(right.getCraftingItem(), turtleWith(stack, left, null)), stack));
             }
 
-            return cast( recipes );
-        }
-        else if( stack.getItem() instanceof ItemPocketComputer )
-        {
-            ItemPocketComputer item = (ItemPocketComputer) stack.getItem();
-            List<IRecipeWrapper> recipes = new ArrayList<>( 0 );
+            return cast(recipes);
+        } else if (stack.getItem() instanceof ItemPocketComputer item) {
+            List<IRecipeWrapper> recipes = new ArrayList<>(0);
 
-            IPocketUpgrade back = item.getUpgrade( stack );
-            if( back != null )
-            {
-                recipes.add( vertical( asList( back.getCraftingItem(), pocketWith( stack, null ) ), stack ) );
+            IPocketUpgrade back = item.getUpgrade(stack);
+            if (back != null) {
+                recipes.add(vertical(asList(back.getCraftingItem(), pocketWith(stack, null)), stack));
             }
 
-            return cast( recipes );
-        }
-        else
-        {
+            return cast(recipes);
+        } else {
             return Collections.emptyList();
         }
     }
 
-    @SuppressWarnings( { "unchecked", "rawtypes" } )
-    private static <T extends IRecipeWrapper, U extends IRecipeWrapper> List<T> cast( List<U> from )
-    {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static <T extends IRecipeWrapper, U extends IRecipeWrapper> List<T> cast(List<U> from) {
         return (List) from;
     }
 
-    private static ItemStack turtleWith( ItemStack stack, ITurtleUpgrade left, ITurtleUpgrade right )
-    {
+    private static ItemStack turtleWith(ItemStack stack, ITurtleUpgrade left, ITurtleUpgrade right) {
         ITurtleItem item = (ITurtleItem) stack.getItem();
-        return TurtleItemFactory.create(
-            item.getComputerID( stack ), item.getLabel( stack ), item.getColour( stack ), item.getFamily( stack ),
-            left, right, item.getFuelLevel( stack ), item.getOverlay( stack )
-        );
+        return TurtleItemFactory.create(item.getComputerID(stack), item.getLabel(stack), item.getColour(stack), item.getFamily(stack), left,
+                                        right, item.getFuelLevel(stack), item.getOverlay(stack));
     }
 
-    private static ItemStack pocketWith( ItemStack stack, IPocketUpgrade back )
-    {
+    private static ItemStack pocketWith(ItemStack stack, IPocketUpgrade back) {
         ItemPocketComputer item = (ItemPocketComputer) stack.getItem();
-        return PocketComputerItemFactory.create(
-            item.getComputerID( stack ), item.getLabel( stack ), item.getColour( stack ), item.getFamily( stack ),
-            back
-        );
+        return PocketComputerItemFactory.create(item.getComputerID(stack), item.getLabel(stack), item.getColour(stack),
+                                                item.getFamily(stack), back);
     }
 
-    private static Shaped vertical( List<ItemStack> input, ItemStack result )
-    {
-        return new Shaped( 1, input.size(), input, result );
+    private static Shaped vertical(List<ItemStack> input, ItemStack result) {
+        return new Shaped(1, input.size(), input, result);
     }
 
-    private static Shaped horizontal( List<ItemStack> input, ItemStack result )
-    {
-        return new Shaped( input.size(), 1, input, result );
+    private static Shaped horizontal(List<ItemStack> input, ItemStack result) {
+        return new Shaped(input.size(), 1, input, result);
     }
 
-    private static class Shaped implements IShapedCraftingRecipeWrapper
-    {
+    private static class Shaped implements IShapedCraftingRecipeWrapper {
+
         private final int width;
         private final int height;
         private final List<ItemStack> input;
         private final ItemStack output;
 
-        Shaped( int width, int height, List<ItemStack> input, ItemStack output )
-        {
+        Shaped(int width, int height, List<ItemStack> input, ItemStack output) {
             this.width = width;
             this.height = height;
             this.input = input;
@@ -308,68 +253,55 @@ class RecipeResolver implements IRecipeRegistryPlugin
         }
 
         @Override
-        public int getWidth()
-        {
+        public int getWidth() {
             return width;
         }
 
         @Override
-        public int getHeight()
-        {
+        public int getHeight() {
             return height;
         }
 
         @Override
-        public void getIngredients( @Nonnull IIngredients ingredients )
-        {
-            ingredients.setInputs( VanillaTypes.ITEM, input );
-            ingredients.setOutput( VanillaTypes.ITEM, output );
+        public void getIngredients(@Nonnull IIngredients ingredients) {
+            ingredients.setInputs(VanillaTypes.ITEM, input);
+            ingredients.setOutput(VanillaTypes.ITEM, output);
         }
     }
 
-    private static class UpgradeInfo
-    {
+    private static class UpgradeInfo {
+
         final ItemStack stack;
         final ITurtleUpgrade turtle;
         final IPocketUpgrade pocket;
         ArrayList<Shaped> recipes;
 
-        UpgradeInfo( ItemStack stack, ITurtleUpgrade turtle )
-        {
+        UpgradeInfo(ItemStack stack, ITurtleUpgrade turtle) {
             this.stack = stack;
             this.turtle = turtle;
             pocket = null;
         }
 
-        UpgradeInfo( ItemStack stack, IPocketUpgrade pocket )
-        {
+        UpgradeInfo(ItemStack stack, IPocketUpgrade pocket) {
             this.stack = stack;
             turtle = null;
             this.pocket = pocket;
         }
 
-        List<Shaped> getRecipes()
-        {
+        List<Shaped> getRecipes() {
             ArrayList<Shaped> recipes = this.recipes;
-            if( recipes != null ) return recipes;
+            if (recipes != null) return recipes;
 
-            recipes = this.recipes = new ArrayList<>( 4 );
-            for( ComputerFamily family : MAIN_FAMILIES )
-            {
-                if( turtle != null && TurtleUpgrades.suitableForFamily( family, turtle ) )
-                {
-                    recipes.add( horizontal(
-                        asList( stack, TurtleItemFactory.create( -1, null, -1, family, null, null, 0, null ) ),
-                        TurtleItemFactory.create( -1, null, -1, family, null, turtle, 0, null )
-                    ) );
+            recipes = this.recipes = new ArrayList<>(4);
+            for (ComputerFamily family : MAIN_FAMILIES) {
+                if (turtle != null && TurtleUpgrades.suitableForFamily(family, turtle)) {
+                    recipes.add(horizontal(asList(stack, TurtleItemFactory.create(-1, null, -1, family, null, null, 0, null)),
+                                           TurtleItemFactory.create(-1, null, -1, family, null, turtle, 0, null)));
                 }
 
-                if( pocket != null )
-                {
-                    recipes.add( vertical(
-                        asList( stack, PocketComputerItemFactory.create( -1, null, -1, family, null ) ),
-                        PocketComputerItemFactory.create( -1, null, -1, family, pocket )
-                    ) );
+                if (pocket != null) {
+                    recipes.add(vertical(asList(stack, PocketComputerItemFactory.create(-1, null, -1, family, null)),
+                                         PocketComputerItemFactory.create(-1, null, -1, family, pocket)));
                 }
             }
 

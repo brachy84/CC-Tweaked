@@ -20,8 +20,7 @@ import java.util.Locale;
  * @see TileEntityMonitorRenderer
  * @see ClientMonitor
  */
-public enum MonitorRenderer
-{
+public enum MonitorRenderer {
     /**
      * Determine the best monitor backend.
      */
@@ -51,31 +50,26 @@ public enum MonitorRenderer
     private static final MonitorRenderer[] VALUES = values();
     public static final String[] NAMES;
 
-    private final String displayName = "gui.computercraft:config.peripheral.monitor_renderer." + name().toLowerCase( Locale.ROOT );
+    private final String displayName = "gui.computercraft:config.peripheral.monitor_renderer." + name().toLowerCase(Locale.ROOT);
 
-    static
-    {
+    static {
         NAMES = new String[VALUES.length];
-        for( int i = 0; i < VALUES.length; i++ ) NAMES[i] = VALUES[i].displayName();
+        for (int i = 0; i < VALUES.length; i++) NAMES[i] = VALUES[i].displayName();
     }
 
-    public String displayName()
-    {
+    public String displayName() {
         return displayName;
     }
 
     @Nonnull
-    public static MonitorRenderer ofString( String name )
-    {
-        for( MonitorRenderer backend : VALUES )
-        {
-            if( backend.displayName.equalsIgnoreCase( name ) || backend.name().equalsIgnoreCase( name ) )
-            {
+    public static MonitorRenderer ofString(String name) {
+        for (MonitorRenderer backend : VALUES) {
+            if (backend.displayName.equalsIgnoreCase(name) || backend.name().equalsIgnoreCase(name)) {
                 return backend;
             }
         }
 
-        ComputerCraft.log.warn( "Unknown monitor renderer {}. Falling back to default.", name );
+        ComputerCraft.log.warn("Unknown monitor renderer {}. Falling back to default.", name);
         return BEST;
     }
 
@@ -85,27 +79,23 @@ public enum MonitorRenderer
      * @return The current renderer. Will not return {@link MonitorRenderer#BEST}.
      */
     @Nonnull
-    public static MonitorRenderer current()
-    {
+    public static MonitorRenderer current() {
         MonitorRenderer current = ComputerCraft.monitorRenderer;
-        switch( current )
-        {
+        switch (current) {
             case BEST:
                 return best();
             case TBO:
                 checkCapabilities();
-                if( !textureBuffer )
-                {
-                    ComputerCraft.log.warn( "Texture buffers are not supported on your graphics card. Falling back to default." );
+                if (!textureBuffer) {
+                    ComputerCraft.log.warn("Texture buffers are not supported on your graphics card. Falling back to default.");
                     ComputerCraft.monitorRenderer = BEST;
                     return best();
                 }
 
                 return TBO;
             case VBO:
-                if( !OpenGlHelper.vboSupported )
-                {
-                    ComputerCraft.log.warn( "VBOs are not supported on your graphics card. Falling back to default." );
+                if (!OpenGlHelper.vboSupported) {
+                    ComputerCraft.log.warn("VBOs are not supported on your graphics card. Falling back to default.");
                     ComputerCraft.monitorRenderer = BEST;
                     return best();
                 }
@@ -116,20 +106,18 @@ public enum MonitorRenderer
         }
     }
 
-    private static MonitorRenderer best()
-    {
+    private static MonitorRenderer best() {
         checkCapabilities();
-        if( textureBuffer ) return TBO;
-        if( OpenGlHelper.vboSupported ) return VBO;
+        if (textureBuffer) return TBO;
+        if (OpenGlHelper.vboSupported) return VBO;
         return DISPLAY_LIST;
     }
 
     private static boolean initialised = false;
     private static boolean textureBuffer = false;
 
-    private static void checkCapabilities()
-    {
-        if( initialised ) return;
+    private static void checkCapabilities() {
+        if (initialised) return;
 
         textureBuffer = GLContext.getCapabilities().OpenGL31;
         initialised = true;

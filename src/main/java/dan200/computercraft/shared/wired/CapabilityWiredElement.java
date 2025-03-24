@@ -17,60 +17,53 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 
 import javax.annotation.Nonnull;
 
-public final class CapabilityWiredElement
-{
-    @CapabilityInject( IWiredElement.class )
-    public static Capability<IWiredElement> CAPABILITY = null;
+public final class CapabilityWiredElement {
 
-    private CapabilityWiredElement() {}
+    @CapabilityInject(IWiredElement.class) public static Capability<IWiredElement> CAPABILITY = null;
 
-    public static void register()
-    {
-        CapabilityManager.INSTANCE.register( IWiredElement.class, new NullStorage(), NullElement::new );
+    private CapabilityWiredElement() {
     }
 
-    private static class NullElement implements IWiredElement
-    {
+    public static void register() {
+        CapabilityManager.INSTANCE.register(IWiredElement.class, new NullStorage(), NullElement::new);
+    }
+
+    private static class NullElement implements IWiredElement {
+
         @Nonnull
         @Override
-        public IWiredNode getNode()
-        {
-            throw new IllegalStateException( "Should not use the default element implementation" );
+        public IWiredNode getNode() {
+            throw new IllegalStateException("Should not use the default element implementation");
         }
 
         @Nonnull
         @Override
-        public World getWorld()
-        {
-            throw new IllegalStateException( "Should not use the default element implementation" );
+        public World getWorld() {
+            throw new IllegalStateException("Should not use the default element implementation");
         }
 
         @Nonnull
         @Override
-        public Vec3d getPosition()
-        {
-            throw new IllegalStateException( "Should not use the default element implementation" );
+        public Vec3d getPosition() {
+            throw new IllegalStateException("Should not use the default element implementation");
         }
 
         @Nonnull
         @Override
-        public String getSenderID()
-        {
-            throw new IllegalStateException( "Should not use the default element implementation" );
+        public String getSenderID() {
+            throw new IllegalStateException("Should not use the default element implementation");
         }
     }
 
-    private static class NullStorage implements Capability.IStorage<IWiredElement>
-    {
+    private static class NullStorage implements Capability.IStorage<IWiredElement> {
+
         @Override
-        public NBTBase writeNBT( Capability<IWiredElement> capability, IWiredElement instance, EnumFacing side )
-        {
+        public NBTBase writeNBT(Capability<IWiredElement> capability, IWiredElement instance, EnumFacing side) {
             return null;
         }
 
         @Override
-        public void readNBT( Capability<IWiredElement> capability, IWiredElement instance, EnumFacing side, NBTBase base )
-        {
+        public void readNBT(Capability<IWiredElement> capability, IWiredElement instance, EnumFacing side, NBTBase base) {
         }
     }
 }

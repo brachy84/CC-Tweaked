@@ -16,66 +16,57 @@ import net.minecraft.util.NonNullList;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ItemCommandComputer extends ItemComputer
-{
-    public ItemCommandComputer( Block block )
-    {
-        super( block );
-        setMaxStackSize( 64 );
-        setHasSubtypes( true );
-        setTranslationKey( "computercraft:command_computer" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
+public class ItemCommandComputer extends ItemComputer {
+
+    public ItemCommandComputer(Block block) {
+        super(block);
+        setMaxStackSize(64);
+        setHasSubtypes(true);
+        setTranslationKey("computercraft:command_computer");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
     }
 
     @Override
-    public ItemStack create( int id, String label, ComputerFamily family )
-    {
+    public ItemStack create(int id, String label, ComputerFamily family) {
         // Ignore types we can't handle
-        if( family != ComputerFamily.Command )
-        {
+        if (family != ComputerFamily.Command) {
             return null;
         }
 
         // Build the stack
-        ItemStack result = new ItemStack( this, 1, 0 );
+        ItemStack result = new ItemStack(this, 1, 0);
 
-        if( id >= 0 )
-        {
+        if (id >= 0) {
             NBTTagCompound nbt = new NBTTagCompound();
-            nbt.setInteger( "computerID", id );
-            result.setTagCompound( nbt );
+            nbt.setInteger("computerID", id);
+            result.setTagCompound(nbt);
         }
 
-        if( label != null )
-        {
-            result.setStackDisplayName( label );
+        if (label != null) {
+            result.setStackDisplayName(label);
         }
 
         return result;
     }
 
     @Override
-    public void getSubItems( @Nullable CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list )
-    {
-        if( !isInCreativeTab( tabs ) ) return;
-        list.add( ComputerItemFactory.create( -1, null, ComputerFamily.Command ) );
+    public void getSubItems(@Nullable CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list) {
+        if (!isInCreativeTab(tabs)) return;
+        list.add(ComputerItemFactory.create(-1, null, ComputerFamily.Command));
     }
 
     // IComputerItem implementation
 
     @Override
-    public int getComputerID( @Nonnull ItemStack stack )
-    {
-        if( stack.hasTagCompound() && stack.getTagCompound().hasKey( "computerID" ) )
-        {
-            return stack.getTagCompound().getInteger( "computerID" );
+    public int getComputerID(@Nonnull ItemStack stack) {
+        if (stack.hasTagCompound() && stack.getTagCompound().hasKey("computerID")) {
+            return stack.getTagCompound().getInteger("computerID");
         }
         return -1;
     }
 
     @Override
-    public ComputerFamily getFamily( int damage )
-    {
+    public ComputerFamily getFamily(int damage) {
         return ComputerFamily.Command;
     }
 }

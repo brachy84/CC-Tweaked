@@ -7,13 +7,11 @@ package dan200.computercraft.api.turtle;
 
 /**
  * An animation a turtle will play between executing commands.
- *
  * Each animation takes 8 ticks to complete unless otherwise specified.
  *
  * @see ITurtleAccess#playAnimation(TurtleAnimation)
  */
-public enum TurtleAnimation
-{
+public enum TurtleAnimation {
     /**
      * An animation which does nothing. This takes no time to complete.
      *
@@ -23,38 +21,34 @@ public enum TurtleAnimation
     None,
 
     /**
-     * Make the turtle move forward. Note that the animation starts from the block <em>behind</em> it, and
-     * moves into this one.
+     * Make the turtle move forward. Note that the animation starts from the block <em>behind</em> it, and moves into this one.
      */
     MoveForward,
 
     /**
-     * Make the turtle move backwards. Note that the animation starts from the block <em>in front</em> it, and
-     * moves into this one.
+     * Make the turtle move backwards. Note that the animation starts from the block <em>in front</em> it, and moves into this one.
      */
     MoveBack,
 
     /**
-     * Make the turtle move backwards. Note that the animation starts from the block <em>above</em> it, and
-     * moves into this one.
+     * Make the turtle move backwards. Note that the animation starts from the block <em>above</em> it, and moves into this one.
      */
     MoveUp,
 
     /**
-     * Make the turtle move backwards. Note that the animation starts from the block <em>below</em> it, and
-     * moves into this one.
+     * Make the turtle move backwards. Note that the animation starts from the block <em>below</em> it, and moves into this one.
      */
     MoveDown,
 
     /**
-     * Turn the turtle to the left. Note that the animation starts with the turtle facing <em>right</em>, and
-     * the turtle turns to face in the current direction.
+     * Turn the turtle to the left. Note that the animation starts with the turtle facing <em>right</em>, and the turtle turns to face in
+     * the current direction.
      */
     TurnLeft,
 
     /**
-     * Turn the turtle to the left. Note that the animation starts with the turtle facing <em>right</em>, and
-     * the turtle turns to face in the current direction.
+     * Turn the turtle to the left. Note that the animation starts with the turtle facing <em>right</em>, and the turtle turns to face in
+     * the current direction.
      */
     TurnRight,
 

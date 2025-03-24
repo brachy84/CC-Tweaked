@@ -15,53 +15,47 @@ import javax.annotation.Nullable;
 /**
  * A wrapper for {@link ILuaAPI}s which cleans up after a {@link ComputerSystem} when the computer is shutdown.
  */
-final class ApiWrapper implements ILuaAPI
-{
+final class ApiWrapper implements ILuaAPI {
+
     private final ILuaAPI delegate;
     private final ComputerSystem system;
 
-    ApiWrapper( ILuaAPI delegate, ComputerSystem system )
-    {
+    ApiWrapper(ILuaAPI delegate, ComputerSystem system) {
         this.delegate = delegate;
         this.system = system;
     }
 
     @Override
-    public String[] getNames()
-    {
+    public String[] getNames() {
         return delegate.getNames();
     }
 
     @Override
-    public void startup()
-    {
+    public void startup() {
         delegate.startup();
     }
 
     @Override
-    public void update()
-    {
+    public void update() {
         delegate.update();
     }
 
     @Override
-    public void shutdown()
-    {
+    public void shutdown() {
         delegate.shutdown();
         system.unmountAll();
     }
 
     @Nonnull
     @Override
-    public String[] getMethodNames()
-    {
+    public String[] getMethodNames() {
         return delegate.getMethodNames();
     }
 
     @Nullable
     @Override
-    public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException, InterruptedException
-    {
-        return delegate.callMethod( context, method, arguments );
+    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] arguments)
+        throws LuaException, InterruptedException {
+        return delegate.callMethod(context, method, arguments);
     }
 }

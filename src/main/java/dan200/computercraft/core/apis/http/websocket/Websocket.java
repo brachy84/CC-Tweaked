@@ -38,11 +38,11 @@ import java.util.concurrent.Future;
 /**
  * Provides functionality to verify and connect to a remote websocket.
  */
-public class Websocket extends Resource<Websocket>
-{
+public class Websocket extends Resource<Websocket> {
+
     /**
-     * We declare the maximum size to be 2^30 bytes. While messages can be much longer, we set an arbitrary limit as
-     * working with larger messages (especially within a Lua VM) is absurd.
+     * We declare the maximum size to be 2^30 bytes. While messages can be much longer, we set an arbitrary limit as working with larger
+     * messages (especially within a Lua VM) is absurd.
      */
     public static final int MAX_MESSAGE_SIZE = 1 << 30;
 
@@ -60,178 +60,136 @@ public class Websocket extends Resource<Websocket>
     private final String address;
     private final HttpHeaders headers;
 
-    public Websocket( ResourceGroup<Websocket> limiter, IAPIEnvironment environment, URI uri, String address, HttpHeaders headers )
-    {
-        super( limiter );
+    public Websocket(ResourceGroup<Websocket> limiter, IAPIEnvironment environment, URI uri, String address, HttpHeaders headers) {
+        super(limiter);
         this.environment = environment;
         this.uri = uri;
         this.address = address;
         this.headers = headers;
     }
 
-    public static URI checkUri( String address ) throws HTTPRequestException
-    {
+    public static URI checkUri(String address) throws HTTPRequestException {
         URI uri = null;
-        try
-        {
-            uri = new URI( address );
-        }
-        catch( URISyntaxException ignored )
-        {
+        try {
+            uri = new URI(address);
+        } catch (URISyntaxException ignored) {
         }
 
-        if( uri == null || uri.getHost() == null )
-        {
-            try
-            {
-                uri = new URI( "ws://" + address );
-            }
-            catch( URISyntaxException ignored )
-            {
+        if (uri == null || uri.getHost() == null) {
+            try {
+                uri = new URI("ws://" + address);
+            } catch (URISyntaxException ignored) {
             }
         }
 
-        if( uri == null || uri.getHost() == null ) throw new HTTPRequestException( "URL malformed" );
+        if (uri == null || uri.getHost() == null) throw new HTTPRequestException("URL malformed");
 
         String scheme = uri.getScheme();
-        if( scheme == null )
-        {
-            try
-            {
-                uri = new URI( "ws://" + uri );
+        if (scheme == null) {
+            try {
+                uri = new URI("ws://" + uri);
+            } catch (URISyntaxException e) {
+                throw new HTTPRequestException("URL malformed");
             }
-            catch( URISyntaxException e )
-            {
-                throw new HTTPRequestException( "URL malformed" );
-            }
-        }
-        else if( !scheme.equalsIgnoreCase( "wss" ) && !scheme.equalsIgnoreCase( "ws" ) )
-        {
-            throw new HTTPRequestException( "Invalid scheme '" + scheme + "'" );
+        } else if (!scheme.equalsIgnoreCase("wss") && !scheme.equalsIgnoreCase("ws")) {
+            throw new HTTPRequestException("Invalid scheme '" + scheme + "'");
         }
 
-        NetworkUtils.checkHost( uri.getHost() );
+        NetworkUtils.checkHost(uri.getHost());
         return uri;
     }
 
-    public void connect()
-    {
-        if( isClosed() ) return;
-        executorFuture = NetworkUtils.EXECUTOR.submit( this::doConnect );
+    public void connect() {
+        if (isClosed()) return;
+        executorFuture = NetworkUtils.EXECUTOR.submit(this::doConnect);
         checkClosed();
     }
 
-    private void doConnect()
-    {
+    private void doConnect() {
         // If we're cancelled, abort.
-        if( isClosed() ) return;
+        if (isClosed()) return;
 
-        try
-        {
-            boolean ssl = uri.getScheme().equalsIgnoreCase( "wss" );
+        try {
+            boolean ssl = uri.getScheme().equalsIgnoreCase("wss");
 
-            InetSocketAddress socketAddress = NetworkUtils.getAddress( uri.getHost(), uri.getPort(), ssl );
+            InetSocketAddress socketAddress = NetworkUtils.getAddress(uri.getHost(), uri.getPort(), ssl);
             SslContext sslContext = ssl ? NetworkUtils.getSslContext() : null;
 
             // getAddress may have a slight delay, so let's perform another cancellation check.
-            if( isClosed() ) return;
+            if (isClosed()) return;
 
-            connectFuture = new Bootstrap()
-                .group( NetworkUtils.LOOP_GROUP )
-                .channel( NioSocketChannel.class )
-                .handler( new ChannelInitializer<SocketChannel>()
-                {
+            connectFuture = new Bootstrap().group(NetworkUtils.LOOP_GROUP).channel(NioSocketChannel.class).handler(
+                new ChannelInitializer<SocketChannel>() {
+
                     @Override
-                    protected void initChannel( SocketChannel ch )
-                    {
+                    protected void initChannel(SocketChannel ch) {
                         ChannelPipeline p = ch.pipeline();
-                        if( sslContext != null )
-                        {
-                            p.addLast( sslContext.newHandler( ch.alloc(), uri.getHost(), socketAddress.getPort() ) );
+                        if (sslContext != null) {
+                            p.addLast(sslContext.newHandler(ch.alloc(), uri.getHost(), socketAddress.getPort()));
                         }
 
-                        WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.newHandshaker(
-                            uri, WebSocketVersion.V13, null, true, headers,
-                            ComputerCraft.httpMaxWebsocketMessage == 0 ? MAX_MESSAGE_SIZE : ComputerCraft.httpMaxWebsocketMessage
-                        );
+                        WebSocketClientHandshaker handshaker = WebSocketClientHandshakerFactory.newHandshaker(uri, WebSocketVersion.V13,
+                                                                                                              null, true, headers,
+                                                                                                              ComputerCraft.httpMaxWebsocketMessage ==
+                                                                                                                  0 ? MAX_MESSAGE_SIZE :
+                                                                                                              ComputerCraft.httpMaxWebsocketMessage);
 
-                        p.addLast(
-                            new HttpClientCodec(),
-                            new HttpObjectAggregator( 8192 ),
-                            WebSocketClientCompressionHandler.INSTANCE,
-                            new WebsocketHandler( Websocket.this, handshaker )
-                        );
+                        p.addLast(new HttpClientCodec(), new HttpObjectAggregator(8192), WebSocketClientCompressionHandler.INSTANCE,
+                                  new WebsocketHandler(Websocket.this, handshaker));
                     }
-                } )
-                .remoteAddress( socketAddress )
-                .connect()
-                .addListener( c -> {
-                    if( !c.isSuccess() ) failure( c.cause().getMessage() );
-                } );
+                }).remoteAddress(socketAddress).connect().addListener(c -> {
+                if (!c.isSuccess()) failure(c.cause().getMessage());
+            });
 
             // Do an additional check for cancellation
             checkClosed();
-        }
-        catch( HTTPRequestException e )
-        {
-            failure( e.getMessage() );
-        }
-        catch( Exception e )
-        {
-            failure( "Could not connect" );
-            if( ComputerCraft.logPeripheralErrors ) ComputerCraft.log.error( "Error in websocket", e );
+        } catch (HTTPRequestException e) {
+            failure(e.getMessage());
+        } catch (Exception e) {
+            failure("Could not connect");
+            if (ComputerCraft.logPeripheralErrors) ComputerCraft.log.error("Error in websocket", e);
         }
     }
 
-    void success( Channel channel )
-    {
-        if( isClosed() ) return;
+    void success(Channel channel) {
+        if (isClosed()) return;
 
-        WebsocketHandle handle = new WebsocketHandle( this, channel );
-        environment().queueEvent( SUCCESS_EVENT, new Object[] { address, handle } );
-        websocketHandle = createOwnerReference( handle );
+        WebsocketHandle handle = new WebsocketHandle(this, channel);
+        environment().queueEvent(SUCCESS_EVENT, new Object[]{address, handle});
+        websocketHandle = createOwnerReference(handle);
 
         checkClosed();
     }
 
-    void failure( String message )
-    {
-        if( tryClose() ) environment.queueEvent( FAILURE_EVENT, new Object[] { address, message } );
+    void failure(String message) {
+        if (tryClose()) environment.queueEvent(FAILURE_EVENT, new Object[]{address, message});
     }
 
-    void close( int status, String reason )
-    {
-        if( tryClose() )
-        {
-            environment.queueEvent( CLOSE_EVENT, new Object[] {
-                address,
-                Strings.isNullOrEmpty( reason ) ? null : reason,
-                status < 0 ? null : status,
-            } );
+    void close(int status, String reason) {
+        if (tryClose()) {
+            environment.queueEvent(CLOSE_EVENT,
+                                   new Object[]{address, Strings.isNullOrEmpty(reason) ? null : reason, status < 0 ? null : status,});
         }
     }
 
     @Override
-    protected void dispose()
-    {
+    protected void dispose() {
         super.dispose();
 
-        executorFuture = closeFuture( executorFuture );
-        connectFuture = closeChannel( connectFuture );
+        executorFuture = closeFuture(executorFuture);
+        connectFuture = closeChannel(connectFuture);
 
         WeakReference<WebsocketHandle> websocketHandleRef = websocketHandle;
         WebsocketHandle websocketHandle = websocketHandleRef == null ? null : websocketHandleRef.get();
-        IoUtil.closeQuietly( websocketHandle );
+        IoUtil.closeQuietly(websocketHandle);
         this.websocketHandle = null;
     }
 
-    public IAPIEnvironment environment()
-    {
+    public IAPIEnvironment environment() {
         return environment;
     }
 
-    public String address()
-    {
+    public String address() {
         return address;
     }
 }

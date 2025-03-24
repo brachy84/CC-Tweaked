@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TurtleSmartItemModel implements IBakedModel
-{
+public class TurtleSmartItemModel implements IBakedModel {
+
     private static final Matrix4f s_identity, s_flip;
 
-    static
-    {
+    static {
         s_identity = new Matrix4f();
         s_identity.setIdentity();
 
@@ -44,8 +43,8 @@ public class TurtleSmartItemModel implements IBakedModel
         s_flip.m13 = 1; // Models go from (0,0,0) to (1,1,1), so push back up.
     }
 
-    private static class TurtleModelCombination
-    {
+    private static class TurtleModelCombination {
+
         final boolean m_colour;
         final ITurtleUpgrade m_leftUpgrade;
         final ITurtleUpgrade m_rightUpgrade;
@@ -53,8 +52,8 @@ public class TurtleSmartItemModel implements IBakedModel
         final boolean m_christmas;
         final boolean m_flip;
 
-        TurtleModelCombination( boolean colour, ITurtleUpgrade leftUpgrade, ITurtleUpgrade rightUpgrade, ResourceLocation overlay, boolean christmas, boolean flip )
-        {
+        TurtleModelCombination(boolean colour, ITurtleUpgrade leftUpgrade, ITurtleUpgrade rightUpgrade, ResourceLocation overlay,
+                               boolean christmas, boolean flip) {
             m_colour = colour;
             m_leftUpgrade = leftUpgrade;
             m_rightUpgrade = rightUpgrade;
@@ -64,23 +63,20 @@ public class TurtleSmartItemModel implements IBakedModel
         }
 
         @Override
-        public boolean equals( Object other )
-        {
-            if( other == this ) return true;
-            if( !(other instanceof TurtleModelCombination) ) return false;
+        public boolean equals(Object other) {
+            if (other == this) return true;
+            if (!(other instanceof TurtleModelCombination otherCombo)) return false;
 
-            TurtleModelCombination otherCombo = (TurtleModelCombination) other;
             return otherCombo.m_colour == m_colour &&
                 otherCombo.m_leftUpgrade == m_leftUpgrade &&
                 otherCombo.m_rightUpgrade == m_rightUpgrade &&
-                Objects.equal( otherCombo.m_overlay, m_overlay ) &&
+                Objects.equal(otherCombo.m_overlay, m_overlay) &&
                 otherCombo.m_christmas == m_christmas &&
                 otherCombo.m_flip == m_flip;
         }
 
         @Override
-        public int hashCode()
-        {
+        public int hashCode() {
             final int prime = 31;
             int result = 0;
             result = prime * result + (m_colour ? 1 : 0);
@@ -96,33 +92,33 @@ public class TurtleSmartItemModel implements IBakedModel
     private final IBakedModel familyModel;
     private final IBakedModel colourModel;
 
-    private HashMap<TurtleModelCombination, IBakedModel> m_cachedModels;
-    private ItemOverrideList m_overrides;
+    private final HashMap<TurtleModelCombination, IBakedModel> m_cachedModels;
+    private final ItemOverrideList m_overrides;
 
-    public TurtleSmartItemModel( IBakedModel familyModel, IBakedModel colourModel )
-    {
+    public TurtleSmartItemModel(IBakedModel familyModel, IBakedModel colourModel) {
         this.familyModel = familyModel;
         this.colourModel = colourModel;
 
         m_cachedModels = new HashMap<>();
-        m_overrides = new ItemOverrideList( new ArrayList<>() )
-        {
+        m_overrides = new ItemOverrideList(new ArrayList<>()) {
+
             @Nonnull
             @Override
-            public IBakedModel handleItemState( @Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world, @Nullable EntityLivingBase entity )
-            {
+            public IBakedModel handleItemState(@Nonnull IBakedModel originalModel, @Nonnull ItemStack stack, @Nullable World world,
+                                               @Nullable EntityLivingBase entity) {
                 ItemTurtleBase turtle = (ItemTurtleBase) stack.getItem();
-                int colour = turtle.getColour( stack );
-                ITurtleUpgrade leftUpgrade = turtle.getUpgrade( stack, TurtleSide.Left );
-                ITurtleUpgrade rightUpgrade = turtle.getUpgrade( stack, TurtleSide.Right );
-                ResourceLocation overlay = turtle.getOverlay( stack );
+                int colour = turtle.getColour(stack);
+                ITurtleUpgrade leftUpgrade = turtle.getUpgrade(stack, TurtleSide.Left);
+                ITurtleUpgrade rightUpgrade = turtle.getUpgrade(stack, TurtleSide.Right);
+                ResourceLocation overlay = turtle.getOverlay(stack);
                 boolean christmas = HolidayUtil.getCurrentHoliday() == Holiday.Christmas;
-                String label = turtle.getLabel( stack );
-                boolean flip = label != null && (label.equals( "Dinnerbone" ) || label.equals( "Grumm" ));
-                TurtleModelCombination combo = new TurtleModelCombination( colour != -1, leftUpgrade, rightUpgrade, overlay, christmas, flip );
+                String label = turtle.getLabel(stack);
+                boolean flip = label != null && (label.equals("Dinnerbone") || label.equals("Grumm"));
+                TurtleModelCombination combo = new TurtleModelCombination(colour != -1, leftUpgrade, rightUpgrade, overlay, christmas,
+                                                                          flip);
 
-                IBakedModel model = m_cachedModels.get( combo );
-                if( model == null ) m_cachedModels.put( combo, model = buildModel( combo ) );
+                IBakedModel model = m_cachedModels.get(combo);
+                if (model == null) m_cachedModels.put(combo, model = buildModel(combo));
                 return model;
             }
         };
@@ -130,77 +126,64 @@ public class TurtleSmartItemModel implements IBakedModel
 
     @Nonnull
     @Override
-    public ItemOverrideList getOverrides()
-    {
+    public ItemOverrideList getOverrides() {
         return m_overrides;
     }
 
-    private IBakedModel buildModel( TurtleModelCombination combo )
-    {
+    private IBakedModel buildModel(TurtleModelCombination combo) {
         Minecraft mc = Minecraft.getMinecraft();
         ModelManager modelManager = mc.getRenderItem().getItemModelMesher().getModelManager();
-        ModelResourceLocation overlayModelLocation = TileEntityTurtleRenderer.getTurtleOverlayModel( combo.m_overlay, combo.m_christmas );
+        ModelResourceLocation overlayModelLocation = TileEntityTurtleRenderer.getTurtleOverlayModel(combo.m_overlay, combo.m_christmas);
 
         IBakedModel baseModel = combo.m_colour ? colourModel : familyModel;
-        IBakedModel overlayModel = overlayModelLocation != null ? modelManager.getModel( overlayModelLocation ) : null;
+        IBakedModel overlayModel = overlayModelLocation != null ? modelManager.getModel(overlayModelLocation) : null;
         Matrix4f transform = combo.m_flip ? s_flip : s_identity;
-        Pair<IBakedModel, Matrix4f> leftModel = combo.m_leftUpgrade != null ? combo.m_leftUpgrade.getModel( null, TurtleSide.Left ) : null;
-        Pair<IBakedModel, Matrix4f> rightModel = combo.m_rightUpgrade != null ? combo.m_rightUpgrade.getModel( null, TurtleSide.Right ) : null;
-        if( leftModel != null && rightModel != null )
-        {
-            return new TurtleMultiModel( baseModel, overlayModel, transform, leftModel.getLeft(), leftModel.getRight(), rightModel.getLeft(), rightModel.getRight() );
-        }
-        else if( leftModel != null )
-        {
-            return new TurtleMultiModel( baseModel, overlayModel, transform, leftModel.getLeft(), leftModel.getRight(), null, null );
-        }
-        else if( rightModel != null )
-        {
-            return new TurtleMultiModel( baseModel, overlayModel, transform, null, null, rightModel.getLeft(), rightModel.getRight() );
-        }
-        else
-        {
-            return new TurtleMultiModel( baseModel, overlayModel, transform, null, null, null, null );
+        Pair<IBakedModel, Matrix4f> leftModel = combo.m_leftUpgrade != null ? combo.m_leftUpgrade.getModel(null, TurtleSide.Left) : null;
+        Pair<IBakedModel, Matrix4f> rightModel =
+            combo.m_rightUpgrade != null ? combo.m_rightUpgrade.getModel(null, TurtleSide.Right) : null;
+        if (leftModel != null && rightModel != null) {
+            return new TurtleMultiModel(baseModel, overlayModel, transform, leftModel.getLeft(), leftModel.getRight(), rightModel.getLeft(),
+                                        rightModel.getRight());
+        } else if (leftModel != null) {
+            return new TurtleMultiModel(baseModel, overlayModel, transform, leftModel.getLeft(), leftModel.getRight(), null, null);
+        } else if (rightModel != null) {
+            return new TurtleMultiModel(baseModel, overlayModel, transform, null, null, rightModel.getLeft(), rightModel.getRight());
+        } else {
+            return new TurtleMultiModel(baseModel, overlayModel, transform, null, null, null, null);
         }
     }
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads( IBlockState state, EnumFacing facing, long rand )
-    {
-        return familyModel.getQuads( state, facing, rand );
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing facing, long rand) {
+        return familyModel.getQuads(state, facing, rand);
     }
 
     @Override
-    public boolean isAmbientOcclusion()
-    {
+    public boolean isAmbientOcclusion() {
         return familyModel.isAmbientOcclusion();
     }
 
     @Override
-    public boolean isGui3d()
-    {
+    public boolean isGui3d() {
         return familyModel.isGui3d();
     }
 
     @Override
-    public boolean isBuiltInRenderer()
-    {
+    public boolean isBuiltInRenderer() {
         return familyModel.isBuiltInRenderer();
     }
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleTexture()
-    {
+    public TextureAtlasSprite getParticleTexture() {
         return familyModel.getParticleTexture();
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public ItemCameraTransforms getItemCameraTransforms()
-    {
+    public ItemCameraTransforms getItemCameraTransforms() {
         return familyModel.getItemCameraTransforms();
     }
 

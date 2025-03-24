@@ -18,72 +18,58 @@ import javax.annotation.Nullable;
 import static dan200.computercraft.shared.integration.charset.IntegrationCharset.CAPABILITY_EMITTER;
 import static dan200.computercraft.shared.integration.charset.IntegrationCharset.CAPABILITY_RECEIVER;
 
-final class BundledCapabilityProvider implements ICapabilityProvider
-{
+final class BundledCapabilityProvider implements ICapabilityProvider {
+
     private final TileGeneric tile;
     private IBundledReceiver receiver;
     private IBundledEmitter[] emitters;
 
-    BundledCapabilityProvider( TileGeneric tile )
-    {
+    BundledCapabilityProvider(TileGeneric tile) {
         this.tile = tile;
     }
 
     @Override
-    public boolean hasCapability( @Nonnull Capability<?> capability, @Nullable EnumFacing side )
-    {
+    public boolean hasCapability(@Nonnull Capability<?> capability, @Nullable EnumFacing side) {
         return capability == CAPABILITY_EMITTER || capability == CAPABILITY_RECEIVER;
     }
 
     @Nullable
     @Override
-    public <T> T getCapability( @Nonnull Capability<T> capability, @Nullable EnumFacing side )
-    {
-        if( capability == CAPABILITY_RECEIVER )
-        {
+    public <T> T getCapability(@Nonnull Capability<T> capability, @Nullable EnumFacing side) {
+        if (capability == CAPABILITY_RECEIVER) {
             IBundledReceiver receiver = this.receiver;
-            if( receiver == null )
-            {
-                receiver = this.receiver = () -> tile.onNeighbourChange( tile.getPos().offset( side ) );
+            if (receiver == null) {
+                receiver = this.receiver = () -> tile.onNeighbourChange(tile.getPos().offset(side));
             }
 
-            return CAPABILITY_RECEIVER.cast( receiver );
-        }
-        else if( capability == CAPABILITY_EMITTER )
-        {
+            return CAPABILITY_RECEIVER.cast(receiver);
+        } else if (capability == CAPABILITY_EMITTER) {
             IBundledEmitter[] emitters = this.emitters;
-            if( emitters == null ) emitters = this.emitters = new IBundledEmitter[7];
+            if (emitters == null) emitters = this.emitters = new IBundledEmitter[7];
 
             int index = side == null ? 6 : side.getIndex();
             IBundledEmitter emitter = emitters[index];
-            if( emitter == null )
-            {
-                if( side == null )
-                {
+            if (emitter == null) {
+                if (side == null) {
                     emitter = emitters[index] = () -> {
                         int flags = 0;
-                        for( EnumFacing facing : EnumFacing.VALUES ) flags |= tile.getBundledRedstoneOutput( facing );
-                        return toBytes( flags );
+                        for (EnumFacing facing : EnumFacing.VALUES) flags |= tile.getBundledRedstoneOutput(facing);
+                        return toBytes(flags);
                     };
-                }
-                else
-                {
-                    emitter = emitters[index] = () -> toBytes( tile.getBundledRedstoneOutput( side ) );
+                } else {
+                    emitter = emitters[index] = () -> toBytes(tile.getBundledRedstoneOutput(side));
                 }
             }
 
-            return CAPABILITY_EMITTER.cast( emitter );
-        }
-        else
-        {
+            return CAPABILITY_EMITTER.cast(emitter);
+        } else {
             return null;
         }
     }
 
-    private static byte[] toBytes( int flag )
-    {
+    private static byte[] toBytes(int flag) {
         byte[] channels = new byte[16];
-        for( int i = 0; i < 16; i++ ) channels[i] = (flag & (1 << i)) == 0 ? (byte) 0 : 15;
+        for (int i = 0; i < 16; i++) channels[i] = (flag & (1 << i)) == 0 ? (byte) 0 : 15;
         return channels;
     }
 }

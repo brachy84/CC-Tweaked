@@ -85,26 +85,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-@Mod(
-    modid = ComputerCraft.MOD_ID, name = ComputerCraft.NAME, version = ComputerCraft.VERSION,
-    guiFactory = "dan200.computercraft.client.gui.GuiConfigCC$Factory",
-    dependencies = "required:forge@[14.23.4.2746,)"
-)
-public class ComputerCraft
-{
+@Mod(modid = ComputerCraft.MOD_ID,
+     name = ComputerCraft.NAME,
+     version = ComputerCraft.VERSION,
+     guiFactory = "dan200.computercraft.client.gui.GuiConfigCC$Factory",
+     dependencies = "required:forge@[14.23.4.2746,)")
+public class ComputerCraft {
+
     public static final String MOD_ID = "computercraft";
     static final String VERSION = "${version}";
     static final String NAME = "CC: Tweaked";
 
     // Configuration options
-    public static final String[] DEFAULT_HTTP_WHITELIST = new String[] { "*" };
-    public static final String[] DEFAULT_HTTP_BLACKLIST = new String[] {
-        "127.0.0.0/8",
-        "10.0.0.0/8",
-        "172.16.0.0/12",
-        "192.168.0.0/16",
-        "fd00::/8",
-    };
+    public static final String[] DEFAULT_HTTP_WHITELIST = new String[]{"*"};
+    public static final String[] DEFAULT_HTTP_BLACKLIST = new String[]{"127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
+                                                                       "fd00::/8",};
 
     public static int computerSpaceLimit = 1000 * 1000;
     public static int floppySpaceLimit = 125 * 1000;
@@ -116,13 +111,13 @@ public class ComputerCraft
     public static boolean commandRequireCreative = true;
 
     public static int computer_threads = 1;
-    public static long maxMainGlobalTime = TimeUnit.MILLISECONDS.toNanos( 10 );
-    public static long maxMainComputerTime = TimeUnit.MILLISECONDS.toNanos( 5 );
+    public static long maxMainGlobalTime = TimeUnit.MILLISECONDS.toNanos(10);
+    public static long maxMainComputerTime = TimeUnit.MILLISECONDS.toNanos(5);
 
     public static boolean http_enable = true;
     public static boolean http_websocket_enable = true;
-    public static AddressPredicate http_whitelist = new AddressPredicate( DEFAULT_HTTP_WHITELIST );
-    public static AddressPredicate http_blacklist = new AddressPredicate( DEFAULT_HTTP_BLACKLIST );
+    public static AddressPredicate http_whitelist = new AddressPredicate(DEFAULT_HTTP_WHITELIST);
+    public static AddressPredicate http_blacklist = new AddressPredicate(DEFAULT_HTTP_BLACKLIST);
 
     public static int httpTimeout = 30000;
     public static int httpMaxRequests = 16;
@@ -145,7 +140,7 @@ public class ComputerCraft
     public static int advancedTurtleFuelLimit = 100000;
     public static boolean turtlesObeyBlockProtection = true;
     public static boolean turtlesCanPush = true;
-    public static EnumSet<TurtleAction> turtleDisabledActions = EnumSet.noneOf( TurtleAction.class );
+    public static EnumSet<TurtleAction> turtleDisabledActions = EnumSet.noneOf(TurtleAction.class);
 
     public static final int terminalWidth_computer = 51;
     public static final int terminalHeight_computer = 19;
@@ -157,8 +152,8 @@ public class ComputerCraft
     public static final int terminalHeight_pocketComputer = 20;
 
     // Blocks and Items
-    public static final class Blocks
-    {
+    public static final class Blocks {
+
         public static BlockComputer computer;
         public static BlockCommandComputer commandComputer;
 
@@ -172,8 +167,8 @@ public class ComputerCraft
         public static BlockWiredModemFull wiredModemFull;
     }
 
-    public static final class Items
-    {
+    public static final class Items {
+
         public static ItemComputer computer;
         public static ItemCommandComputer commandComputer;
 
@@ -195,8 +190,8 @@ public class ComputerCraft
         public static ItemBlock wiredModemFull;
     }
 
-    public static final class TurtleUpgrades
-    {
+    public static final class TurtleUpgrades {
+
         public static TurtleModem wirelessModem;
         public static TurtleModem advancedModem;
         public static TurtleSpeaker speaker;
@@ -209,19 +204,18 @@ public class ComputerCraft
         public static TurtleHoe diamondHoe;
     }
 
-    public static final class PocketUpgrades
-    {
+    public static final class PocketUpgrades {
+
         public static PocketModem wirelessModem;
         public static PocketModem advancedModem;
         public static PocketSpeaker speaker;
 
-        @Deprecated
-        public static PocketSpeaker pocketSpeaker;
+        @Deprecated public static PocketSpeaker pocketSpeaker;
     }
 
     @Deprecated
-    public static final class Upgrades
-    {
+    public static final class Upgrades {
+
         public static TurtleModem advancedModem;
     }
 
@@ -239,43 +233,34 @@ public class ComputerCraft
     public static List<IPeripheralProvider> peripheralProviders = new ArrayList<>();
 
     // Implementation
-    @Mod.Instance( ComputerCraft.MOD_ID )
-    public static ComputerCraft instance;
+    @Mod.Instance(ComputerCraft.MOD_ID) public static ComputerCraft instance;
 
-    @SidedProxy(
-        clientSide = "dan200.computercraft.client.proxy.ComputerCraftProxyClient",
-        serverSide = "dan200.computercraft.shared.proxy.ComputerCraftProxyCommon"
-    )
-    private static ComputerCraftProxyCommon proxy;
+    @SidedProxy(clientSide = "dan200.computercraft.client.proxy.ComputerCraftProxyClient",
+                serverSide = "dan200.computercraft.shared.proxy.ComputerCraftProxyCommon") private static ComputerCraftProxyCommon proxy;
 
     @Mod.EventHandler
-    public void preInit( FMLPreInitializationEvent event )
-    {
+    public void preInit(FMLPreInitializationEvent event) {
         log = event.getModLog();
 
         // Load config
-        Config.load( event.getSuggestedConfigurationFile() );
+        Config.load(event.getSuggestedConfigurationFile());
 
         proxy.preInit();
     }
 
     @Mod.EventHandler
-    public void init( FMLInitializationEvent event )
-    {
+    public void init(FMLInitializationEvent event) {
         proxy.init();
     }
 
     @Mod.EventHandler
-    public void onServerStarting( FMLServerStartingEvent event )
-    {
-        ComputerCraftProxyCommon.initServer( event.getServer() );
+    public void onServerStarting(FMLServerStartingEvent event) {
+        ComputerCraftProxyCommon.initServer(event.getServer());
     }
 
     @Mod.EventHandler
-    public void onServerStart( FMLServerStartedEvent event )
-    {
-        if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
-        {
+    public void onServerStart(FMLServerStartedEvent event) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
             ComputerCraft.serverComputerRegistry.reset();
             WirelessNetwork.resetNetworks();
             MainThread.reset();
@@ -284,10 +269,8 @@ public class ComputerCraft
     }
 
     @Mod.EventHandler
-    public void onServerStopped( FMLServerStoppedEvent event )
-    {
-        if( FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER )
-        {
+    public void onServerStopped(FMLServerStoppedEvent event) {
+        if (FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER) {
             ComputerCraft.serverComputerRegistry.reset();
             WirelessNetwork.resetNetworks();
             MainThread.reset();
@@ -295,373 +278,292 @@ public class ComputerCraft
         }
     }
 
-    public static String getVersion()
-    {
+    public static String getVersion() {
         return VERSION;
     }
 
-    private static File getBaseDir()
-    {
+    private static File getBaseDir() {
         return FMLCommonHandler.instance().getMinecraftServerInstance().getDataDirectory();
     }
 
-    private static File getResourcePackDir()
-    {
-        return new File( getBaseDir(), "resourcepacks" );
+    private static File getResourcePackDir() {
+        return new File(getBaseDir(), "resourcepacks");
     }
 
     @Deprecated
-    public static void registerPermissionProvider( ITurtlePermissionProvider provider )
-    {
-        TurtlePermissions.register( provider );
+    public static void registerPermissionProvider(ITurtlePermissionProvider provider) {
+        TurtlePermissions.register(provider);
     }
 
     @Deprecated
-    public static void registerPocketUpgrade( IPocketUpgrade upgrade )
-    {
-        dan200.computercraft.shared.PocketUpgrades.register( upgrade );
+    public static void registerPocketUpgrade(IPocketUpgrade upgrade) {
+        dan200.computercraft.shared.PocketUpgrades.register(upgrade);
     }
 
     @Deprecated
-    public static void registerPeripheralProvider( IPeripheralProvider provider )
-    {
-        Peripherals.register( provider );
+    public static void registerPeripheralProvider(IPeripheralProvider provider) {
+        Peripherals.register(provider);
     }
 
     @Deprecated
-    public static void registerBundledRedstoneProvider( IBundledRedstoneProvider provider )
-    {
-        BundledRedstone.register( provider );
+    public static void registerBundledRedstoneProvider(IBundledRedstoneProvider provider) {
+        BundledRedstone.register(provider);
     }
 
     @Deprecated
-    public static void registerMediaProvider( IMediaProvider provider )
-    {
-        MediaProviders.register( provider );
+    public static void registerMediaProvider(IMediaProvider provider) {
+        MediaProviders.register(provider);
     }
 
     @Deprecated
-    public static void registerAPIFactory( ILuaAPIFactory factory )
-    {
-        ApiFactories.register( factory );
+    public static void registerAPIFactory(ILuaAPIFactory factory) {
+        ApiFactories.register(factory);
     }
 
     @Deprecated
-    public static IWiredNode createWiredNodeForElement( IWiredElement element )
-    {
-        return new WiredNode( element );
+    public static IWiredNode createWiredNodeForElement(IWiredElement element) {
+        return new WiredNode(element);
     }
 
     @Deprecated
-    public static IWiredElement getWiredElementAt( IBlockAccess world, BlockPos pos, EnumFacing side )
-    {
-        TileEntity tile = world.getTileEntity( pos );
-        return tile != null && tile.hasCapability( CapabilityWiredElement.CAPABILITY, side )
-            ? tile.getCapability( CapabilityWiredElement.CAPABILITY, side )
-            : null;
+    public static IWiredElement getWiredElementAt(IBlockAccess world, BlockPos pos, EnumFacing side) {
+        TileEntity tile = world.getTileEntity(pos);
+        return tile != null && tile.hasCapability(CapabilityWiredElement.CAPABILITY, side) ?
+               tile.getCapability(CapabilityWiredElement.CAPABILITY, side) : null;
     }
 
     @Deprecated
-    public static int getDefaultBundledRedstoneOutput( World world, BlockPos pos, EnumFacing side )
-    {
-        return BundledRedstone.getDefaultOutput( world, pos, side );
+    public static int getDefaultBundledRedstoneOutput(World world, BlockPos pos, EnumFacing side) {
+        return BundledRedstone.getDefaultOutput(world, pos, side);
     }
 
     @Deprecated
-    public static IPacketNetwork getWirelessNetwork()
-    {
+    public static IPacketNetwork getWirelessNetwork() {
         return WirelessNetwork.getUniversal();
     }
 
     @Deprecated
-    public static int createUniqueNumberedSaveDir( World world, String parentSubPath )
-    {
-        return IDAssigner.getNextIDFromDirectory( parentSubPath );
+    public static int createUniqueNumberedSaveDir(World world, String parentSubPath) {
+        return IDAssigner.getNextIDFromDirectory(parentSubPath);
     }
 
     @Deprecated
-    public static IWritableMount createSaveDirMount( World world, String subPath, long capacity )
-    {
-        try
-        {
-            return new FileMount( new File( getWorldDir(), subPath ), capacity );
-        }
-        catch( Exception e )
-        {
+    public static IWritableMount createSaveDirMount(World world, String subPath, long capacity) {
+        try {
+            return new FileMount(new File(getWorldDir(), subPath), capacity);
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private static void loadFromFile( List<IMount> mounts, File file, String path, boolean allowMissing )
-    {
-        try
-        {
-            if( file.isFile() )
-            {
-                mounts.add( new JarMount( file, path ) );
+    private static void loadFromFile(List<IMount> mounts, File file, String path, boolean allowMissing) {
+        try {
+            if (file.isFile()) {
+                mounts.add(new JarMount(file, path));
+            } else {
+                File subResource = new File(file, path);
+                if (subResource.exists()) mounts.add(new FileMount(subResource, 0));
             }
-            else
-            {
-                File subResource = new File( file, path );
-                if( subResource.exists() ) mounts.add( new FileMount( subResource, 0 ) );
-            }
-        }
-        catch( IOException | RuntimeException e )
-        {
-            if( allowMissing && e instanceof FileNotFoundException ) return;
-            ComputerCraft.log.error( "Could not load mount '" + path + " 'from '" + file.getName() + "'", e );
+        } catch (IOException | RuntimeException e) {
+            if (allowMissing && e instanceof FileNotFoundException) return;
+            ComputerCraft.log.error("Could not load mount '" + path + " 'from '" + file.getName() + "'", e);
         }
     }
 
     @Deprecated
-    public static IMount createResourceMount( Class<?> modClass, String domain, String subPath )
-    {
+    public static IMount createResourceMount(Class<?> modClass, String domain, String subPath) {
         // Start building list of mounts
         List<IMount> mounts = new ArrayList<>();
         subPath = "assets/" + domain + "/" + subPath;
 
         // Mount from debug dir
-        File codeDir = getDebugCodeDir( modClass );
-        if( codeDir != null )
-        {
-            File subResource = new File( codeDir, subPath );
-            if( subResource.exists() )
-            {
-                IMount resourcePackMount = new FileMount( subResource, 0 );
-                mounts.add( resourcePackMount );
+        File codeDir = getDebugCodeDir(modClass);
+        if (codeDir != null) {
+            File subResource = new File(codeDir, subPath);
+            if (subResource.exists()) {
+                IMount resourcePackMount = new FileMount(subResource, 0);
+                mounts.add(resourcePackMount);
             }
         }
 
         // Mount from mod jars, preferring the specified one.
-        File modJar = getContainingJar( modClass );
+        File modJar = getContainingJar(modClass);
         Set<File> otherMods = new HashSet<>();
-        for( ModContainer container : Loader.instance().getActiveModList() )
-        {
+        for (ModContainer container : Loader.instance().getActiveModList()) {
             File modFile = container.getSource();
-            if( modFile != null && !modFile.equals( modJar ) && modFile.exists() )
-            {
-                otherMods.add( container.getSource() );
+            if (modFile != null && !modFile.equals(modJar) && modFile.exists()) {
+                otherMods.add(container.getSource());
             }
         }
 
-        for( File file : otherMods )
-        {
-            loadFromFile( mounts, file, subPath, true );
+        for (File file : otherMods) {
+            loadFromFile(mounts, file, subPath, true);
         }
 
-        if( modJar != null )
-        {
-            loadFromFile( mounts, modJar, subPath, false );
+        if (modJar != null) {
+            loadFromFile(mounts, modJar, subPath, false);
         }
 
         // Mount from resource packs
         File resourcePackDir = getResourcePackDir();
-        if( resourcePackDir.exists() && resourcePackDir.isDirectory() )
-        {
+        if (resourcePackDir.exists() && resourcePackDir.isDirectory()) {
             String[] resourcePacks = resourcePackDir.list();
-            for( String resourcePackName : resourcePacks )
-            {
-                File resourcePack = new File( resourcePackDir, resourcePackName );
-                loadFromFile( mounts, resourcePack, subPath, true );
+            for (String resourcePackName : resourcePacks) {
+                File resourcePack = new File(resourcePackDir, resourcePackName);
+                loadFromFile(mounts, resourcePack, subPath, true);
             }
         }
 
         // Return the combination of all the mounts found
-        if( mounts.size() >= 2 )
-        {
+        if (mounts.size() >= 2) {
             IMount[] mountArray = new IMount[mounts.size()];
-            mounts.toArray( mountArray );
-            return new ComboMount( mountArray );
-        }
-        else if( mounts.size() == 1 )
-        {
-            return mounts.get( 0 );
-        }
-        else
-        {
+            mounts.toArray(mountArray);
+            return new ComboMount(mountArray);
+        } else if (mounts.size() == 1) {
+            return mounts.get(0);
+        } else {
             return null;
         }
     }
 
-    public static InputStream getResourceFile( Class<?> modClass, String domain, String subPath )
-    {
+    public static InputStream getResourceFile(Class<?> modClass, String domain, String subPath) {
         // Start searching in possible locations
         subPath = "assets/" + domain + "/" + subPath;
 
         // Look in resource packs
         File resourcePackDir = getResourcePackDir();
-        if( resourcePackDir.exists() && resourcePackDir.isDirectory() )
-        {
+        if (resourcePackDir.exists() && resourcePackDir.isDirectory()) {
             String[] resourcePacks = resourcePackDir.list();
-            for( String resourcePackPath : resourcePacks )
-            {
-                File resourcePack = new File( resourcePackDir, resourcePackPath );
-                if( resourcePack.isDirectory() )
-                {
+            for (String resourcePackPath : resourcePacks) {
+                File resourcePack = new File(resourcePackDir, resourcePackPath);
+                if (resourcePack.isDirectory()) {
                     // Mount a resource pack from a folder
-                    File subResource = new File( resourcePack, subPath );
-                    if( subResource.exists() && subResource.isFile() )
-                    {
-                        try
-                        {
-                            return new FileInputStream( subResource );
-                        }
-                        catch( FileNotFoundException ignored )
-                        {
+                    File subResource = new File(resourcePack, subPath);
+                    if (subResource.exists() && subResource.isFile()) {
+                        try {
+                            return new FileInputStream(subResource);
+                        } catch (FileNotFoundException ignored) {
                         }
                     }
-                }
-                else
-                {
+                } else {
                     ZipFile zipFile = null;
-                    try
-                    {
-                        final ZipFile zip = zipFile = new ZipFile( resourcePack );
-                        ZipEntry entry = zipFile.getEntry( subPath );
-                        if( entry != null )
-                        {
+                    try {
+                        final ZipFile zip = zipFile = new ZipFile(resourcePack);
+                        ZipEntry entry = zipFile.getEntry(subPath);
+                        if (entry != null) {
                             // Return a custom InputStream which will close the original zip when finished.
-                            return new FilterInputStream( zipFile.getInputStream( entry ) )
-                            {
+                            return new FilterInputStream(zipFile.getInputStream(entry)) {
+
                                 @Override
-                                public void close() throws IOException
-                                {
+                                public void close() throws IOException {
                                     super.close();
                                     zip.close();
                                 }
                             };
+                        } else {
+                            IoUtil.closeQuietly(zipFile);
                         }
-                        else
-                        {
-                            IoUtil.closeQuietly( zipFile );
-                        }
-                    }
-                    catch( IOException e )
-                    {
-                        IoUtil.closeQuietly( zipFile );
+                    } catch (IOException e) {
+                        IoUtil.closeQuietly(zipFile);
                     }
                 }
             }
         }
 
         // Look in debug dir
-        File codeDir = getDebugCodeDir( modClass );
-        if( codeDir != null )
-        {
-            File subResource = new File( codeDir, subPath );
-            if( subResource.exists() && subResource.isFile() )
-            {
-                try
-                {
-                    return new FileInputStream( subResource );
-                }
-                catch( FileNotFoundException ignored )
-                {
+        File codeDir = getDebugCodeDir(modClass);
+        if (codeDir != null) {
+            File subResource = new File(codeDir, subPath);
+            if (subResource.exists() && subResource.isFile()) {
+                try {
+                    return new FileInputStream(subResource);
+                } catch (FileNotFoundException ignored) {
                 }
             }
         }
 
         // Look in class loader
-        return modClass.getClassLoader().getResourceAsStream( subPath );
+        return modClass.getClassLoader().getResourceAsStream(subPath);
     }
 
-    private static File getContainingJar( Class<?> modClass )
-    {
+    private static File getContainingJar(Class<?> modClass) {
         String path = modClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-        int bangIndex = path.indexOf( '!' );
-        if( bangIndex >= 0 )
-        {
-            path = path.substring( 0, bangIndex );
+        int bangIndex = path.indexOf('!');
+        if (bangIndex >= 0) {
+            path = path.substring(0, bangIndex);
         }
 
         URL url;
-        try
-        {
-            url = new URL( path );
-        }
-        catch( MalformedURLException e1 )
-        {
+        try {
+            url = new URL(path);
+        } catch (MalformedURLException e1) {
             return null;
         }
 
         File file;
-        try
-        {
-            file = new File( url.toURI() );
-        }
-        catch( URISyntaxException e )
-        {
-            file = new File( url.getPath() );
+        try {
+            file = new File(url.toURI());
+        } catch (URISyntaxException e) {
+            file = new File(url.getPath());
         }
         return file;
     }
 
-    private static File getDebugCodeDir( Class<?> modClass )
-    {
+    private static File getDebugCodeDir(Class<?> modClass) {
         String path = modClass.getProtectionDomain().getCodeSource().getLocation().getPath();
-        int bangIndex = path.indexOf( '!' );
-        return bangIndex >= 0 ? null : new File( new File( path ).getParentFile(), "../.." );
+        int bangIndex = path.indexOf('!');
+        return bangIndex >= 0 ? null : new File(new File(path).getParentFile(), "../..");
     }
 
     @Deprecated
-    public static void registerTurtleUpgrade( ITurtleUpgrade upgrade )
-    {
-        dan200.computercraft.shared.TurtleUpgrades.register( upgrade );
+    public static void registerTurtleUpgrade(ITurtleUpgrade upgrade) {
+        dan200.computercraft.shared.TurtleUpgrades.register(upgrade);
     }
 
-    public static File getWorldDir()
-    {
+    public static File getWorldDir() {
         return DimensionManager.getCurrentSaveRootDirectory();
     }
 
     //region Compatibility
     @Deprecated
-    public static File getWorldDir( World world )
-    {
+    public static File getWorldDir(World world) {
         return DimensionManager.getCurrentSaveRootDirectory();
     }
 
     @Deprecated
-    public static IMedia getMedia( ItemStack stack )
-    {
-        return MediaProviders.get( stack );
+    public static IMedia getMedia(ItemStack stack) {
+        return MediaProviders.get(stack);
     }
 
     @Deprecated
-    public static IPocketUpgrade getPocketUpgrade( ItemStack stack )
-    {
-        return dan200.computercraft.shared.PocketUpgrades.get( stack );
+    public static IPocketUpgrade getPocketUpgrade(ItemStack stack) {
+        return dan200.computercraft.shared.PocketUpgrades.get(stack);
     }
 
     @Deprecated
-    public static ITurtleUpgrade getTurtleUpgrade( ItemStack stack )
-    {
-        return dan200.computercraft.shared.TurtleUpgrades.get( stack );
+    public static ITurtleUpgrade getTurtleUpgrade(ItemStack stack) {
+        return dan200.computercraft.shared.TurtleUpgrades.get(stack);
     }
 
     @Deprecated
-    public static IPocketUpgrade getPocketUpgrade( String id )
-    {
-        return dan200.computercraft.shared.PocketUpgrades.get( id );
+    public static IPocketUpgrade getPocketUpgrade(String id) {
+        return dan200.computercraft.shared.PocketUpgrades.get(id);
     }
 
     @Deprecated
-    public static ITurtleUpgrade getTurtleUpgrade( String id )
-    {
-        return dan200.computercraft.shared.TurtleUpgrades.get( id );
+    public static ITurtleUpgrade getTurtleUpgrade(String id) {
+        return dan200.computercraft.shared.TurtleUpgrades.get(id);
     }
 
     @Deprecated
-    public static IPeripheral getPeripheralAt( World world, BlockPos pos, EnumFacing side )
-    {
-        return Peripherals.getPeripheral( world, pos, side );
+    public static IPeripheral getPeripheralAt(World world, BlockPos pos, EnumFacing side) {
+        return Peripherals.getPeripheral(world, pos, side);
     }
 
     @Deprecated
-    public static boolean canPlayerUseCommands( EntityPlayer player )
-    {
+    public static boolean canPlayerUseCommands(EntityPlayer player) {
         MinecraftServer server = player.getServer();
-        return server != null && server.getPlayerList().canSendCommands( player.getGameProfile() );
+        return server != null && server.getPlayerList().canSendCommands(player.getGameProfile());
     }
     //endregion
 }

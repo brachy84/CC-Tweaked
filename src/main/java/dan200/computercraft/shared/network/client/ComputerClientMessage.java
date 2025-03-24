@@ -15,42 +15,35 @@ import javax.annotation.Nonnull;
 /**
  * A packet, which performs an action on a {@link ClientComputer}.
  */
-public abstract class ComputerClientMessage implements NetworkMessage
-{
+public abstract class ComputerClientMessage implements NetworkMessage {
+
     private int instanceId;
 
-    public ComputerClientMessage( int instanceId )
-    {
+    public ComputerClientMessage(int instanceId) {
         this.instanceId = instanceId;
     }
 
-    public ComputerClientMessage()
-    {
+    public ComputerClientMessage() {
     }
 
-    public int getInstanceId()
-    {
+    public int getInstanceId() {
         return instanceId;
     }
 
     @Override
-    public void toBytes( @Nonnull PacketBuffer buf )
-    {
-        buf.writeVarInt( instanceId );
+    public void toBytes(@Nonnull PacketBuffer buf) {
+        buf.writeVarInt(instanceId);
     }
 
     @Override
-    public void fromBytes( @Nonnull PacketBuffer buf )
-    {
+    public void fromBytes(@Nonnull PacketBuffer buf) {
         instanceId = buf.readVarInt();
     }
 
-    public ClientComputer getComputer()
-    {
-        ClientComputer computer = ComputerCraft.clientComputerRegistry.get( instanceId );
-        if( computer == null )
-        {
-            ComputerCraft.clientComputerRegistry.add( instanceId, computer = new ClientComputer( instanceId ) );
+    public ClientComputer getComputer() {
+        ClientComputer computer = ComputerCraft.clientComputerRegistry.get(instanceId);
+        if (computer == null) {
+            ComputerCraft.clientComputerRegistry.add(instanceId, computer = new ClientComputer(instanceId));
         }
         return computer;
     }

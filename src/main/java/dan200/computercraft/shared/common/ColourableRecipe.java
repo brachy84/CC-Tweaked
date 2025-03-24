@@ -19,29 +19,22 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 import javax.annotation.Nonnull;
 
-public class ColourableRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe
-{
+public class ColourableRecipe extends IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {
+
     @Override
-    public boolean matches( @Nonnull InventoryCrafting inv, @Nonnull World worldIn )
-    {
+    public boolean matches(@Nonnull InventoryCrafting inv, @Nonnull World worldIn) {
         boolean hasColourable = false;
         boolean hasDye = false;
-        for( int i = 0; i < inv.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inv.getStackInSlot( i );
-            if( stack.isEmpty() ) continue;
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
+            if (stack.isEmpty()) continue;
 
-            if( stack.getItem() instanceof IColouredItem )
-            {
-                if( hasColourable ) return false;
+            if (stack.getItem() instanceof IColouredItem) {
+                if (hasColourable) return false;
                 hasColourable = true;
-            }
-            else if( ColourUtils.getStackColour( stack ) >= 0 )
-            {
+            } else if (ColourUtils.getStackColour(stack) >= 0) {
                 hasDye = true;
-            }
-            else
-            {
+            } else {
                 return false;
             }
         }
@@ -51,60 +44,51 @@ public class ColourableRecipe extends IForgeRegistryEntry.Impl<IRecipe> implemen
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult( @Nonnull InventoryCrafting inv )
-    {
+    public ItemStack getCraftingResult(@Nonnull InventoryCrafting inv) {
         ItemStack colourable = ItemStack.EMPTY;
 
         ColourTracker tracker = new ColourTracker();
 
-        for( int i = 0; i < inv.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inv.getStackInSlot( i );
+        for (int i = 0; i < inv.getSizeInventory(); i++) {
+            ItemStack stack = inv.getStackInSlot(i);
 
-            if( stack.isEmpty() ) continue;
+            if (stack.isEmpty()) continue;
 
-            if( stack.getItem() instanceof IColouredItem )
-            {
+            if (stack.getItem() instanceof IColouredItem) {
                 colourable = stack;
-            }
-            else
-            {
-                int index = ColourUtils.getStackColour( stack );
-                if( index < 0 ) continue;
+            } else {
+                int index = ColourUtils.getStackColour(stack);
+                if (index < 0) continue;
 
                 Colour colour = Colour.values()[index];
-                tracker.addColour( colour.getR(), colour.getG(), colour.getB() );
+                tracker.addColour(colour.getR(), colour.getG(), colour.getB());
             }
         }
 
-        if( colourable.isEmpty() ) return ItemStack.EMPTY;
-        return ((IColouredItem) colourable.getItem()).withColour( colourable, tracker.getColour() );
+        if (colourable.isEmpty()) return ItemStack.EMPTY;
+        return ((IColouredItem) colourable.getItem()).withColour(colourable, tracker.getColour());
     }
 
     @Override
-    public boolean canFit( int x, int y )
-    {
+    public boolean canFit(int x, int y) {
         return x >= 2 && y >= 2;
     }
 
     @Override
-    public boolean isDynamic()
-    {
+    public boolean isDynamic() {
         return true;
     }
 
     @Nonnull
     @Override
-    public ItemStack getRecipeOutput()
-    {
+    public ItemStack getRecipeOutput() {
         return ItemStack.EMPTY;
     }
 
-    public static class Factory implements IRecipeFactory
-    {
+    public static class Factory implements IRecipeFactory {
+
         @Override
-        public IRecipe parse( JsonContext jsonContext, JsonObject jsonObject )
-        {
+        public IRecipe parse(JsonContext jsonContext, JsonObject jsonObject) {
             return new ColourableRecipe();
         }
     }

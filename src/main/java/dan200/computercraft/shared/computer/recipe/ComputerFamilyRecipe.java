@@ -18,35 +18,33 @@ import net.minecraftforge.common.crafting.JsonContext;
 
 import javax.annotation.Nonnull;
 
-public class ComputerFamilyRecipe extends ComputerConvertRecipe
-{
+public class ComputerFamilyRecipe extends ComputerConvertRecipe {
+
     private final ComputerFamily family;
 
-    public ComputerFamilyRecipe( String group, @Nonnull CraftingHelper.ShapedPrimer primer, @Nonnull ItemStack result, ComputerFamily family )
-    {
-        super( group, primer, result );
+    public ComputerFamilyRecipe(String group, @Nonnull CraftingHelper.ShapedPrimer primer, @Nonnull ItemStack result,
+                                ComputerFamily family) {
+        super(group, primer, result);
         this.family = family;
     }
 
     @Nonnull
     @Override
-    protected ItemStack convert( @Nonnull IComputerItem item, @Nonnull ItemStack stack )
-    {
-        return item.withFamily( stack, family );
+    protected ItemStack convert(@Nonnull IComputerItem item, @Nonnull ItemStack stack) {
+        return item.withFamily(stack, family);
     }
 
-    public static class Factory implements IRecipeFactory
-    {
+    public static class Factory implements IRecipeFactory {
+
         @Override
-        public IRecipe parse( JsonContext context, JsonObject json )
-        {
-            String group = JsonUtils.getString( json, "group", "" );
-            ComputerFamily family = RecipeUtil.getFamily( json, "family" );
+        public IRecipe parse(JsonContext context, JsonObject json) {
+            String group = JsonUtils.getString(json, "group", "");
+            ComputerFamily family = RecipeUtil.getFamily(json, "family");
 
-            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer( context, json );
-            ItemStack result = deserializeItem( JsonUtils.getJsonObject( json, "result" ), false );
+            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer(context, json);
+            ItemStack result = deserializeItem(JsonUtils.getJsonObject(json, "result"), false);
 
-            return new ComputerFamilyRecipe( group, primer, result, family );
+            return new ComputerFamilyRecipe(group, primer, result, family);
         }
     }
 }

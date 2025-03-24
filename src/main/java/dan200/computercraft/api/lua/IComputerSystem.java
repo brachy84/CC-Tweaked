@@ -11,11 +11,10 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import javax.annotation.Nullable;
 
 /**
- * An interface passed to {@link ILuaAPIFactory} in order to provide additional information
- * about a computer.
+ * An interface passed to {@link ILuaAPIFactory} in order to provide additional information about a computer.
  */
-public interface IComputerSystem extends IComputerAccess
-{
+public interface IComputerSystem extends IComputerAccess {
+
     /**
      * Get the file system for this computer.
      *

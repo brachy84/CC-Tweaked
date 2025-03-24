@@ -8,14 +8,12 @@ package dan200.computercraft.api.turtle;
 import net.minecraft.util.EnumFacing;
 
 /**
- * An enum representing the different actions that an {@link ITurtleUpgrade} of type Tool may be called on to perform by
- * a turtle.
+ * An enum representing the different actions that an {@link ITurtleUpgrade} of type Tool may be called on to perform by a turtle.
  *
  * @see ITurtleUpgrade#getType()
  * @see ITurtleUpgrade#useTool(ITurtleAccess, TurtleSide, TurtleVerb, EnumFacing)
  */
-public enum TurtleVerb
-{
+public enum TurtleVerb {
     /**
      * The turtle called {@code turtle.dig()}, {@code turtle.digUp()} or {@code turtle.digDown()}.
      */

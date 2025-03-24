@@ -17,40 +17,31 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Keeps track of tasks that a {@link Computer} should run on the main thread and how long that has been spent executing
- * them.
- *
- * This provides rate-limiting mechanism for tasks enqueued with {@link Computer#queueMainThread(Runnable)}, but also
- * those run elsewhere (such as during the turtle's tick - see {@link TurtleBrain#update()}). In order to handle this,
- * the executor goes through three stages:
- *
- * When {@link State#COOL}, the computer is allocated {@link ComputerCraft#maxMainComputerTime}ns to execute any work
- * this tick. At the beginning of the tick, we execute as many {@link MainThread} tasks as possible, until our
- * time-frame or the global time frame has expired.
- *
+ * Keeps track of tasks that a {@link Computer} should run on the main thread and how long that has been spent executing them.
+ * This provides rate-limiting mechanism for tasks enqueued with {@link Computer#queueMainThread(Runnable)}, but also those run elsewhere
+ * (such as during the turtle's tick - see {@link TurtleBrain#update()}). In order to handle this, the executor goes through three stages:
+ * When {@link State#COOL}, the computer is allocated {@link ComputerCraft#maxMainComputerTime}ns to execute any work this tick. At the
+ * beginning of the tick, we execute as many {@link MainThread} tasks as possible, until our time-frame or the global time frame has
+ * expired.
  * Then, when other objects (such as {@link TileEntity}) are ticked, we update how much time we've used using
  * {@link IWorkMonitor#trackWork(long, TimeUnit)}.
- *
- * Now, if anywhere during this period, we use more than our allocated time slice, the executor is marked as
- * {@link State#HOT}. This means it will no longer be able to execute {@link MainThread} tasks (though will still
- * execute tile entity tasks, in order to prevent the main thread from exhausting work every tick).
- *
- * At the beginning of the next tick, we increment the budget e by {@link ComputerCraft#maxMainComputerTime} and any
- * {@link State#HOT} executors are marked as {@link State#COOLING}. They will remain cooling until their budget is
- * fully replenished (is equal to {@link ComputerCraft#maxMainComputerTime}). Note, this is different to
- * {@link MainThread}, which allows running when it has any budget left. When cooling, <em>no</em> tasks are executed -
- * be they on the tile entity or main thread.
- *
- * This mechanism means that, on average, computers will use at most {@link ComputerCraft#maxMainComputerTime}ns per
- * second, but one task source will not prevent others from executing.
+ * Now, if anywhere during this period, we use more than our allocated time slice, the executor is marked as {@link State#HOT}. This means
+ * it will no longer be able to execute {@link MainThread} tasks (though will still execute tile entity tasks, in order to prevent the main
+ * thread from exhausting work every tick).
+ * At the beginning of the next tick, we increment the budget e by {@link ComputerCraft#maxMainComputerTime} and any {@link State#HOT}
+ * executors are marked as {@link State#COOLING}. They will remain cooling until their budget is fully replenished (is equal to
+ * {@link ComputerCraft#maxMainComputerTime}). Note, this is different to {@link MainThread}, which allows running when it has any budget
+ * left. When cooling, <em>no</em> tasks are executed - be they on the tile entity or main thread.
+ * This mechanism means that, on average, computers will use at most {@link ComputerCraft#maxMainComputerTime}ns per second, but one task
+ * source will not prevent others from executing.
  *
  * @see MainThread
  * @see IWorkMonitor
  * @see Computer#getMainThreadMonitor()
  * @see Computer#queueMainThread(Runnable)
  */
-final class MainThreadExecutor implements IWorkMonitor
-{
+final class MainThreadExecutor implements IWorkMonitor {
+
     /**
      * The maximum number of {@link MainThread} tasks allowed on the queue.
      */
@@ -59,8 +50,8 @@ final class MainThreadExecutor implements IWorkMonitor
     private final Computer computer;
 
     /**
-     * A lock used for any changes to {@link #tasks}, or {@link #onQueue}. This will be
-     * used on the main thread, so locks should be kept as brief as possible.
+     * A lock used for any changes to {@link #tasks}, or {@link #onQueue}. This will be used on the main thread, so locks should be kept as
+     * brief as possible.
      */
     private final Object queueLock = new Object();
 
@@ -69,11 +60,10 @@ final class MainThreadExecutor implements IWorkMonitor
      *
      * @see #queueLock
      */
-    private final Queue<Runnable> tasks = new ArrayDeque<>( 4 );
+    private final Queue<Runnable> tasks = new ArrayDeque<>(4);
 
     /**
      * Determines if this executor is currently present on the queue.
-     *
      * This should be true iff {@link #tasks} is non-empty.
      *
      * @see #queueLock
@@ -109,8 +99,7 @@ final class MainThreadExecutor implements IWorkMonitor
 
     long virtualTime;
 
-    MainThreadExecutor( Computer computer )
-    {
+    MainThreadExecutor(Computer computer) {
         this.computer = computer;
     }
 
@@ -120,27 +109,23 @@ final class MainThreadExecutor implements IWorkMonitor
      * @param runnable The task to run on the main thread.
      * @return Whether this task was enqueued (namely, was there space).
      */
-    boolean enqueue( Runnable runnable )
-    {
-        synchronized( queueLock )
-        {
-            if( tasks.size() >= MAX_TASKS || !tasks.offer( runnable ) ) return false;
-            if( !onQueue && state == State.COOL ) MainThread.queue( this, true );
+    boolean enqueue(Runnable runnable) {
+        synchronized (queueLock) {
+            if (tasks.size() >= MAX_TASKS || !tasks.offer(runnable)) return false;
+            if (!onQueue && state == State.COOL) MainThread.queue(this, true);
             return true;
         }
     }
 
-    void execute()
-    {
-        if( state != State.COOL ) return;
+    void execute() {
+        if (state != State.COOL) return;
 
         Runnable task;
-        synchronized( queueLock )
-        {
+        synchronized (queueLock) {
             task = tasks.poll();
         }
 
-        if( task != null ) task.run();
+        if (task != null) task.run();
     }
 
     /**
@@ -149,15 +134,13 @@ final class MainThreadExecutor implements IWorkMonitor
      * @param time The time some task took to run.
      * @return Whether this should be added back to the queue.
      */
-    boolean afterExecute( long time )
-    {
-        consumeTime( time );
+    boolean afterExecute(long time) {
+        consumeTime(time);
 
-        synchronized( queueLock )
-        {
+        synchronized (queueLock) {
             virtualTime += time;
             updateTime();
-            if( state != State.COOL || tasks.isEmpty() ) return onQueue = false;
+            if (state != State.COOL || tasks.isEmpty()) return onQueue = false;
             return true;
         }
     }
@@ -168,38 +151,32 @@ final class MainThreadExecutor implements IWorkMonitor
      * @return Whether we can execute external tasks.
      */
     @Override
-    public boolean canWork()
-    {
+    public boolean canWork() {
         return state != State.COOLING && MainThread.canExecute();
     }
 
     @Override
-    public boolean shouldWork()
-    {
+    public boolean shouldWork() {
         return state == State.COOL && MainThread.canExecute();
     }
 
     @Override
-    public void trackWork( long time, @Nonnull TimeUnit unit )
-    {
-        long nanoTime = unit.toNanos( time );
-        synchronized( queueLock )
-        {
+    public void trackWork(long time, @Nonnull TimeUnit unit) {
+        long nanoTime = unit.toNanos(time);
+        synchronized (queueLock) {
             pendingTime += nanoTime;
         }
 
-        consumeTime( nanoTime );
-        MainThread.consumeTime( nanoTime );
+        consumeTime(nanoTime);
+        MainThread.consumeTime(nanoTime);
     }
 
-    private void consumeTime( long time )
-    {
-        Tracking.addServerTiming( computer, time );
+    private void consumeTime(long time) {
+        Tracking.addServerTiming(computer, time);
 
         // Reset the budget if moving onto a new tick. We know this is safe, as this will only have happened if
         // #tickCooling() isn't called, and so we didn't overrun the previous tick.
-        if( currentTick != MainThread.currentTick() )
-        {
+        if (currentTick != MainThread.currentTick()) {
             currentTick = MainThread.currentTick();
             budget = ComputerCraft.maxMainComputerTime;
         }
@@ -207,10 +184,9 @@ final class MainThreadExecutor implements IWorkMonitor
         budget -= time;
 
         // If we've gone over our limit, mark us as having to cool down.
-        if( budget < 0 && state == State.COOL )
-        {
+        if (budget < 0 && state == State.COOL) {
             state = State.HOT;
-            MainThread.cooling( this );
+            MainThread.cooling(this);
         }
     }
 
@@ -219,31 +195,25 @@ final class MainThreadExecutor implements IWorkMonitor
      *
      * @return Whether this executor has cooled down, and so is safe to run again.
      */
-    boolean tickCooling()
-    {
+    boolean tickCooling() {
         state = State.COOLING;
         currentTick = MainThread.currentTick();
-        budget = Math.min( budget + ComputerCraft.maxMainComputerTime, ComputerCraft.maxMainComputerTime );
-        if( budget < ComputerCraft.maxMainComputerTime ) return false;
+        budget = Math.min(budget + ComputerCraft.maxMainComputerTime, ComputerCraft.maxMainComputerTime);
+        if (budget < ComputerCraft.maxMainComputerTime) return false;
 
         state = State.COOL;
-        synchronized( queueLock )
-        {
-            if( !tasks.isEmpty() && !onQueue ) MainThread.queue( this, false );
+        synchronized (queueLock) {
+            if (!tasks.isEmpty() && !onQueue) MainThread.queue(this, false);
         }
         return true;
     }
 
-    void updateTime()
-    {
+    void updateTime() {
         virtualTime += pendingTime;
         pendingTime = 0;
     }
 
-    private enum State
-    {
-        COOL,
-        HOT,
-        COOLING,
+    private enum State {
+        COOL, HOT, COOLING,
     }
 }

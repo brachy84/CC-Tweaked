@@ -12,13 +12,12 @@ package dan200.computercraft.core.apis;
  * @deprecated Use the version in the public API. Only exists for compatibility with CCEmuX.
  */
 @Deprecated
-public interface ILuaAPI extends dan200.computercraft.api.lua.ILuaAPI
-{
-    void advance( double v );
+public interface ILuaAPI extends dan200.computercraft.api.lua.ILuaAPI {
+
+    void advance(double v);
 
     @Override
-    default void update()
-    {
-        advance( 0.05 );
+    default void update() {
+        advance(0.05);
     }
 }

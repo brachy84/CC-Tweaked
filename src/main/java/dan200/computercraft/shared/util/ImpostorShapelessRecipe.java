@@ -20,47 +20,41 @@ import net.minecraftforge.common.crafting.JsonContext;
 
 import javax.annotation.Nonnull;
 
-public class ImpostorShapelessRecipe extends ShapelessRecipes
-{
-    public ImpostorShapelessRecipe( @Nonnull String group, @Nonnull ItemStack result, NonNullList<Ingredient> ingredients )
-    {
-        super( group, result, ingredients );
+public class ImpostorShapelessRecipe extends ShapelessRecipes {
+
+    public ImpostorShapelessRecipe(@Nonnull String group, @Nonnull ItemStack result, NonNullList<Ingredient> ingredients) {
+        super(group, result, ingredients);
     }
 
-    public ImpostorShapelessRecipe( @Nonnull String group, @Nonnull ItemStack result, ItemStack[] ingredients )
-    {
-        super( group, result, convert( ingredients ) );
+    public ImpostorShapelessRecipe(@Nonnull String group, @Nonnull ItemStack result, ItemStack[] ingredients) {
+        super(group, result, convert(ingredients));
     }
 
-    private static NonNullList<Ingredient> convert( ItemStack[] items )
-    {
-        NonNullList<Ingredient> ingredients = NonNullList.withSize( items.length, Ingredient.EMPTY );
-        for( int i = 0; i < items.length; i++ ) ingredients.set( i, Ingredient.fromStacks( items[i] ) );
+    private static NonNullList<Ingredient> convert(ItemStack[] items) {
+        NonNullList<Ingredient> ingredients = NonNullList.withSize(items.length, Ingredient.EMPTY);
+        for (int i = 0; i < items.length; i++) ingredients.set(i, Ingredient.fromStacks(items[i]));
         return ingredients;
     }
 
     @Override
-    public boolean matches( InventoryCrafting inv, World world )
-    {
+    public boolean matches(InventoryCrafting inv, World world) {
         return false;
     }
 
     @Nonnull
     @Override
-    public ItemStack getCraftingResult( InventoryCrafting inventory )
-    {
+    public ItemStack getCraftingResult(InventoryCrafting inventory) {
         return ItemStack.EMPTY;
     }
 
-    public static class Factory implements IRecipeFactory
-    {
+    public static class Factory implements IRecipeFactory {
+
         @Override
-        public IRecipe parse( JsonContext context, JsonObject json )
-        {
-            String group = JsonUtils.getString( json, "group", "" );
-            NonNullList<Ingredient> ingredients = RecipeUtil.getIngredients( context, json );
-            ItemStack itemstack = CraftingHelper.getItemStack( JsonUtils.getJsonObject( json, "result" ), context );
-            return new ImpostorShapelessRecipe( group, itemstack, ingredients );
+        public IRecipe parse(JsonContext context, JsonObject json) {
+            String group = JsonUtils.getString(json, "group", "");
+            NonNullList<Ingredient> ingredients = RecipeUtil.getIngredients(context, json);
+            ItemStack itemstack = CraftingHelper.getItemStack(JsonUtils.getJsonObject(json, "result"), context);
+            return new ImpostorShapelessRecipe(group, itemstack, ingredients);
         }
     }
 }

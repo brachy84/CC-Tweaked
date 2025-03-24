@@ -18,66 +18,50 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
 
-public class BlockWiredModemFull extends BlockGeneric
-{
-    private static final PropertyBool MODEM_ON = PropertyBool.create( "modem" );
-    private static final PropertyBool PERIPHERAL_ON = PropertyBool.create( "peripheral" );
+public class BlockWiredModemFull extends BlockGeneric {
 
-    public BlockWiredModemFull()
-    {
-        super( Material.ROCK );
-        setHardness( 1.5f );
-        setTranslationKey( "computercraft:wired_modem_full" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
-        setDefaultState( blockState.getBaseState()
-            .withProperty( MODEM_ON, false )
-            .withProperty( PERIPHERAL_ON, false )
-        );
+    private static final PropertyBool MODEM_ON = PropertyBool.create("modem");
+    private static final PropertyBool PERIPHERAL_ON = PropertyBool.create("peripheral");
+
+    public BlockWiredModemFull() {
+        super(Material.ROCK);
+        setHardness(1.5f);
+        setTranslationKey("computercraft:wired_modem_full");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
+        setDefaultState(blockState.getBaseState().withProperty(MODEM_ON, false).withProperty(PERIPHERAL_ON, false));
     }
 
     @Nonnull
     @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer( this,
-            MODEM_ON,
-            PERIPHERAL_ON
-        );
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, MODEM_ON, PERIPHERAL_ON);
     }
 
     @Override
-    public int getMetaFromState( IBlockState state )
-    {
+    public int getMetaFromState(IBlockState state) {
         return 0;
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public IBlockState getActualState( @Nonnull IBlockState state, IBlockAccess world, BlockPos pos )
-    {
-        TileEntity te = world.getTileEntity( pos );
-        if( te instanceof TileWiredModemFull )
-        {
-            TileWiredModemFull modem = (TileWiredModemFull) te;
+    public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof TileWiredModemFull modem) {
             int anim = modem.getState();
-            state = state
-                .withProperty( MODEM_ON, (anim & 1) != 0 )
-                .withProperty( PERIPHERAL_ON, (anim & 2) != 0 );
+            state = state.withProperty(MODEM_ON, (anim & 1) != 0).withProperty(PERIPHERAL_ON, (anim & 2) != 0);
         }
 
         return state;
     }
 
     @Override
-    protected TileGeneric createTile( IBlockState state )
-    {
+    protected TileGeneric createTile(IBlockState state) {
         return new TileWiredModemFull();
     }
 
     @Override
-    protected TileGeneric createTile( int damage )
-    {
+    protected TileGeneric createTile(int damage) {
         return new TileWiredModemFull();
     }
 }

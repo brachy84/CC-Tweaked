@@ -19,26 +19,24 @@ import java.util.Objects;
 
 /**
  * Fired when a turtle attempts to attack an entity.
- *
- * This must be fired by {@link ITurtleUpgrade#useTool(ITurtleAccess, TurtleSide, TurtleVerb, EnumFacing)},
- * as the base {@code turtle.attack()} command does not fire it.
- *
+ * This must be fired by {@link ITurtleUpgrade#useTool(ITurtleAccess, TurtleSide, TurtleVerb, EnumFacing)}, as the base
+ * {@code turtle.attack()} command does not fire it.
  * Note that such commands should also fire {@link AttackEntityEvent}, so you do not need to listen to both.
  *
  * @see TurtleAction#ATTACK
  */
-public class TurtleAttackEvent extends TurtlePlayerEvent
-{
+public class TurtleAttackEvent extends TurtlePlayerEvent {
+
     private final Entity target;
     private final ITurtleUpgrade upgrade;
     private final TurtleSide side;
 
-    public TurtleAttackEvent( @Nonnull ITurtleAccess turtle, @Nonnull FakePlayer player, @Nonnull Entity target, @Nonnull ITurtleUpgrade upgrade, @Nonnull TurtleSide side )
-    {
-        super( turtle, TurtleAction.ATTACK, player );
-        Objects.requireNonNull( target, "target cannot be null" );
-        Objects.requireNonNull( upgrade, "upgrade cannot be null" );
-        Objects.requireNonNull( side, "side cannot be null" );
+    public TurtleAttackEvent(@Nonnull ITurtleAccess turtle, @Nonnull FakePlayer player, @Nonnull Entity target,
+                             @Nonnull ITurtleUpgrade upgrade, @Nonnull TurtleSide side) {
+        super(turtle, TurtleAction.ATTACK, player);
+        Objects.requireNonNull(target, "target cannot be null");
+        Objects.requireNonNull(upgrade, "upgrade cannot be null");
+        Objects.requireNonNull(side, "side cannot be null");
         this.target = target;
         this.upgrade = upgrade;
         this.side = side;
@@ -50,8 +48,7 @@ public class TurtleAttackEvent extends TurtlePlayerEvent
      * @return The entity being attacked.
      */
     @Nonnull
-    public Entity getTarget()
-    {
+    public Entity getTarget() {
         return target;
     }
 
@@ -61,8 +58,7 @@ public class TurtleAttackEvent extends TurtlePlayerEvent
      * @return The upgrade responsible for attacking.
      */
     @Nonnull
-    public ITurtleUpgrade getUpgrade()
-    {
+    public ITurtleUpgrade getUpgrade() {
         return upgrade;
     }
 
@@ -72,8 +68,7 @@ public class TurtleAttackEvent extends TurtlePlayerEvent
      * @return The upgrade's side.
      */
     @Nonnull
-    public TurtleSide getSide()
-    {
+    public TurtleSide getSide() {
         return side;
     }
 }

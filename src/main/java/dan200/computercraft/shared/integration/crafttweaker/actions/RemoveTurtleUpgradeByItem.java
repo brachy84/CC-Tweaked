@@ -14,34 +14,29 @@ import java.util.Optional;
 /**
  * Removes a turtle upgrade crafted with the given stack.
  */
-public class RemoveTurtleUpgradeByItem implements IAction
-{
+public class RemoveTurtleUpgradeByItem implements IAction {
+
     private final ItemStack stack;
 
-    public RemoveTurtleUpgradeByItem( ItemStack stack )
-    {
+    public RemoveTurtleUpgradeByItem(ItemStack stack) {
         this.stack = stack;
     }
 
     @Override
-    public void apply()
-    {
-        ITurtleUpgrade upgrade = TurtleUpgrades.get( stack );
-        if( upgrade != null ) TurtleUpgrades.disable( upgrade );
+    public void apply() {
+        ITurtleUpgrade upgrade = TurtleUpgrades.get(stack);
+        if (upgrade != null) TurtleUpgrades.disable(upgrade);
     }
 
     @Override
-    public String describe()
-    {
-        return String.format( "Remove turtle upgrades crafted with '%s'", stack );
+    public String describe() {
+        return String.format("Remove turtle upgrades crafted with '%s'", stack);
     }
 
     @Override
-    public Optional<String> getValidationProblem()
-    {
-        if( TurtleUpgrades.get( stack ) == null )
-        {
-            return Optional.of( String.format( "Unknown turtle upgrade crafted with '%s'.", stack ) );
+    public Optional<String> getValidationProblem() {
+        if (TurtleUpgrades.get(stack) == null) {
+            return Optional.of(String.format("Unknown turtle upgrade crafted with '%s'.", stack));
         }
 
         return Optional.empty();

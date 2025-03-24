@@ -16,218 +16,179 @@ import net.minecraftforge.common.util.FakePlayer;
 import javax.annotation.Nonnull;
 import javax.crypto.SecretKey;
 
-public class FakeNetHandler extends NetHandlerPlayServer
-{
-    public static class FakeNetworkManager extends NetworkManager
-    {
+public class FakeNetHandler extends NetHandlerPlayServer {
+
+    public static class FakeNetworkManager extends NetworkManager {
+
         private INetHandler handler;
 
-        public FakeNetworkManager()
-        {
-            super( EnumPacketDirection.CLIENTBOUND );
+        public FakeNetworkManager() {
+            super(EnumPacketDirection.CLIENTBOUND);
         }
 
         @Override
-        public void channelActive( ChannelHandlerContext context )
-        {
+        public void channelActive(ChannelHandlerContext context) {
         }
 
         @Override
-        public void setConnectionState( @Nonnull EnumConnectionState state )
-        {
+        public void setConnectionState(@Nonnull EnumConnectionState state) {
         }
 
         @Override
-        public void channelInactive( ChannelHandlerContext context )
-        {
+        public void channelInactive(ChannelHandlerContext context) {
         }
 
         @Override
-        public void exceptionCaught( ChannelHandlerContext context, @Nonnull Throwable e )
-        {
+        public void exceptionCaught(ChannelHandlerContext context, @Nonnull Throwable e) {
         }
 
         @Override
-        public void setNetHandler( INetHandler handler )
-        {
+        public void setNetHandler(INetHandler handler) {
             this.handler = handler;
         }
 
         @Override
-        public void processReceivedPackets()
-        {
+        public void processReceivedPackets() {
         }
 
         @Override
-        public void closeChannel( @Nonnull ITextComponent channel )
-        {
+        public void closeChannel(@Nonnull ITextComponent channel) {
         }
 
         @Override
-        public boolean isLocalChannel()
-        {
+        public boolean isLocalChannel() {
             return false;
         }
 
 
         @Override
-        public void enableEncryption( SecretKey key )
-        {
+        public void enableEncryption(SecretKey key) {
         }
 
         @Override
-        public boolean isChannelOpen()
-        {
+        public boolean isChannelOpen() {
             return false;
         }
 
         @Nonnull
         @Override
-        public INetHandler getNetHandler()
-        {
+        public INetHandler getNetHandler() {
             return handler;
         }
 
         @Nonnull
         @Override
-        public ITextComponent getExitMessage()
-        {
+        public ITextComponent getExitMessage() {
             return null;
         }
 
         @Override
-        public void disableAutoRead()
-        {
+        public void disableAutoRead() {
         }
 
         @Nonnull
         @Override
-        public Channel channel()
-        {
+        public Channel channel() {
             return null;
         }
     }
 
 
-    public FakeNetHandler( FakePlayer player )
-    {
-        this( player.server, player );
+    public FakeNetHandler(FakePlayer player) {
+        this(player.server, player);
     }
 
-    public FakeNetHandler( MinecraftServer server, FakePlayer player )
-    {
-        super( server, new FakeNetworkManager(), player );
-    }
-
-    @Override
-    public void processInput( CPacketInput packet )
-    {
+    public FakeNetHandler(MinecraftServer server, FakePlayer player) {
+        super(server, new FakeNetworkManager(), player);
     }
 
     @Override
-    public void processPlayer( CPacketPlayer packet )
-    {
+    public void processInput(CPacketInput packet) {
     }
 
     @Override
-    public void setPlayerLocation( double x, double y, double z, float yaw, float pitch )
-    {
+    public void processPlayer(CPacketPlayer packet) {
     }
 
     @Override
-    public void processPlayerDigging( CPacketPlayerDigging packet )
-    {
+    public void setPlayerLocation(double x, double y, double z, float yaw, float pitch) {
     }
 
     @Override
-    public void onDisconnect( @Nonnull ITextComponent chat )
-    {
+    public void processPlayerDigging(CPacketPlayerDigging packet) {
     }
 
     @Override
-    @SuppressWarnings( "rawtypes" )
-    public void sendPacket( @Nonnull final Packet packet )
-    {
+    public void onDisconnect(@Nonnull ITextComponent chat) {
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public void sendPacket(@Nonnull final Packet packet) {
 
     }
 
     @Override
-    public void processHeldItemChange( CPacketHeldItemChange packet )
-    {
+    public void processHeldItemChange(CPacketHeldItemChange packet) {
     }
 
     @Override
-    public void processChatMessage( @Nonnull CPacketChatMessage packet )
-    {
+    public void processChatMessage(@Nonnull CPacketChatMessage packet) {
     }
 
     @Override
-    public void processEntityAction( CPacketEntityAction packet )
-    {
+    public void processEntityAction(CPacketEntityAction packet) {
     }
 
     @Override
-    public void processUseEntity( CPacketUseEntity packet )
-    {
+    public void processUseEntity(CPacketUseEntity packet) {
     }
 
     @Override
-    public void processClientStatus( CPacketClientStatus packet )
-    {
+    public void processClientStatus(CPacketClientStatus packet) {
     }
 
     @Override
-    public void processCloseWindow( @Nonnull CPacketCloseWindow packet )
-    {
+    public void processCloseWindow(@Nonnull CPacketCloseWindow packet) {
     }
 
     @Override
-    public void processClickWindow( CPacketClickWindow packet )
-    {
+    public void processClickWindow(CPacketClickWindow packet) {
     }
 
     @Override
-    public void processEnchantItem( CPacketEnchantItem packet )
-    {
+    public void processEnchantItem(CPacketEnchantItem packet) {
     }
 
     @Override
-    public void processCreativeInventoryAction( @Nonnull CPacketCreativeInventoryAction packet )
-    {
+    public void processCreativeInventoryAction(@Nonnull CPacketCreativeInventoryAction packet) {
     }
 
     @Override
-    public void processConfirmTransaction( @Nonnull CPacketConfirmTransaction packet )
-    {
+    public void processConfirmTransaction(@Nonnull CPacketConfirmTransaction packet) {
     }
 
     @Override
-    public void processUpdateSign( CPacketUpdateSign packet )
-    {
+    public void processUpdateSign(CPacketUpdateSign packet) {
     }
 
     @Override
-    public void processKeepAlive( @Nonnull CPacketKeepAlive packet )
-    {
+    public void processKeepAlive(@Nonnull CPacketKeepAlive packet) {
     }
 
     @Override
-    public void processPlayerAbilities( CPacketPlayerAbilities packet )
-    {
+    public void processPlayerAbilities(CPacketPlayerAbilities packet) {
     }
 
     @Override
-    public void processTabComplete( CPacketTabComplete packet )
-    {
+    public void processTabComplete(CPacketTabComplete packet) {
     }
 
     @Override
-    public void processClientSettings( @Nonnull CPacketClientSettings packet )
-    {
+    public void processClientSettings(@Nonnull CPacketClientSettings packet) {
     }
 
     @Override
-    public void processCustomPayload( CPacketCustomPayload packetIn )
-    {
+    public void processCustomPayload(CPacketCustomPayload packetIn) {
     }
 }

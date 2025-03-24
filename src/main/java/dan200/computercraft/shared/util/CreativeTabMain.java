@@ -13,18 +13,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public class CreativeTabMain extends CreativeTabs
-{
-    public CreativeTabMain( int i )
-    {
-        super( i, ComputerCraft.MOD_ID );
+public class CreativeTabMain extends CreativeTabs {
+
+    public CreativeTabMain(int i) {
+        super(i, ComputerCraft.MOD_ID);
     }
 
     @Nonnull
     @Override
-    @SideOnly( Side.CLIENT )
-    public ItemStack createIcon()
-    {
-        return new ItemStack( ComputerCraft.Blocks.computer );
+    @SideOnly(Side.CLIENT)
+    public ItemStack createIcon() {
+        return new ItemStack(ComputerCraft.Blocks.computer);
     }
 }

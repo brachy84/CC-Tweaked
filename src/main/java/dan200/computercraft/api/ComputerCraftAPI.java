@@ -31,30 +31,22 @@ import java.lang.reflect.Method;
 
 /**
  * The static entry point to the ComputerCraft API.
- *
- * Members in this class must be called after mod_ComputerCraft has been initialised, but may be called before it is
- * fully loaded.
+ * Members in this class must be called after mod_ComputerCraft has been initialised, but may be called before it is fully loaded.
  */
-public final class ComputerCraftAPI
-{
-    public static boolean isInstalled()
-    {
+public final class ComputerCraftAPI {
+
+    public static boolean isInstalled() {
         findCC();
         return computerCraft != null;
     }
 
     @Nonnull
-    public static String getInstalledVersion()
-    {
+    public static String getInstalledVersion() {
         findCC();
-        if( computerCraft_getVersion != null )
-        {
-            try
-            {
-                return (String) computerCraft_getVersion.invoke( null );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_getVersion != null) {
+            try {
+                return (String) computerCraft_getVersion.invoke(null);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -62,35 +54,27 @@ public final class ComputerCraftAPI
     }
 
     @Nonnull
-    public static String getAPIVersion()
-    {
+    public static String getAPIVersion() {
         return "${version}";
     }
 
     /**
      * Creates a numbered directory in a subfolder of the save directory for a given world, and returns that number.
-     *
      * Use in conjunction with createSaveDirMount() to create a unique place for your peripherals or media items to store files.
      *
      * @param world         The world for which the save dir should be created. This should be the server side world object.
      * @param parentSubPath The folder path within the save directory where the new directory should be created. eg: "computercraft/disk"
      * @return The numerical value of the name of the new folder, or -1 if the folder could not be created for some reason.
-     *
-     * eg: if createUniqueNumberedSaveDir( world, "computer/disk" ) was called returns 42, then "computer/disk/42" is now
-     * available for writing.
+     * eg: if createUniqueNumberedSaveDir( world, "computer/disk" ) was called returns 42, then "computer/disk/42" is now available for
+     * writing.
      * @see #createSaveDirMount(World, String, long)
      */
-    public static int createUniqueNumberedSaveDir( @Nonnull World world, @Nonnull String parentSubPath )
-    {
+    public static int createUniqueNumberedSaveDir(@Nonnull World world, @Nonnull String parentSubPath) {
         findCC();
-        if( computerCraft_createUniqueNumberedSaveDir != null )
-        {
-            try
-            {
-                return (Integer) computerCraft_createUniqueNumberedSaveDir.invoke( null, world, parentSubPath );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_createUniqueNumberedSaveDir != null) {
+            try {
+                return (Integer) computerCraft_createUniqueNumberedSaveDir.invoke(null, world, parentSubPath);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -99,16 +83,15 @@ public final class ComputerCraftAPI
 
     /**
      * Creates a file system mount that maps to a subfolder of the save directory for a given world, and returns it.
-     *
-     * Use in conjunction with IComputerAccess.mount() or IComputerAccess.mountWritable() to mount a folder from the
-     * users save directory onto a computers file system.
+     * Use in conjunction with IComputerAccess.mount() or IComputerAccess.mountWritable() to mount a folder from the users save directory
+     * onto a computers file system.
      *
      * @param world    The world for which the save dir can be found. This should be the server side world object.
-     * @param subPath  The folder path within the save directory that the mount should map to. eg: "computer/disk/42".
-     *                 Use createUniqueNumberedSaveDir() to create a new numbered folder to use.
+     * @param subPath  The folder path within the save directory that the mount should map to. eg: "computer/disk/42". Use
+     *                 createUniqueNumberedSaveDir() to create a new numbered folder to use.
      * @param capacity The amount of data that can be stored in the directory before it fills up, in bytes.
-     * @return The mount, or null if it could be created for some reason. Use IComputerAccess.mount() or IComputerAccess.mountWritable()
-     * to mount this on a Computers' file system.
+     * @return The mount, or null if it could be created for some reason. Use IComputerAccess.mount() or IComputerAccess.mountWritable() to
+     * mount this on a Computers' file system.
      * @see #createUniqueNumberedSaveDir(World, String)
      * @see IComputerAccess#mount(String, IMount)
      * @see IComputerAccess#mountWritable(String, IWritableMount)
@@ -116,17 +99,12 @@ public final class ComputerCraftAPI
      * @see IWritableMount
      */
     @Nullable
-    public static IWritableMount createSaveDirMount( @Nonnull World world, @Nonnull String subPath, long capacity )
-    {
+    public static IWritableMount createSaveDirMount(@Nonnull World world, @Nonnull String subPath, long capacity) {
         findCC();
-        if( computerCraft_createSaveDirMount != null )
-        {
-            try
-            {
-                return (IWritableMount) computerCraft_createSaveDirMount.invoke( null, world, subPath, capacity );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_createSaveDirMount != null) {
+            try {
+                return (IWritableMount) computerCraft_createSaveDirMount.invoke(null, world, subPath, capacity);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -135,14 +113,13 @@ public final class ComputerCraftAPI
 
     /**
      * Creates a file system mount to a resource folder, and returns it.
+     * Use in conjunction with IComputerAccess.mount() or IComputerAccess.mountWritable() to mount a resource folder onto a computer's file
+     * system.
+     * The files in this mount will be a combination of files in the specified mod jar, and resource packs that contain resources with the
+     * same domain and path.
      *
-     * Use in conjunction with IComputerAccess.mount() or IComputerAccess.mountWritable() to mount a resource folder
-     * onto a computer's file system.
-     *
-     * The files in this mount will be a combination of files in the specified mod jar, and resource packs that contain
-     * resources with the same domain and path.
-     *
-     * @param modClass A class in whose jar to look first for the resources to mount. Using your main mod class is recommended. eg: MyMod.class
+     * @param modClass A class in whose jar to look first for the resources to mount. Using your main mod class is recommended. eg:
+     *                 MyMod.class
      * @param domain   The domain under which to look for resources. eg: "mymod".
      * @param subPath  The domain under which to look for resources. eg: "mymod/lua/myfiles".
      * @return The mount, or {@code null} if it could be created for some reason. Use IComputerAccess.mount() or
@@ -152,17 +129,12 @@ public final class ComputerCraftAPI
      * @see IMount
      */
     @Nullable
-    public static IMount createResourceMount( @Nonnull Class<?> modClass, @Nonnull String domain, @Nonnull String subPath )
-    {
+    public static IMount createResourceMount(@Nonnull Class<?> modClass, @Nonnull String domain, @Nonnull String subPath) {
         findCC();
-        if( computerCraft_createResourceMount != null )
-        {
-            try
-            {
-                return (IMount) computerCraft_createResourceMount.invoke( null, modClass, domain, subPath );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_createResourceMount != null) {
+            try {
+                return (IMount) computerCraft_createResourceMount.invoke(null, modClass, domain, subPath);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -176,43 +148,31 @@ public final class ComputerCraftAPI
      * @see IPeripheral
      * @see IPeripheralProvider
      */
-    public static void registerPeripheralProvider( @Nonnull IPeripheralProvider provider )
-    {
+    public static void registerPeripheralProvider(@Nonnull IPeripheralProvider provider) {
         findCC();
-        if( computerCraft_registerPeripheralProvider != null )
-        {
-            try
-            {
-                computerCraft_registerPeripheralProvider.invoke( null, provider );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerPeripheralProvider != null) {
+            try {
+                computerCraft_registerPeripheralProvider.invoke(null, provider);
+            } catch (Exception e) {
                 // It failed
             }
         }
     }
 
     /**
-     * Registers a new turtle turtle for use in ComputerCraft. After calling this,
-     * users should be able to craft Turtles with your new turtle. It is recommended to call
-     * this during the load() method of your mod.
+     * Registers a new turtle turtle for use in ComputerCraft. After calling this, users should be able to craft Turtles with your new
+     * turtle. It is recommended to call this during the load() method of your mod.
      *
      * @param upgrade The turtle upgrade to register.
      * @see ITurtleUpgrade
      */
-    public static void registerTurtleUpgrade( @Nonnull ITurtleUpgrade upgrade )
-    {
-        if( upgrade != null )
-        {
+    public static void registerTurtleUpgrade(@Nonnull ITurtleUpgrade upgrade) {
+        if (upgrade != null) {
             findCC();
-            if( computerCraft_registerTurtleUpgrade != null )
-            {
-                try
-                {
-                    computerCraft_registerTurtleUpgrade.invoke( null, upgrade );
-                }
-                catch( Exception e )
-                {
+            if (computerCraft_registerTurtleUpgrade != null) {
+                try {
+                    computerCraft_registerTurtleUpgrade.invoke(null, upgrade);
+                } catch (Exception e) {
                     // It failed
                 }
             }
@@ -225,17 +185,12 @@ public final class ComputerCraftAPI
      * @param provider The bundled redstone provider to register.
      * @see IBundledRedstoneProvider
      */
-    public static void registerBundledRedstoneProvider( @Nonnull IBundledRedstoneProvider provider )
-    {
+    public static void registerBundledRedstoneProvider(@Nonnull IBundledRedstoneProvider provider) {
         findCC();
-        if( computerCraft_registerBundledRedstoneProvider != null )
-        {
-            try
-            {
-                computerCraft_registerBundledRedstoneProvider.invoke( null, provider );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerBundledRedstoneProvider != null) {
+            try {
+                computerCraft_registerBundledRedstoneProvider.invoke(null, provider);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -247,21 +202,16 @@ public final class ComputerCraftAPI
      * @param world The world this block is in.
      * @param pos   The position this block is at.
      * @param side  The side to extract the bundled redstone output from.
-     * @return If there is a block capable of emitting bundled redstone at the location, it's signal (0-65535) will be returned.
-     * If there is no block capable of emitting bundled redstone at the location, -1 will be returned.
+     * @return If there is a block capable of emitting bundled redstone at the location, it's signal (0-65535) will be returned. If there is
+     * no block capable of emitting bundled redstone at the location, -1 will be returned.
      * @see IBundledRedstoneProvider
      */
-    public static int getBundledRedstoneOutput( @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side )
-    {
+    public static int getBundledRedstoneOutput(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
         findCC();
-        if( computerCraft_getDefaultBundledRedstoneOutput != null )
-        {
-            try
-            {
-                return (Integer) computerCraft_getDefaultBundledRedstoneOutput.invoke( null, world, pos, side );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_getDefaultBundledRedstoneOutput != null) {
+            try {
+                return (Integer) computerCraft_getDefaultBundledRedstoneOutput.invoke(null, world, pos, side);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -274,17 +224,12 @@ public final class ComputerCraftAPI
      * @param provider The media provider to register.
      * @see IMediaProvider
      */
-    public static void registerMediaProvider( @Nonnull IMediaProvider provider )
-    {
+    public static void registerMediaProvider(@Nonnull IMediaProvider provider) {
         findCC();
-        if( computerCraft_registerMediaProvider != null )
-        {
-            try
-            {
-                computerCraft_registerMediaProvider.invoke( null, provider );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerMediaProvider != null) {
+            try {
+                computerCraft_registerMediaProvider.invoke(null, provider);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -298,33 +243,23 @@ public final class ComputerCraftAPI
      * @deprecated Prefer using {@link dan200.computercraft.api.turtle.event.TurtleBlockEvent} or the standard Forge events.
      */
     @Deprecated
-    public static void registerPermissionProvider( @Nonnull ITurtlePermissionProvider provider )
-    {
+    public static void registerPermissionProvider(@Nonnull ITurtlePermissionProvider provider) {
         findCC();
-        if( computerCraft_registerPermissionProvider != null )
-        {
-            try
-            {
-                computerCraft_registerPermissionProvider.invoke( null, provider );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerPermissionProvider != null) {
+            try {
+                computerCraft_registerPermissionProvider.invoke(null, provider);
+            } catch (Exception e) {
                 // It failed
             }
         }
     }
 
-    public static void registerPocketUpgrade( @Nonnull IPocketUpgrade upgrade )
-    {
+    public static void registerPocketUpgrade(@Nonnull IPocketUpgrade upgrade) {
         findCC();
-        if( computerCraft_registerPocketUpgrade != null )
-        {
-            try
-            {
-                computerCraft_registerPocketUpgrade.invoke( null, upgrade );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerPocketUpgrade != null) {
+            try {
+                computerCraft_registerPocketUpgrade.invoke(null, upgrade);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -335,17 +270,12 @@ public final class ComputerCraftAPI
      *
      * @return The global wireless network, or {@code null} if it could not be fetched.
      */
-    public static IPacketNetwork getWirelessNetwork()
-    {
+    public static IPacketNetwork getWirelessNetwork() {
         findCC();
-        if( computerCraft_getWirelessNetwork != null )
-        {
-            try
-            {
-                return (IPacketNetwork) computerCraft_getWirelessNetwork.invoke( null );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_getWirelessNetwork != null) {
+            try {
+                return (IPacketNetwork) computerCraft_getWirelessNetwork.invoke(null);
+            } catch (Exception e) {
                 // It failed;
             }
         }
@@ -353,17 +283,12 @@ public final class ComputerCraftAPI
         return null;
     }
 
-    public static void registerAPIFactory( @Nonnull ILuaAPIFactory upgrade )
-    {
+    public static void registerAPIFactory(@Nonnull ILuaAPIFactory upgrade) {
         findCC();
-        if( computerCraft_registerAPIFactory != null )
-        {
-            try
-            {
-                computerCraft_registerAPIFactory.invoke( null, upgrade );
-            }
-            catch( Exception e )
-            {
+        if (computerCraft_registerAPIFactory != null) {
+            try {
+                computerCraft_registerAPIFactory.invoke(null, upgrade);
+            } catch (Exception e) {
                 // It failed
             }
         }
@@ -377,23 +302,16 @@ public final class ComputerCraftAPI
      * @see IWiredElement#getNode()
      */
     @Nonnull
-    public static IWiredNode createWiredNodeForElement( @Nonnull IWiredElement element )
-    {
+    public static IWiredNode createWiredNodeForElement(@Nonnull IWiredElement element) {
         findCC();
-        if( computerCraft_createWiredNodeForElement != null )
-        {
-            try
-            {
-                return (IWiredNode) computerCraft_createWiredNodeForElement.invoke( null, element );
+        if (computerCraft_createWiredNodeForElement != null) {
+            try {
+                return (IWiredNode) computerCraft_createWiredNodeForElement.invoke(null, element);
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("Error creating wired node", e);
             }
-            catch( ReflectiveOperationException e )
-            {
-                throw new IllegalStateException( "Error creating wired node", e );
-            }
-        }
-        else
-        {
-            throw new IllegalStateException( "ComputerCraft cannot be found" );
+        } else {
+            throw new IllegalStateException("ComputerCraft cannot be found");
         }
     }
 
@@ -407,17 +325,12 @@ public final class ComputerCraftAPI
      * @see IWiredElement#getNode()
      */
     @Nullable
-    public static IWiredElement getWiredElementAt( @Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EnumFacing side )
-    {
+    public static IWiredElement getWiredElementAt(@Nonnull IBlockAccess world, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
         findCC();
-        if( computerCraft_getWiredElementAt != null )
-        {
-            try
-            {
-                return (IWiredElement) computerCraft_getWiredElementAt.invoke( null, world, pos, side );
-            }
-            catch( ReflectiveOperationException ignored )
-            {
+        if (computerCraft_getWiredElementAt != null) {
+            try {
+                return (IWiredElement) computerCraft_getWiredElementAt.invoke(null, world, pos, side);
+            } catch (ReflectiveOperationException ignored) {
             }
         }
 
@@ -428,77 +341,47 @@ public final class ComputerCraftAPI
     // Reflection is used here so you can develop your mod without decompiling ComputerCraft and including
     // it in your solution, and so your mod won't crash if ComputerCraft is installed.
 
-    private static void findCC()
-    {
-        if( !ccSearched )
-        {
-            try
-            {
-                computerCraft = Class.forName( "dan200.computercraft.ComputerCraft" );
-                computerCraft_getVersion = findCCMethod( "getVersion", new Class<?>[] {
-                } );
-                computerCraft_createUniqueNumberedSaveDir = findCCMethod( "createUniqueNumberedSaveDir", new Class<?>[] {
-                    World.class, String.class,
-                } );
-                computerCraft_createSaveDirMount = findCCMethod( "createSaveDirMount", new Class<?>[] {
-                    World.class, String.class, Long.TYPE,
-                } );
-                computerCraft_createResourceMount = findCCMethod( "createResourceMount", new Class<?>[] {
-                    Class.class, String.class, String.class,
-                } );
-                computerCraft_registerPeripheralProvider = findCCMethod( "registerPeripheralProvider", new Class<?>[] {
-                    IPeripheralProvider.class,
-                } );
-                computerCraft_registerTurtleUpgrade = findCCMethod( "registerTurtleUpgrade", new Class<?>[] {
-                    ITurtleUpgrade.class,
-                } );
-                computerCraft_registerBundledRedstoneProvider = findCCMethod( "registerBundledRedstoneProvider", new Class<?>[] {
-                    IBundledRedstoneProvider.class,
-                } );
-                computerCraft_getDefaultBundledRedstoneOutput = findCCMethod( "getDefaultBundledRedstoneOutput", new Class<?>[] {
-                    World.class, BlockPos.class, EnumFacing.class,
-                } );
-                computerCraft_registerMediaProvider = findCCMethod( "registerMediaProvider", new Class<?>[] {
-                    IMediaProvider.class,
-                } );
-                computerCraft_registerPermissionProvider = findCCMethod( "registerPermissionProvider", new Class<?>[] {
-                    ITurtlePermissionProvider.class,
-                } );
-                computerCraft_registerPocketUpgrade = findCCMethod( "registerPocketUpgrade", new Class<?>[] {
-                    IPocketUpgrade.class,
-                } );
-                computerCraft_getWirelessNetwork = findCCMethod( "getWirelessNetwork", new Class<?>[] {
-                } );
-                computerCraft_registerAPIFactory = findCCMethod( "registerAPIFactory", new Class<?>[] {
-                    ILuaAPIFactory.class,
-                } );
-                computerCraft_createWiredNodeForElement = findCCMethod( "createWiredNodeForElement", new Class<?>[] {
-                    IWiredElement.class,
-                } );
-                computerCraft_getWiredElementAt = findCCMethod( "getWiredElementAt", new Class<?>[] {
-                    IBlockAccess.class, BlockPos.class, EnumFacing.class,
-                } );
-            }
-            catch( Exception e )
-            {
-                System.err.println( "ComputerCraftAPI: ComputerCraft not found." );
-            }
-            finally
-            {
+    private static void findCC() {
+        if (!ccSearched) {
+            try {
+                computerCraft = Class.forName("dan200.computercraft.ComputerCraft");
+                computerCraft_getVersion = findCCMethod("getVersion", new Class<?>[]{});
+                computerCraft_createUniqueNumberedSaveDir = findCCMethod("createUniqueNumberedSaveDir",
+                                                                         new Class<?>[]{World.class, String.class,});
+                computerCraft_createSaveDirMount = findCCMethod("createSaveDirMount",
+                                                                new Class<?>[]{World.class, String.class, Long.TYPE,});
+                computerCraft_createResourceMount = findCCMethod("createResourceMount",
+                                                                 new Class<?>[]{Class.class, String.class, String.class,});
+                computerCraft_registerPeripheralProvider = findCCMethod("registerPeripheralProvider",
+                                                                        new Class<?>[]{IPeripheralProvider.class,});
+                computerCraft_registerTurtleUpgrade = findCCMethod("registerTurtleUpgrade", new Class<?>[]{ITurtleUpgrade.class,});
+                computerCraft_registerBundledRedstoneProvider = findCCMethod("registerBundledRedstoneProvider",
+                                                                             new Class<?>[]{IBundledRedstoneProvider.class,});
+                computerCraft_getDefaultBundledRedstoneOutput = findCCMethod("getDefaultBundledRedstoneOutput",
+                                                                             new Class<?>[]{World.class, BlockPos.class,
+                                                                                            EnumFacing.class,});
+                computerCraft_registerMediaProvider = findCCMethod("registerMediaProvider", new Class<?>[]{IMediaProvider.class,});
+                computerCraft_registerPermissionProvider = findCCMethod("registerPermissionProvider",
+                                                                        new Class<?>[]{ITurtlePermissionProvider.class,});
+                computerCraft_registerPocketUpgrade = findCCMethod("registerPocketUpgrade", new Class<?>[]{IPocketUpgrade.class,});
+                computerCraft_getWirelessNetwork = findCCMethod("getWirelessNetwork", new Class<?>[]{});
+                computerCraft_registerAPIFactory = findCCMethod("registerAPIFactory", new Class<?>[]{ILuaAPIFactory.class,});
+                computerCraft_createWiredNodeForElement = findCCMethod("createWiredNodeForElement", new Class<?>[]{IWiredElement.class,});
+                computerCraft_getWiredElementAt = findCCMethod("getWiredElementAt",
+                                                               new Class<?>[]{IBlockAccess.class, BlockPos.class, EnumFacing.class,});
+            } catch (Exception e) {
+                System.err.println("ComputerCraftAPI: ComputerCraft not found.");
+            } finally {
                 ccSearched = true;
             }
         }
     }
 
-    private static Method findCCMethod( String name, Class<?>[] args )
-    {
-        try
-        {
-            return computerCraft != null ? computerCraft.getMethod( name, args ) : null;
-        }
-        catch( NoSuchMethodException e )
-        {
-            System.err.println( "ComputerCraftAPI: ComputerCraft method " + name + " not found." );
+    private static Method findCCMethod(String name, Class<?>[] args) {
+        try {
+            return computerCraft != null ? computerCraft.getMethod(name, args) : null;
+        } catch (NoSuchMethodException e) {
+            System.err.println("ComputerCraftAPI: ComputerCraft method " + name + " not found.");
             return null;
         }
     }

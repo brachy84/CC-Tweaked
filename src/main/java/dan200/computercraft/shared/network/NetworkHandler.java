@@ -20,82 +20,70 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import java.util.function.Supplier;
 
-public final class NetworkHandler
-{
+public final class NetworkHandler {
+
     public static SimpleNetworkWrapper network;
 
-    private NetworkHandler()
-    {
+    private NetworkHandler() {
     }
 
-    public static void setup()
-    {
-        network = NetworkRegistry.INSTANCE.newSimpleChannel( ComputerCraft.MOD_ID );
+    public static void setup() {
+        network = NetworkRegistry.INSTANCE.newSimpleChannel(ComputerCraft.MOD_ID);
 
         // Server messages
-        registerMainThread( 0, Side.SERVER, ComputerActionServerMessage::new );
-        registerMainThread( 1, Side.SERVER, QueueEventServerMessage::new );
-        registerMainThread( 2, Side.SERVER, RequestComputerMessage::new );
-        registerMainThread( 3, Side.SERVER, KeyEventServerMessage::new );
-        registerMainThread( 4, Side.SERVER, MouseEventServerMessage::new );
+        registerMainThread(0, Side.SERVER, ComputerActionServerMessage::new);
+        registerMainThread(1, Side.SERVER, QueueEventServerMessage::new);
+        registerMainThread(2, Side.SERVER, RequestComputerMessage::new);
+        registerMainThread(3, Side.SERVER, KeyEventServerMessage::new);
+        registerMainThread(4, Side.SERVER, MouseEventServerMessage::new);
 
         // Client messages
-        registerMainThread( 10, Side.CLIENT, ChatTableClientMessage::new );
-        registerMainThread( 11, Side.CLIENT, ComputerDataClientMessage::new );
-        registerMainThread( 12, Side.CLIENT, ComputerDeletedClientMessage::new );
-        registerMainThread( 13, Side.CLIENT, ComputerTerminalClientMessage::new );
-        registerMainThread( 14, Side.CLIENT, PlayRecordClientMessage::new );
-        registerMainThread( 15, Side.CLIENT, MonitorClientMessage::new );
+        registerMainThread(10, Side.CLIENT, ChatTableClientMessage::new);
+        registerMainThread(11, Side.CLIENT, ComputerDataClientMessage::new);
+        registerMainThread(12, Side.CLIENT, ComputerDeletedClientMessage::new);
+        registerMainThread(13, Side.CLIENT, ComputerTerminalClientMessage::new);
+        registerMainThread(14, Side.CLIENT, PlayRecordClientMessage::new);
+        registerMainThread(15, Side.CLIENT, MonitorClientMessage::new);
     }
 
-    public static void sendToPlayer( EntityPlayer player, IMessage packet )
-    {
-        network.sendTo( packet, (EntityPlayerMP) player );
+    public static void sendToPlayer(EntityPlayer player, IMessage packet) {
+        network.sendTo(packet, (EntityPlayerMP) player);
     }
 
-    public static void sendToAllPlayers( IMessage packet )
-    {
-        network.sendToAll( packet );
+    public static void sendToAllPlayers(IMessage packet) {
+        network.sendToAll(packet);
     }
 
-    public static void sendToServer( IMessage packet )
-    {
-        network.sendToServer( packet );
+    public static void sendToServer(IMessage packet) {
+        network.sendToServer(packet);
     }
 
-    public static void sendToAllAround( IMessage packet, NetworkRegistry.TargetPoint point )
-    {
-        network.sendToAllAround( packet, point );
+    public static void sendToAllAround(IMessage packet, NetworkRegistry.TargetPoint point) {
+        network.sendToAllAround(packet, point);
     }
 
-    public static void sendToAllTracking( IMessage packet, NetworkRegistry.TargetPoint point )
-    {
-        network.sendToAllTracking( packet, point );
+    public static void sendToAllTracking(IMessage packet, NetworkRegistry.TargetPoint point) {
+        network.sendToAllTracking(packet, point);
     }
 
     /**
-     * /**
-     * Register packet, and a thread-unsafe handler for it.
+     * /** Register packet, and a thread-unsafe handler for it.
      *
      * @param <T>     The type of the packet to send.
      * @param id      The identifier for this packet type
      * @param side    The side to register this packet handler under
      * @param factory The factory for this type of packet.
      */
-    private static <T extends NetworkMessage> void registerMainThread( int id, Side side, Supplier<T> factory )
-    {
-        network.registerMessage( MAIN_THREAD_HANDLER, factory.get().getClass(), id, side );
+    private static <T extends NetworkMessage> void registerMainThread(int id, Side side, Supplier<T> factory) {
+        network.registerMessage(MAIN_THREAD_HANDLER, factory.get().getClass(), id, side);
     }
 
-    private static final IMessageHandler<NetworkMessage, IMessage> MAIN_THREAD_HANDLER = ( packet, context ) -> {
+    private static final IMessageHandler<NetworkMessage, IMessage> MAIN_THREAD_HANDLER = (packet, context) -> {
         IThreadListener listener = context.side == Side.CLIENT ? Minecraft.getMinecraft() : context.getServerHandler().player.server;
-        if( listener.isCallingFromMinecraftThread() )
-        {
-            packet.handle( context );
-        }
-        else
-        {
-            listener.addScheduledTask( () -> packet.handle( context ) );
+        if (listener.isCallingFromMinecraftThread()) {
+            packet.handle(context);
+        } else {
+            listener.addScheduledTask(() -> packet.handle(context));
         }
         return null;
     };

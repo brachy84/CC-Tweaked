@@ -6,6 +6,6 @@
 package dan200.computercraft.shared.peripheral.common;
 
 @Deprecated
-public interface IPeripheralTile extends dan200.computercraft.api.peripheral.IPeripheralTile
-{
+public interface IPeripheralTile extends dan200.computercraft.api.peripheral.IPeripheralTile {
+
 }

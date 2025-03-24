@@ -10,79 +10,65 @@ import dan200.computercraft.shared.network.client.TerminalState;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class ServerTerminal implements ITerminal
-{
+public class ServerTerminal implements ITerminal {
+
     private final boolean m_colour;
     private Terminal m_terminal;
-    private final AtomicBoolean m_terminalChanged = new AtomicBoolean( false );
+    private final AtomicBoolean m_terminalChanged = new AtomicBoolean(false);
     private boolean m_terminalChangedLastFrame = false;
 
-    public ServerTerminal( boolean colour )
-    {
+    public ServerTerminal(boolean colour) {
         m_colour = colour;
         m_terminal = null;
     }
 
-    public ServerTerminal( boolean colour, int terminalWidth, int terminalHeight )
-    {
+    public ServerTerminal(boolean colour, int terminalWidth, int terminalHeight) {
         m_colour = colour;
-        m_terminal = new Terminal( terminalWidth, terminalHeight, this::markTerminalChanged );
+        m_terminal = new Terminal(terminalWidth, terminalHeight, this::markTerminalChanged);
     }
 
-    protected void resize( int width, int height )
-    {
-        if( m_terminal == null )
-        {
-            m_terminal = new Terminal( width, height, this::markTerminalChanged );
+    protected void resize(int width, int height) {
+        if (m_terminal == null) {
+            m_terminal = new Terminal(width, height, this::markTerminalChanged);
             markTerminalChanged();
-        }
-        else
-        {
-            m_terminal.resize( width, height );
+        } else {
+            m_terminal.resize(width, height);
         }
     }
 
-    public void delete()
-    {
-        if( m_terminal != null )
-        {
+    public void delete() {
+        if (m_terminal != null) {
             m_terminal = null;
             markTerminalChanged();
         }
     }
 
-    protected void markTerminalChanged()
-    {
-        m_terminalChanged.set( true );
+    protected void markTerminalChanged() {
+        m_terminalChanged.set(true);
     }
 
-    public void update()
-    {
+    public void update() {
         Terminal terminal = m_terminal;
-        if( terminal != null ) terminal.clearChanged();
+        if (terminal != null) terminal.clearChanged();
 
-        m_terminalChangedLastFrame = m_terminalChanged.getAndSet( false );
+        m_terminalChangedLastFrame = m_terminalChanged.getAndSet(false);
     }
 
-    public boolean hasTerminalChanged()
-    {
+    public boolean hasTerminalChanged() {
         return m_terminalChangedLastFrame;
     }
 
     @Override
-    public Terminal getTerminal()
-    {
+    public Terminal getTerminal() {
         return m_terminal;
     }
 
     @Override
-    public boolean isColour()
-    {
+    public boolean isColour() {
         return m_colour;
     }
 
-    public TerminalState write()
-    {
-        return new TerminalState( m_colour, m_terminal );
+    public TerminalState write() {
+        return new TerminalState(m_colour, m_terminal);
     }
 }

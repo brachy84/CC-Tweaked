@@ -18,8 +18,8 @@ import java.util.List;
 /**
  * A slightly different implementation of {@link ICommand} which is delegated to.
  */
-public interface ISubCommand
-{
+public interface ISubCommand {
+
     /**
      * Get the name of this command.
      *
@@ -46,8 +46,7 @@ public interface ISubCommand
      * @see ICommand#getUsage(ICommandSender)
      */
     @Nonnull
-    default String getUsage( CommandContext context )
-    {
+    default String getUsage(CommandContext context) {
         return "commands." + getFullName() + ".usage";
     }
 
@@ -58,7 +57,7 @@ public interface ISubCommand
      * @return Whether this command can be executed.
      * @see ICommand#checkPermission(MinecraftServer, ICommandSender)
      */
-    boolean checkPermission( @Nonnull CommandContext context );
+    boolean checkPermission(@Nonnull CommandContext context);
 
     /**
      * Execute this command.
@@ -68,7 +67,7 @@ public interface ISubCommand
      * @throws CommandException When an error occurs
      * @see ICommand#execute(MinecraftServer, ICommandSender, String[])
      */
-    void execute( @Nonnull CommandContext context, @Nonnull List<String> arguments ) throws CommandException;
+    void execute(@Nonnull CommandContext context, @Nonnull List<String> arguments) throws CommandException;
 
     /**
      * Get a list of possible completions.
@@ -79,8 +78,7 @@ public interface ISubCommand
      * @see ICommand#getTabCompletions(MinecraftServer, ICommandSender, String[], BlockPos)
      */
     @Nonnull
-    default List<String> getCompletion( @Nonnull CommandContext context, @Nonnull List<String> arguments )
-    {
+    default List<String> getCompletion(@Nonnull CommandContext context, @Nonnull List<String> arguments) {
         return Collections.emptyList();
     }
 }

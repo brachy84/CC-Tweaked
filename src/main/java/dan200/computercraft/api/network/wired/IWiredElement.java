@@ -11,24 +11,19 @@ import javax.annotation.Nonnull;
 
 /**
  * An object which may be part of a wired network.
- *
- * Elements should construct a node using {@link ComputerCraftAPI#createWiredNodeForElement(IWiredElement)}. This acts
- * as a proxy for all network objects. Whilst the node may change networks, an element's node should remain constant
- * for its lifespan.
- *
- * Elements are generally tied to a block or tile entity in world. In such as case, one should provide the
- * {@link IWiredElement} capability for the appropriate sides.
+ * Elements should construct a node using {@link ComputerCraftAPI#createWiredNodeForElement(IWiredElement)}. This acts as a proxy for all
+ * network objects. Whilst the node may change networks, an element's node should remain constant for its lifespan.
+ * Elements are generally tied to a block or tile entity in world. In such as case, one should provide the {@link IWiredElement} capability
+ * for the appropriate sides.
  */
-public interface IWiredElement extends IWiredSender
-{
+public interface IWiredElement extends IWiredSender {
+
     /**
-     * Called when objects on the network change. This may occur when network nodes are added or removed, or when
-     * peripherals change.
+     * Called when objects on the network change. This may occur when network nodes are added or removed, or when peripherals change.
      *
      * @param change The change which occurred.
      * @see IWiredNetworkChange
      */
-    default void networkChanged( @Nonnull IWiredNetworkChange change )
-    {
+    default void networkChanged(@Nonnull IWiredNetworkChange change) {
     }
 }

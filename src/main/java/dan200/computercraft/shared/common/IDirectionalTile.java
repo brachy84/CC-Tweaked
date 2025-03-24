@@ -7,9 +7,9 @@ package dan200.computercraft.shared.common;
 
 import net.minecraft.util.EnumFacing;
 
-public interface IDirectionalTile
-{
+public interface IDirectionalTile {
+
     EnumFacing getDirection();
 
-    void setDirection( EnumFacing dir );
+    void setDirection(EnumFacing dir);
 }

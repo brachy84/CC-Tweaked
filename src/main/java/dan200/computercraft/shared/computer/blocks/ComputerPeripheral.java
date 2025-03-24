@@ -11,13 +11,12 @@ import dan200.computercraft.api.peripheral.IPeripheral;
 
 import javax.annotation.Nonnull;
 
-public class ComputerPeripheral implements IPeripheral
-{
+public class ComputerPeripheral implements IPeripheral {
+
     private final String m_type;
     private final ComputerProxy m_computer;
 
-    public ComputerPeripheral( String type, ComputerProxy computer )
-    {
+    public ComputerPeripheral(String type, ComputerProxy computer) {
         m_type = type;
         m_computer = computer;
     }
@@ -26,30 +25,19 @@ public class ComputerPeripheral implements IPeripheral
 
     @Nonnull
     @Override
-    public String getType()
-    {
+    public String getType() {
         return m_type;
     }
 
     @Nonnull
     @Override
-    public String[] getMethodNames()
-    {
-        return new String[] {
-            "turnOn",
-            "shutdown",
-            "reboot",
-            "getID",
-            "isOn",
-            "getLabel",
-        };
+    public String[] getMethodNames() {
+        return new String[]{"turnOn", "shutdown", "reboot", "getID", "isOn", "getLabel",};
     }
 
     @Override
-    public Object[] callMethod( @Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments )
-    {
-        switch( method )
-        {
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments) {
+        switch (method) {
             case 0: // turnOn
                 m_computer.turnOn();
                 return null;
@@ -60,26 +48,24 @@ public class ComputerPeripheral implements IPeripheral
                 m_computer.reboot();
                 return null;
             case 3: // getID
-                return new Object[] { m_computer.assignID() };
+                return new Object[]{m_computer.assignID()};
             case 4: // isOn
-                return new Object[] { m_computer.isOn() };
+                return new Object[]{m_computer.isOn()};
             case 5: // getLabel
-                return new Object[] { m_computer.getLabel() };
+                return new Object[]{m_computer.getLabel()};
             default:
                 return null;
         }
     }
 
     @Override
-    public boolean equals( IPeripheral other )
-    {
+    public boolean equals(IPeripheral other) {
         return other != null && other.getClass() == getClass();
     }
 
     @Nonnull
     @Override
-    public Object getTarget()
-    {
+    public Object getTarget() {
         return m_computer.getTile();
     }
 }

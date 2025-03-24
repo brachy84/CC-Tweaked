@@ -20,9 +20,7 @@ import java.util.List;
 /**
  * Represents a read only part of a virtual filesystem that can be mounted onto a computer using
  * {@link IComputerAccess#mount(String, IMount)}.
- *
- * Ready made implementations of this interface can be created using
- * {@link ComputerCraftAPI#createSaveDirMount(World, String, long)} or
+ * Ready made implementations of this interface can be created using {@link ComputerCraftAPI#createSaveDirMount(World, String, long)} or
  * {@link ComputerCraftAPI#createResourceMount(Class, String, String)}, or you're free to implement it yourselves!
  *
  * @see ComputerCraftAPI#createSaveDirMount(World, String, long)
@@ -30,8 +28,8 @@ import java.util.List;
  * @see IComputerAccess#mount(String, IMount)
  * @see IWritableMount
  */
-public interface IMount
-{
+public interface IMount {
+
     /**
      * Returns whether a file with a given path exists or not.
      *
@@ -39,7 +37,7 @@ public interface IMount
      * @return If the file exists.
      * @throws IOException If an error occurs when checking the existence of the file.
      */
-    boolean exists( @Nonnull String path ) throws IOException;
+    boolean exists(@Nonnull String path) throws IOException;
 
     /**
      * Returns whether a file with a given path is a directory or not.
@@ -48,7 +46,7 @@ public interface IMount
      * @return If the file exists and is a directory
      * @throws IOException If an error occurs when checking whether the file is a directory.
      */
-    boolean isDirectory( @Nonnull String path ) throws IOException;
+    boolean isDirectory(@Nonnull String path) throws IOException;
 
     /**
      * Returns the file names of all the files in a directory.
@@ -57,7 +55,7 @@ public interface IMount
      * @param contents A list of strings. Add all the file names to this list.
      * @throws IOException If the file was not a directory, or could not be listed.
      */
-    void list( @Nonnull String path, @Nonnull List<String> contents ) throws IOException;
+    void list(@Nonnull String path, @Nonnull List<String> contents) throws IOException;
 
     /**
      * Returns the size of a file with a given path, in bytes.
@@ -66,7 +64,7 @@ public interface IMount
      * @return The size of the file, in bytes.
      * @throws IOException If the file does not exist, or its size could not be determined.
      */
-    long getSize( @Nonnull String path ) throws IOException;
+    long getSize(@Nonnull String path) throws IOException;
 
     /**
      * Opens a file with a given path, and returns an {@link InputStream} representing its contents.
@@ -78,21 +76,19 @@ public interface IMount
      */
     @Nonnull
     @Deprecated
-    InputStream openForRead( @Nonnull String path ) throws IOException;
+    InputStream openForRead(@Nonnull String path) throws IOException;
 
     /**
      * Opens a file with a given path, and returns an {@link ReadableByteChannel} representing its contents.
      *
      * @param path A file path in normalised format, relative to the mount location. ie: "programs/myprogram".
-     * @return A channel representing the contents of the file. If the channel implements
-     * {@link java.nio.channels.SeekableByteChannel}, one will be able to seek to arbitrary positions when using binary
-     * mode.
+     * @return A channel representing the contents of the file. If the channel implements {@link java.nio.channels.SeekableByteChannel}, one
+     * will be able to seek to arbitrary positions when using binary mode.
      * @throws IOException If the file does not exist, or could not be opened.
      */
     @Nonnull
-    default ReadableByteChannel openChannelForRead( @Nonnull String path ) throws IOException
-    {
-        return Channels.newChannel( openForRead( path ) );
+    default ReadableByteChannel openChannelForRead(@Nonnull String path) throws IOException {
+        return Channels.newChannel(openForRead(path));
     }
 
     /**
@@ -103,9 +99,8 @@ public interface IMount
      * @throws IOException If the file does not exist, or attributes could not be fetched.
      */
     @Nonnull
-    default BasicFileAttributes getAttributes( @Nonnull String path ) throws IOException
-    {
-        if( !exists( path ) ) throw new FileOperationException( path, "No such file" );
-        return new FileAttributes( isDirectory( path ), getSize( path ) );
+    default BasicFileAttributes getAttributes(@Nonnull String path) throws IOException {
+        if (!exists(path)) throw new FileOperationException(path, "No such file");
+        return new FileAttributes(isDirectory(path), getSize(path));
     }
 }

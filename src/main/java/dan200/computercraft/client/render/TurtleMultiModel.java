@@ -20,8 +20,8 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-public class TurtleMultiModel implements IBakedModel
-{
+public class TurtleMultiModel implements IBakedModel {
+
     private final IBakedModel m_baseModel;
     private final IBakedModel m_overlayModel;
     private final Matrix4f m_generalTransform;
@@ -30,10 +30,10 @@ public class TurtleMultiModel implements IBakedModel
     private final IBakedModel m_rightUpgradeModel;
     private final Matrix4f m_rightUpgradeTransform;
     private List<BakedQuad> m_generalQuads = null;
-    private Map<EnumFacing, List<BakedQuad>> m_faceQuads = new EnumMap<>( EnumFacing.class );
+    private final Map<EnumFacing, List<BakedQuad>> m_faceQuads = new EnumMap<>(EnumFacing.class);
 
-    public TurtleMultiModel( IBakedModel baseModel, IBakedModel overlayModel, Matrix4f generalTransform, IBakedModel leftUpgradeModel, Matrix4f leftUpgradeTransform, IBakedModel rightUpgradeModel, Matrix4f rightUpgradeTransform )
-    {
+    public TurtleMultiModel(IBakedModel baseModel, IBakedModel overlayModel, Matrix4f generalTransform, IBakedModel leftUpgradeModel,
+                            Matrix4f leftUpgradeTransform, IBakedModel rightUpgradeModel, Matrix4f rightUpgradeTransform) {
         // Get the models
         m_baseModel = baseModel;
         m_overlayModel = overlayModel;
@@ -46,93 +46,76 @@ public class TurtleMultiModel implements IBakedModel
 
     @Nonnull
     @Override
-    public List<BakedQuad> getQuads( IBlockState state, EnumFacing side, long rand )
-    {
-        if( side != null )
-        {
-            if( !m_faceQuads.containsKey( side ) ) m_faceQuads.put( side, buildQuads( state, side, rand ) );
-            return m_faceQuads.get( side );
-        }
-        else
-        {
-            if( m_generalQuads == null ) m_generalQuads = buildQuads( state, side, rand );
+    public List<BakedQuad> getQuads(IBlockState state, EnumFacing side, long rand) {
+        if (side != null) {
+            if (!m_faceQuads.containsKey(side)) m_faceQuads.put(side, buildQuads(state, side, rand));
+            return m_faceQuads.get(side);
+        } else {
+            if (m_generalQuads == null) m_generalQuads = buildQuads(state, side, rand);
             return m_generalQuads;
         }
     }
 
-    private List<BakedQuad> buildQuads( IBlockState state, EnumFacing side, long rand )
-    {
+    private List<BakedQuad> buildQuads(IBlockState state, EnumFacing side, long rand) {
         ArrayList<BakedQuad> quads = new ArrayList<>();
-        ModelTransformer.transformQuadsTo( quads, m_baseModel.getQuads( state, side, rand ), m_generalTransform );
-        if( m_overlayModel != null )
-        {
-            ModelTransformer.transformQuadsTo( quads, m_overlayModel.getQuads( state, side, rand ), m_generalTransform );
+        ModelTransformer.transformQuadsTo(quads, m_baseModel.getQuads(state, side, rand), m_generalTransform);
+        if (m_overlayModel != null) {
+            ModelTransformer.transformQuadsTo(quads, m_overlayModel.getQuads(state, side, rand), m_generalTransform);
         }
-        if( m_overlayModel != null )
-        {
-            ModelTransformer.transformQuadsTo( quads, m_overlayModel.getQuads( state, side, rand ), m_generalTransform );
+        if (m_overlayModel != null) {
+            ModelTransformer.transformQuadsTo(quads, m_overlayModel.getQuads(state, side, rand), m_generalTransform);
         }
-        if( m_leftUpgradeModel != null )
-        {
+        if (m_leftUpgradeModel != null) {
             Matrix4f upgradeTransform = m_generalTransform;
-            if( m_leftUpgradeTransform != null )
-            {
-                upgradeTransform = new Matrix4f( m_generalTransform );
-                upgradeTransform.mul( m_leftUpgradeTransform );
+            if (m_leftUpgradeTransform != null) {
+                upgradeTransform = new Matrix4f(m_generalTransform);
+                upgradeTransform.mul(m_leftUpgradeTransform);
             }
-            ModelTransformer.transformQuadsTo( quads, m_leftUpgradeModel.getQuads( state, side, rand ), upgradeTransform );
+            ModelTransformer.transformQuadsTo(quads, m_leftUpgradeModel.getQuads(state, side, rand), upgradeTransform);
         }
-        if( m_rightUpgradeModel != null )
-        {
+        if (m_rightUpgradeModel != null) {
             Matrix4f upgradeTransform = m_generalTransform;
-            if( m_rightUpgradeTransform != null )
-            {
-                upgradeTransform = new Matrix4f( m_generalTransform );
-                upgradeTransform.mul( m_rightUpgradeTransform );
+            if (m_rightUpgradeTransform != null) {
+                upgradeTransform = new Matrix4f(m_generalTransform);
+                upgradeTransform.mul(m_rightUpgradeTransform);
             }
-            ModelTransformer.transformQuadsTo( quads, m_rightUpgradeModel.getQuads( state, side, rand ), upgradeTransform );
+            ModelTransformer.transformQuadsTo(quads, m_rightUpgradeModel.getQuads(state, side, rand), upgradeTransform);
         }
         quads.trimToSize();
         return quads;
     }
 
     @Override
-    public boolean isAmbientOcclusion()
-    {
+    public boolean isAmbientOcclusion() {
         return m_baseModel.isAmbientOcclusion();
     }
 
     @Override
-    public boolean isGui3d()
-    {
+    public boolean isGui3d() {
         return m_baseModel.isGui3d();
     }
 
     @Override
-    public boolean isBuiltInRenderer()
-    {
+    public boolean isBuiltInRenderer() {
         return m_baseModel.isBuiltInRenderer();
     }
 
     @Nonnull
     @Override
-    public TextureAtlasSprite getParticleTexture()
-    {
+    public TextureAtlasSprite getParticleTexture() {
         return m_baseModel.getParticleTexture();
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public ItemCameraTransforms getItemCameraTransforms()
-    {
+    public ItemCameraTransforms getItemCameraTransforms() {
         return m_baseModel.getItemCameraTransforms();
     }
 
     @Nonnull
     @Override
-    public ItemOverrideList getOverrides()
-    {
+    public ItemOverrideList getOverrides() {
         return ItemOverrideList.NONE;
     }
 }

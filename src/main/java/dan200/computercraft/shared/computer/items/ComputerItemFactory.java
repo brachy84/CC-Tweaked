@@ -12,26 +12,24 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public final class ComputerItemFactory
-{
-    private ComputerItemFactory() {}
+public final class ComputerItemFactory {
 
-    @Nonnull
-    public static ItemStack create( TileComputer tile )
-    {
-        return create( tile.getComputerID(), tile.getLabel(), tile.getFamily() );
+    private ComputerItemFactory() {
     }
 
     @Nonnull
-    public static ItemStack create( int id, String label, ComputerFamily family )
-    {
-        switch( family )
-        {
+    public static ItemStack create(TileComputer tile) {
+        return create(tile.getComputerID(), tile.getLabel(), tile.getFamily());
+    }
+
+    @Nonnull
+    public static ItemStack create(int id, String label, ComputerFamily family) {
+        switch (family) {
             case Normal:
             case Advanced:
-                return ComputerCraft.Items.computer.create( id, label, family );
+                return ComputerCraft.Items.computer.create(id, label, family);
             case Command:
-                return ComputerCraft.Items.commandComputer.create( id, label, family );
+                return ComputerCraft.Items.commandComputer.create(id, label, family);
             default:
                 return ItemStack.EMPTY;
         }

@@ -16,36 +16,30 @@ import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Objects;
 
-public final class Peripherals
-{
+public final class Peripherals {
+
     private static final Collection<IPeripheralProvider> providers = ComputerCraft.peripheralProviders;
 
-    private Peripherals() {}
-
-    public static void register( @Nonnull IPeripheralProvider provider )
-    {
-        Objects.requireNonNull( provider, "provider cannot be null" );
-        if( !providers.contains( provider ) ) providers.add( provider );
+    private Peripherals() {
     }
 
-    public static IPeripheral getPeripheral( World world, BlockPos pos, EnumFacing side )
-    {
-        return world.isValid( pos ) && !world.isRemote ? getPeripheralAt( world, pos, side ) : null;
+    public static void register(@Nonnull IPeripheralProvider provider) {
+        Objects.requireNonNull(provider, "provider cannot be null");
+        if (!providers.contains(provider)) providers.add(provider);
     }
 
-    private static IPeripheral getPeripheralAt( World world, BlockPos pos, EnumFacing side )
-    {
+    public static IPeripheral getPeripheral(World world, BlockPos pos, EnumFacing side) {
+        return world.isValid(pos) && !world.isRemote ? getPeripheralAt(world, pos, side) : null;
+    }
+
+    private static IPeripheral getPeripheralAt(World world, BlockPos pos, EnumFacing side) {
         // Try the handlers in order:
-        for( IPeripheralProvider peripheralProvider : providers )
-        {
-            try
-            {
-                IPeripheral peripheral = peripheralProvider.getPeripheral( world, pos, side );
-                if( peripheral != null ) return peripheral;
-            }
-            catch( Exception e )
-            {
-                ComputerCraft.log.error( "Peripheral provider " + peripheralProvider + " errored.", e );
+        for (IPeripheralProvider peripheralProvider : providers) {
+            try {
+                IPeripheral peripheral = peripheralProvider.getPeripheral(world, pos, side);
+                if (peripheral != null) return peripheral;
+            } catch (Exception e) {
+                ComputerCraft.log.error("Peripheral provider " + peripheralProvider + " errored.", e);
             }
         }
 

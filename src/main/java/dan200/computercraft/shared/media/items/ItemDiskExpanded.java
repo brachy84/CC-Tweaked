@@ -12,62 +12,51 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import javax.annotation.Nonnull;
 
-public class ItemDiskExpanded extends ItemDiskLegacy
-{
+public class ItemDiskExpanded extends ItemDiskLegacy {
+
     @Nonnull
-    public static ItemStack createFromIDAndColour( int id, String label, int colour )
-    {
-        ItemStack stack = new ItemStack( ComputerCraft.Items.diskExpanded, 1, 0 );
+    public static ItemStack createFromIDAndColour(int id, String label, int colour) {
+        ItemStack stack = new ItemStack(ComputerCraft.Items.diskExpanded, 1, 0);
 
         NBTTagCompound nbt = stack.getTagCompound();
-        if( nbt == null )
-        {
+        if (nbt == null) {
             nbt = new NBTTagCompound();
-            stack.setTagCompound( nbt );
+            stack.setTagCompound(nbt);
         }
-        nbt.setInteger( "color", colour );
-        ComputerCraft.Items.diskExpanded.setDiskID( stack, id );
-        ComputerCraft.Items.diskExpanded.setLabel( stack, label );
+        nbt.setInteger("color", colour);
+        ComputerCraft.Items.diskExpanded.setDiskID(stack, id);
+        ComputerCraft.Items.diskExpanded.setLabel(stack, label);
         return stack;
     }
 
     @Override
-    public int getDiskID( @Nonnull ItemStack stack )
-    {
+    public int getDiskID(@Nonnull ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
-        if( nbt != null && nbt.hasKey( "diskID" ) )
-        {
-            return nbt.getInteger( "diskID" );
+        if (nbt != null && nbt.hasKey("diskID")) {
+            return nbt.getInteger("diskID");
         }
         return -1;
     }
 
     @Override
-    protected void setDiskID( @Nonnull ItemStack stack, int id )
-    {
-        if( id >= 0 )
-        {
+    protected void setDiskID(@Nonnull ItemStack stack, int id) {
+        if (id >= 0) {
             NBTTagCompound nbt = stack.getTagCompound();
-            if( nbt == null )
-            {
+            if (nbt == null) {
                 nbt = new NBTTagCompound();
-                stack.setTagCompound( nbt );
+                stack.setTagCompound(nbt);
             }
-            nbt.setInteger( "diskID", id );
+            nbt.setInteger("diskID", id);
         }
     }
 
     @Override
-    public int getColour( @Nonnull ItemStack stack )
-    {
+    public int getColour(@Nonnull ItemStack stack) {
         NBTTagCompound nbt = stack.getTagCompound();
-        if( nbt != null && nbt.hasKey( "color" ) )
-        {
-            return nbt.getInteger( "color" );
-        }
-        else
-        {
-            return Colour.values()[Math.min( 15, stack.getItemDamage() )].getHex();
+        if (nbt != null && nbt.hasKey("color")) {
+            return nbt.getInteger("color");
+        } else {
+            return Colour.values()[Math.min(15, stack.getItemDamage())].getHex();
         }
     }
 }

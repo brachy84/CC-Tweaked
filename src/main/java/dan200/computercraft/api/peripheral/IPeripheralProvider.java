@@ -15,14 +15,13 @@ import javax.annotation.Nullable;
 
 /**
  * This interface is used to create peripheral implementations for blocks.
- *
  * If you have a {@link TileEntity} which acts as a peripheral, you may alternatively implement {@link IPeripheralTile}.
  *
  * @see dan200.computercraft.api.ComputerCraftAPI#registerPeripheralProvider(IPeripheralProvider)
  */
 @FunctionalInterface
-public interface IPeripheralProvider
-{
+public interface IPeripheralProvider {
+
     /**
      * Produce an peripheral implementation from a block location.
      *
@@ -33,5 +32,5 @@ public interface IPeripheralProvider
      * @see dan200.computercraft.api.ComputerCraftAPI#registerPeripheralProvider(IPeripheralProvider)
      */
     @Nullable
-    IPeripheral getPeripheral( @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side );
+    IPeripheral getPeripheral(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side);
 }

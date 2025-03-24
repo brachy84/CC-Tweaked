@@ -12,29 +12,26 @@ import net.minecraft.util.EnumHand;
 
 import javax.annotation.Nonnull;
 
-public class ContainerHeldItem extends Container
-{
+public class ContainerHeldItem extends Container {
+
     private final ItemStack m_stack;
     private final EnumHand m_hand;
 
-    public ContainerHeldItem( EntityPlayer player, EnumHand hand )
-    {
+    public ContainerHeldItem(EntityPlayer player, EnumHand hand) {
         m_hand = hand;
-        m_stack = player.getHeldItem( hand ).copy();
+        m_stack = player.getHeldItem(hand).copy();
     }
 
     @Nonnull
-    public ItemStack getStack()
-    {
+    public ItemStack getStack() {
         return m_stack;
     }
 
     @Override
-    public boolean canInteractWith( @Nonnull EntityPlayer player )
-    {
-        if( !player.isEntityAlive() ) return false;
+    public boolean canInteractWith(@Nonnull EntityPlayer player) {
+        if (!player.isEntityAlive()) return false;
 
-        ItemStack stack = player.getHeldItem( m_hand );
+        ItemStack stack = player.getHeldItem(m_hand);
         return stack == m_stack || !stack.isEmpty() && !m_stack.isEmpty() && stack.getItem() == m_stack.getItem();
     }
 }

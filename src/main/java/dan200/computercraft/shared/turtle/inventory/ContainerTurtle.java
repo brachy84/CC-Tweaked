@@ -21,8 +21,8 @@ import net.minecraft.item.ItemStack;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ContainerTurtle extends Container implements IContainerComputer
-{
+public class ContainerTurtle extends Container implements IContainerComputer {
+
     private static final int PROGRESS_ID_SELECTED_SLOT = 0;
 
     public final int playerInvStartY;
@@ -30,11 +30,10 @@ public class ContainerTurtle extends Container implements IContainerComputer
 
     private final ITurtleAccess m_turtle;
     private IComputer m_computer;
-    private final InputState input = new InputState( this );
+    private final InputState input = new InputState(this);
     private int m_selectedSlot;
 
-    protected ContainerTurtle( IInventory playerInventory, ITurtleAccess turtle, int playerInvStartY, int turtleInvStartX )
-    {
+    protected ContainerTurtle(IInventory playerInventory, ITurtleAccess turtle, int playerInvStartY, int turtleInvStartX) {
         this.playerInvStartY = playerInvStartY;
         this.turtleInvStartX = turtleInvStartX;
 
@@ -42,81 +41,67 @@ public class ContainerTurtle extends Container implements IContainerComputer
         m_selectedSlot = m_turtle.getWorld().isRemote ? 0 : m_turtle.getSelectedSlot();
 
         // Turtle inventory
-        for( int y = 0; y < 4; y++ )
-        {
-            for( int x = 0; x < 4; x++ )
-            {
-                addSlotToContainer( new Slot( m_turtle.getInventory(), x + y * 4, turtleInvStartX + 1 + x * 18, playerInvStartY + 1 + y * 18 ) );
+        for (int y = 0; y < 4; y++) {
+            for (int x = 0; x < 4; x++) {
+                addSlotToContainer(
+                    new Slot(m_turtle.getInventory(), x + y * 4, turtleInvStartX + 1 + x * 18, playerInvStartY + 1 + y * 18));
             }
         }
 
         // Player inventory
-        for( int y = 0; y < 3; y++ )
-        {
-            for( int x = 0; x < 9; x++ )
-            {
-                addSlotToContainer( new Slot( playerInventory, x + y * 9 + 9, 8 + x * 18, playerInvStartY + 1 + y * 18 ) );
+        for (int y = 0; y < 3; y++) {
+            for (int x = 0; x < 9; x++) {
+                addSlotToContainer(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, playerInvStartY + 1 + y * 18));
             }
         }
 
         // Player hotbar
-        for( int x = 0; x < 9; x++ )
-        {
-            addSlotToContainer( new Slot( playerInventory, x, 8 + x * 18, playerInvStartY + 3 * 18 + 5 ) );
+        for (int x = 0; x < 9; x++) {
+            addSlotToContainer(new Slot(playerInventory, x, 8 + x * 18, playerInvStartY + 3 * 18 + 5));
         }
     }
 
-    public ContainerTurtle( IInventory playerInventory, ITurtleAccess turtle )
-    {
-        this( playerInventory, turtle, 134, 175 );
+    public ContainerTurtle(IInventory playerInventory, ITurtleAccess turtle) {
+        this(playerInventory, turtle, 134, 175);
     }
 
-    public ContainerTurtle( IInventory playerInventory, ITurtleAccess turtle, IComputer computer )
-    {
-        this( playerInventory, turtle );
+    public ContainerTurtle(IInventory playerInventory, ITurtleAccess turtle, IComputer computer) {
+        this(playerInventory, turtle);
         m_computer = computer;
     }
 
-    public int getSelectedSlot()
-    {
+    public int getSelectedSlot() {
         return m_selectedSlot;
     }
 
-    private void sendStateToPlayer( IContainerListener listener )
-    {
+    private void sendStateToPlayer(IContainerListener listener) {
         int selectedSlot = m_turtle.getSelectedSlot();
-        listener.sendWindowProperty( this, PROGRESS_ID_SELECTED_SLOT, selectedSlot );
+        listener.sendWindowProperty(this, PROGRESS_ID_SELECTED_SLOT, selectedSlot);
     }
 
     @Override
-    public void addListener( IContainerListener listener )
-    {
-        super.addListener( listener );
-        sendStateToPlayer( listener );
+    public void addListener(IContainerListener listener) {
+        super.addListener(listener);
+        sendStateToPlayer(listener);
     }
 
     @Override
-    public void detectAndSendChanges()
-    {
+    public void detectAndSendChanges() {
         super.detectAndSendChanges();
 
         int selectedSlot = m_turtle.getSelectedSlot();
-        for( IContainerListener listener : listeners )
-        {
-            if( m_selectedSlot != selectedSlot )
-            {
-                listener.sendWindowProperty( this, PROGRESS_ID_SELECTED_SLOT, selectedSlot );
+        for (IContainerListener listener : listeners) {
+            if (m_selectedSlot != selectedSlot) {
+                listener.sendWindowProperty(this, PROGRESS_ID_SELECTED_SLOT, selectedSlot);
             }
         }
         m_selectedSlot = selectedSlot;
     }
 
     @Override
-    public void updateProgressBar( int id, int value )
-    {
-        super.updateProgressBar( id, value );
-        switch( id )
-        {
+    public void updateProgressBar(int id, int value) {
+        super.updateProgressBar(id, value);
+        switch (id) {
             case PROGRESS_ID_SELECTED_SLOT:
                 m_selectedSlot = value;
                 break;
@@ -124,41 +109,31 @@ public class ContainerTurtle extends Container implements IContainerComputer
     }
 
     @Override
-    public boolean canInteractWith( @Nonnull EntityPlayer player )
-    {
+    public boolean canInteractWith(@Nonnull EntityPlayer player) {
         TileTurtle turtle = ((TurtleBrain) m_turtle).getOwner();
-        return turtle != null && turtle.isUsableByPlayer( player );
+        return turtle != null && turtle.isUsableByPlayer(player);
     }
 
     @Nonnull
-    private ItemStack tryItemMerge( EntityPlayer player, int slotNum, int firstSlot, int lastSlot, boolean reverse )
-    {
-        Slot slot = inventorySlots.get( slotNum );
+    private ItemStack tryItemMerge(EntityPlayer player, int slotNum, int firstSlot, int lastSlot, boolean reverse) {
+        Slot slot = inventorySlots.get(slotNum);
         ItemStack originalStack = ItemStack.EMPTY;
-        if( slot != null && slot.getHasStack() )
-        {
+        if (slot != null && slot.getHasStack()) {
             ItemStack clickedStack = slot.getStack();
             originalStack = clickedStack.copy();
-            if( !mergeItemStack( clickedStack, firstSlot, lastSlot, reverse ) )
-            {
+            if (!mergeItemStack(clickedStack, firstSlot, lastSlot, reverse)) {
                 return ItemStack.EMPTY;
             }
 
-            if( clickedStack.isEmpty() )
-            {
-                slot.putStack( ItemStack.EMPTY );
-            }
-            else
-            {
+            if (clickedStack.isEmpty()) {
+                slot.putStack(ItemStack.EMPTY);
+            } else {
                 slot.onSlotChanged();
             }
 
-            if( clickedStack.getCount() != originalStack.getCount() )
-            {
-                slot.onTake( player, clickedStack );
-            }
-            else
-            {
+            if (clickedStack.getCount() != originalStack.getCount()) {
+                slot.onTake(player, clickedStack);
+            } else {
                 return ItemStack.EMPTY;
             }
         }
@@ -167,37 +142,30 @@ public class ContainerTurtle extends Container implements IContainerComputer
 
     @Nonnull
     @Override
-    public ItemStack transferStackInSlot( EntityPlayer player, int slotNum )
-    {
-        if( slotNum >= 0 && slotNum < 16 )
-        {
-            return tryItemMerge( player, slotNum, 16, 52, true );
-        }
-        else if( slotNum >= 16 )
-        {
-            return tryItemMerge( player, slotNum, 0, 16, false );
+    public ItemStack transferStackInSlot(EntityPlayer player, int slotNum) {
+        if (slotNum >= 0 && slotNum < 16) {
+            return tryItemMerge(player, slotNum, 16, 52, true);
+        } else if (slotNum >= 16) {
+            return tryItemMerge(player, slotNum, 0, 16, false);
         }
         return ItemStack.EMPTY;
     }
 
     @Nullable
     @Override
-    public IComputer getComputer()
-    {
+    public IComputer getComputer() {
         return m_computer;
     }
 
     @Nonnull
     @Override
-    public InputState getInput()
-    {
+    public InputState getInput() {
         return input;
     }
 
     @Override
-    public void onContainerClosed( EntityPlayer player )
-    {
-        super.onContainerClosed( player );
+    public void onContainerClosed(EntityPlayer player) {
+        super.onContainerClosed(player);
         input.close();
     }
 }

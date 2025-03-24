@@ -31,43 +31,38 @@ import static dan200.computercraft.client.gui.GuiComputer.*;
 /**
  * Emulates map rendering for pocket computers.
  */
-@Mod.EventBusSubscriber( modid = ComputerCraft.MOD_ID, value = Side.CLIENT )
-public final class ItemPocketRenderer extends ItemMapLikeRenderer
-{
+@Mod.EventBusSubscriber(modid = ComputerCraft.MOD_ID, value = Side.CLIENT)
+public final class ItemPocketRenderer extends ItemMapLikeRenderer {
+
     private static final int MARGIN = 2;
     private static final int FRAME = 12;
     private static final int LIGHT_HEIGHT = 8;
 
     private static final ItemPocketRenderer INSTANCE = new ItemPocketRenderer();
 
-    private ItemPocketRenderer()
-    {
+    private ItemPocketRenderer() {
     }
 
     @SubscribeEvent
-    public static void renderItem( RenderSpecificHandEvent event )
-    {
+    public static void renderItem(RenderSpecificHandEvent event) {
         ItemStack stack = event.getItemStack();
-        if( !(stack.getItem() instanceof ItemPocketComputer) ) return;
+        if (!(stack.getItem() instanceof ItemPocketComputer)) return;
 
-        event.setCanceled( true );
-        INSTANCE.renderItemFirstPerson( event.getHand(), event.getInterpolatedPitch(), event.getEquipProgress(), event.getSwingProgress(), event.getItemStack() );
+        event.setCanceled(true);
+        INSTANCE.renderItemFirstPerson(event.getHand(), event.getInterpolatedPitch(), event.getEquipProgress(), event.getSwingProgress(),
+                                       event.getItemStack());
     }
 
     @Override
-    protected void renderItem( ItemStack stack )
-    {
-        ClientComputer computer = ItemPocketComputer.createClientComputer( stack );
+    protected void renderItem(ItemStack stack) {
+        ClientComputer computer = ItemPocketComputer.createClientComputer(stack);
         Terminal terminal = computer == null ? null : computer.getTerminal();
 
         int termWidth, termHeight;
-        if( terminal == null )
-        {
+        if (terminal == null) {
             termWidth = ComputerCraft.terminalWidth_pocketComputer;
             termHeight = ComputerCraft.terminalHeight_pocketComputer;
-        }
-        else
-        {
+        } else {
             termWidth = terminal.getWidth();
             termHeight = terminal.getHeight();
         }
@@ -82,31 +77,28 @@ public final class ItemPocketRenderer extends ItemMapLikeRenderer
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
 
-        GlStateManager.rotate( 180f, 0f, 1f, 0f );
-        GlStateManager.rotate( 180f, 0f, 0f, 1f );
-        GlStateManager.scale( 0.5, 0.5, 0.5 );
+        GlStateManager.rotate(180f, 0f, 1f, 0f);
+        GlStateManager.rotate(180f, 0f, 0f, 1f);
+        GlStateManager.scale(0.5, 0.5, 0.5);
 
-        double scale = 0.75 / Math.max( width + FRAME * 2, height + FRAME * 2 + LIGHT_HEIGHT );
-        GlStateManager.scale( scale, scale, 0 );
-        GlStateManager.translate( -0.5 * width, -0.5 * height, 0 );
+        double scale = 0.75 / Math.max(width + FRAME * 2, height + FRAME * 2 + LIGHT_HEIGHT);
+        GlStateManager.scale(scale, scale, 0);
+        GlStateManager.translate(-0.5 * width, -0.5 * height, 0);
 
         // Render the main frame
-        ComputerFamily family = ComputerCraft.Items.pocketComputer.getFamily( stack );
-        int frameColour = ComputerCraft.Items.pocketComputer.getColour( stack );
-        renderFrame( family, frameColour, width, height );
+        ComputerFamily family = ComputerCraft.Items.pocketComputer.getFamily(stack);
+        int frameColour = ComputerCraft.Items.pocketComputer.getColour(stack);
+        renderFrame(family, frameColour, width, height);
 
         // Render the light
-        int lightColour = ItemPocketComputer.getLightState( stack );
-        if( lightColour == -1 ) lightColour = Colour.Black.getHex();
-        renderLight( lightColour, width, height );
+        int lightColour = ItemPocketComputer.getLightState(stack);
+        if (lightColour == -1) lightColour = Colour.Black.getHex();
+        renderLight(lightColour, width, height);
 
-        if( computer != null && terminal != null )
-        {
-            FixedWidthFontRenderer.drawTerminal( MARGIN, MARGIN, terminal, !computer.isColour(), MARGIN, MARGIN, MARGIN, MARGIN );
-        }
-        else
-        {
-            FixedWidthFontRenderer.drawEmptyTerminal( 0, 0, width, height );
+        if (computer != null && terminal != null) {
+            FixedWidthFontRenderer.drawTerminal(MARGIN, MARGIN, terminal, !computer.isColour(), MARGIN, MARGIN, MARGIN, MARGIN);
+        } else {
+            FixedWidthFontRenderer.drawEmptyTerminal(0, 0, width, height);
         }
 
         GlStateManager.enableDepth();
@@ -114,13 +106,10 @@ public final class ItemPocketRenderer extends ItemMapLikeRenderer
         GlStateManager.popMatrix();
     }
 
-    private static void renderFrame( ComputerFamily family, int colour, int width, int height )
-    {
+    private static void renderFrame(ComputerFamily family, int colour, int width, int height) {
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture( colour != -1
-            ? BACKGROUND_COLOUR
-            : family == ComputerFamily.Normal ? BACKGROUND_NORMAL : BACKGROUND_ADVANCED
-        );
+        Minecraft.getMinecraft().getTextureManager().bindTexture(
+            colour != -1 ? BACKGROUND_COLOUR : family == ComputerFamily.Normal ? BACKGROUND_NORMAL : BACKGROUND_ADVANCED);
 
         float r = ((colour >>> 16) & 0xFF) / 255.0f;
         float g = ((colour >>> 8) & 0xFF) / 255.0f;
@@ -128,36 +117,35 @@ public final class ItemPocketRenderer extends ItemMapLikeRenderer
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR );
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 
         // Top left, middle, right
-        renderTexture( buffer, -FRAME, -FRAME, 12, 28, FRAME, FRAME, r, g, b );
-        renderTexture( buffer, 0, -FRAME, 0, 0, width, FRAME, r, g, b );
-        renderTexture( buffer, width, -FRAME, 24, 28, FRAME, FRAME, r, g, b );
+        renderTexture(buffer, -FRAME, -FRAME, 12, 28, FRAME, FRAME, r, g, b);
+        renderTexture(buffer, 0, -FRAME, 0, 0, width, FRAME, r, g, b);
+        renderTexture(buffer, width, -FRAME, 24, 28, FRAME, FRAME, r, g, b);
 
         // Left and bright border
-        renderTexture( buffer, -FRAME, 0, 0, 28, FRAME, height, r, g, b );
-        renderTexture( buffer, width, 0, 36, 28, FRAME, height, r, g, b );
+        renderTexture(buffer, -FRAME, 0, 0, 28, FRAME, height, r, g, b);
+        renderTexture(buffer, width, 0, 36, 28, FRAME, height, r, g, b);
 
         // Bottom left, middle, right. We do this in three portions: the top inner corners, an extended region for
         // lights, and then the bottom outer corners.
-        renderTexture( buffer, -FRAME, height, 12, 40, FRAME, FRAME / 2, r, g, b );
-        renderTexture( buffer, 0, height, 0, 12, width, FRAME / 2, r, g, b );
-        renderTexture( buffer, width, height, 24, 40, FRAME, FRAME / 2, r, g, b );
+        renderTexture(buffer, -FRAME, height, 12, 40, FRAME, FRAME / 2, r, g, b);
+        renderTexture(buffer, 0, height, 0, 12, width, FRAME / 2, r, g, b);
+        renderTexture(buffer, width, height, 24, 40, FRAME, FRAME / 2, r, g, b);
 
-        renderTexture( buffer, -FRAME, height + FRAME / 2, 12, 44, FRAME, LIGHT_HEIGHT, FRAME, 4, r, g, b );
-        renderTexture( buffer, 0, height + FRAME / 2, 0, 16, width, LIGHT_HEIGHT, FRAME, 4, r, g, b );
-        renderTexture( buffer, width, height + FRAME / 2, 24, 44, FRAME, LIGHT_HEIGHT, FRAME, 4, r, g, b );
+        renderTexture(buffer, -FRAME, height + FRAME / 2, 12, 44, FRAME, LIGHT_HEIGHT, FRAME, 4, r, g, b);
+        renderTexture(buffer, 0, height + FRAME / 2, 0, 16, width, LIGHT_HEIGHT, FRAME, 4, r, g, b);
+        renderTexture(buffer, width, height + FRAME / 2, 24, 44, FRAME, LIGHT_HEIGHT, FRAME, 4, r, g, b);
 
-        renderTexture( buffer, -FRAME, height + LIGHT_HEIGHT + FRAME / 2, 12, 40 + FRAME / 2, FRAME, FRAME / 2, r, g, b );
-        renderTexture( buffer, 0, height + LIGHT_HEIGHT + FRAME / 2, 0, 12 + FRAME / 2, width, FRAME / 2, r, g, b );
-        renderTexture( buffer, width, height + LIGHT_HEIGHT + FRAME / 2, 24, 40 + FRAME / 2, FRAME, FRAME / 2, r, g, b );
+        renderTexture(buffer, -FRAME, height + LIGHT_HEIGHT + FRAME / 2, 12, 40 + FRAME / 2, FRAME, FRAME / 2, r, g, b);
+        renderTexture(buffer, 0, height + LIGHT_HEIGHT + FRAME / 2, 0, 12 + FRAME / 2, width, FRAME / 2, r, g, b);
+        renderTexture(buffer, width, height + LIGHT_HEIGHT + FRAME / 2, 24, 40 + FRAME / 2, FRAME, FRAME / 2, r, g, b);
 
         tessellator.draw();
     }
 
-    private static void renderLight( int colour, int width, int height )
-    {
+    private static void renderLight(int colour, int width, int height) {
         GlStateManager.enableBlend();
         GlStateManager.disableTexture2D();
 
@@ -167,27 +155,28 @@ public final class ItemPocketRenderer extends ItemMapLikeRenderer
 
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        buffer.begin( GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR );
-        buffer.pos( width - LIGHT_HEIGHT * 2, height + LIGHT_HEIGHT + FRAME / 2.0f, 0.0D ).color( r, g, b, 1.0f ).endVertex();
-        buffer.pos( width, height + LIGHT_HEIGHT + FRAME / 2.0f, 0.0D ).color( r, g, b, 1.0f ).endVertex();
-        buffer.pos( width, height + FRAME / 2.0f, 0.0D ).color( r, g, b, 1.0f ).endVertex();
-        buffer.pos( width - LIGHT_HEIGHT * 2, height + FRAME / 2.0f, 0.0D ).color( r, g, b, 1.0f ).endVertex();
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+        buffer.pos(width - LIGHT_HEIGHT * 2, height + LIGHT_HEIGHT + FRAME / 2.0f, 0.0D).color(r, g, b, 1.0f).endVertex();
+        buffer.pos(width, height + LIGHT_HEIGHT + FRAME / 2.0f, 0.0D).color(r, g, b, 1.0f).endVertex();
+        buffer.pos(width, height + FRAME / 2.0f, 0.0D).color(r, g, b, 1.0f).endVertex();
+        buffer.pos(width - LIGHT_HEIGHT * 2, height + FRAME / 2.0f, 0.0D).color(r, g, b, 1.0f).endVertex();
 
         tessellator.draw();
         GlStateManager.enableTexture2D();
     }
 
-    private static void renderTexture( BufferBuilder builder, int x, int y, int textureX, int textureY, int width, int height, float r, float g, float b )
-    {
-        renderTexture( builder, x, y, textureX, textureY, width, height, width, height, r, g, b );
+    private static void renderTexture(BufferBuilder builder, int x, int y, int textureX, int textureY, int width, int height, float r,
+                                      float g, float b) {
+        renderTexture(builder, x, y, textureX, textureY, width, height, width, height, r, g, b);
     }
 
-    private static void renderTexture( BufferBuilder builder, int x, int y, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight, float r, float g, float b )
-    {
+    private static void renderTexture(BufferBuilder builder, int x, int y, int textureX, int textureY, int width, int height,
+                                      int textureWidth, int textureHeight, float r, float g, float b) {
         float scale = 1 / 255.0f;
-        builder.pos( x, y + height, 0 ).tex( textureX * scale, (textureY + textureHeight) * scale ).color( r, g, b, 1.0f ).endVertex();
-        builder.pos( x + width, y + height, 0 ).tex( (textureX + textureWidth) * scale, (textureY + textureHeight) * scale ).color( r, g, b, 1.0f ).endVertex();
-        builder.pos( x + width, y, 0 ).tex( (textureX + textureWidth) * scale, textureY * scale ).color( r, g, b, 1.0f ).endVertex();
-        builder.pos( x, y, 0 ).tex( textureX * scale, textureY * scale ).color( r, g, b, 1.0f ).endVertex();
+        builder.pos(x, y + height, 0).tex(textureX * scale, (textureY + textureHeight) * scale).color(r, g, b, 1.0f).endVertex();
+        builder.pos(x + width, y + height, 0).tex((textureX + textureWidth) * scale, (textureY + textureHeight) * scale).color(r, g, b,
+                                                                                                                               1.0f).endVertex();
+        builder.pos(x + width, y, 0).tex((textureX + textureWidth) * scale, textureY * scale).color(r, g, b, 1.0f).endVertex();
+        builder.pos(x, y, 0).tex(textureX * scale, textureY * scale).color(r, g, b, 1.0f).endVertex();
     }
 }

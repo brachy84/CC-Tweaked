@@ -22,45 +22,35 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class PartPeripheral implements IMultipart
-{
+public class PartPeripheral implements IMultipart {
+
     @Override
-    public IPartSlot getSlotForPlacement( World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY, float hitZ, EntityLivingBase placer )
-    {
-        return getSlot( state );
+    public IPartSlot getSlotForPlacement(World world, BlockPos pos, IBlockState state, EnumFacing facing, float hitX, float hitY,
+                                         float hitZ, EntityLivingBase placer) {
+        return getSlot(state);
     }
 
     @Override
-    public IPartSlot getSlotFromWorld( IBlockAccess world, BlockPos pos, IBlockState state )
-    {
-        return getSlot( state );
+    public IPartSlot getSlotFromWorld(IBlockAccess world, BlockPos pos, IBlockState state) {
+        return getSlot(state);
     }
 
     @Nonnull
-    private static IPartSlot getSlot( IBlockState state )
-    {
-        BlockPeripheralVariant type = state.getValue( BlockPeripheral.VARIANT );
-        if( type == BlockPeripheralVariant.WirelessModemUpOn || type == BlockPeripheralVariant.WirelessModemUpOff )
-        {
+    private static IPartSlot getSlot(IBlockState state) {
+        BlockPeripheralVariant type = state.getValue(BlockPeripheral.VARIANT);
+        if (type == BlockPeripheralVariant.WirelessModemUpOn || type == BlockPeripheralVariant.WirelessModemUpOff) {
             return EnumFaceSlot.UP;
-        }
-        else if( type == BlockPeripheralVariant.WirelessModemDownOn || type == BlockPeripheralVariant.WirelessModemDownOff )
-        {
+        } else if (type == BlockPeripheralVariant.WirelessModemDownOn || type == BlockPeripheralVariant.WirelessModemDownOff) {
             return EnumFaceSlot.DOWN;
-        }
-        else if( type == BlockPeripheralVariant.WirelessModemOff || type == BlockPeripheralVariant.WirelessModemOn )
-        {
-            return EnumFaceSlot.fromFace( state.getValue( BlockPeripheral.FACING ) );
-        }
-        else
-        {
+        } else if (type == BlockPeripheralVariant.WirelessModemOff || type == BlockPeripheralVariant.WirelessModemOn) {
+            return EnumFaceSlot.fromFace(state.getValue(BlockPeripheral.FACING));
+        } else {
             return EnumCenterSlot.CENTER;
         }
     }
 
     @Override
-    public Block getBlock()
-    {
+    public Block getBlock() {
         return ComputerCraft.Blocks.peripheral;
     }
 }

@@ -24,35 +24,32 @@ import net.minecraft.world.World;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ItemAdvancedModem extends ItemPeripheralBase
-{
-    public ItemAdvancedModem( Block block )
-    {
-        super( block );
-        setTranslationKey( "computercraft:advanced_modem" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
+public class ItemAdvancedModem extends ItemPeripheralBase {
+
+    public ItemAdvancedModem(Block block) {
+        super(block);
+        setTranslationKey("computercraft:advanced_modem");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
     }
 
     @Override
-    public void getSubItems( @Nullable CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list )
-    {
-        if( !isInCreativeTab( tabs ) ) return;
-        list.add( PeripheralItemFactory.create( PeripheralType.AdvancedModem, null, 1 ) );
+    public void getSubItems(@Nullable CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list) {
+        if (!isInCreativeTab(tabs)) return;
+        list.add(PeripheralItemFactory.create(PeripheralType.AdvancedModem, null, 1));
     }
 
     @Override
-    public PeripheralType getPeripheralType( int damage )
-    {
+    public PeripheralType getPeripheralType(int damage) {
         return PeripheralType.AdvancedModem;
     }
 
     @Nonnull
     @Override
-    public EnumActionResult onItemUse( EntityPlayer player, World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ )
-    {
-        EnumActionResult result = MCMPHooks.onItemUse( this, player, worldIn, pos, hand, facing, hitX, hitY, hitZ );
-        if( result != EnumActionResult.PASS ) return result;
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, @Nonnull BlockPos pos, @Nonnull EnumHand hand,
+                                      @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        EnumActionResult result = MCMPHooks.onItemUse(this, player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
+        if (result != EnumActionResult.PASS) return result;
 
-        return super.onItemUse( player, worldIn, pos, hand, facing, hitX, hitY, hitZ );
+        return super.onItemUse(player, worldIn, pos, hand, facing, hitX, hitY, hitZ);
     }
 }

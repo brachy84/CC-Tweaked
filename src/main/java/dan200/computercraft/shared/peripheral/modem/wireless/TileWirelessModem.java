@@ -17,20 +17,17 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class TileWirelessModem extends TileWirelessModemBase implements IDirectionalTile, ITilePeripheral
-{
-    public TileWirelessModem()
-    {
-        super( false );
+public class TileWirelessModem extends TileWirelessModemBase implements IDirectionalTile, ITilePeripheral {
+
+    public TileWirelessModem() {
+        super(false);
     }
 
     @Override
-    public EnumFacing getDirection()
-    {
+    public EnumFacing getDirection() {
         // Wireless Modem
         IBlockState state = getBlockState();
-        switch( state.getValue( BlockPeripheral.VARIANT ) )
-        {
+        switch (state.getValue(BlockPeripheral.VARIANT)) {
             case WirelessModemDownOff:
             case WirelessModemDownOn:
                 return EnumFacing.DOWN;
@@ -38,46 +35,33 @@ public class TileWirelessModem extends TileWirelessModemBase implements IDirecti
             case WirelessModemUpOn:
                 return EnumFacing.UP;
             default:
-                return state.getValue( BlockPeripheral.FACING );
+                return state.getValue(BlockPeripheral.FACING);
         }
     }
 
     @Override
-    public void setDirection( EnumFacing dir )
-    {
+    public void setDirection(EnumFacing dir) {
         // Wireless Modem
-        if( dir == EnumFacing.UP )
-        {
-            setBlockState( getBlockState()
-                .withProperty( BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemUpOff )
-                .withProperty( BlockPeripheral.FACING, EnumFacing.NORTH )
-            );
-        }
-        else if( dir == EnumFacing.DOWN )
-        {
-            setBlockState( getBlockState()
-                .withProperty( BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemDownOff )
-                .withProperty( BlockPeripheral.FACING, EnumFacing.NORTH )
-            );
-        }
-        else
-        {
-            setBlockState( getBlockState()
-                .withProperty( BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemOff )
-                .withProperty( BlockPeripheral.FACING, dir )
-            );
+        if (dir == EnumFacing.UP) {
+            setBlockState(getBlockState().withProperty(BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemUpOff).withProperty(
+                BlockPeripheral.FACING, EnumFacing.NORTH));
+        } else if (dir == EnumFacing.DOWN) {
+            setBlockState(getBlockState().withProperty(BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemDownOff).withProperty(
+                BlockPeripheral.FACING, EnumFacing.NORTH));
+        } else {
+            setBlockState(getBlockState().withProperty(BlockPeripheral.VARIANT, BlockPeripheralVariant.WirelessModemOff).withProperty(
+                BlockPeripheral.FACING, dir));
         }
     }
 
     @Override
-    public boolean shouldRefresh( World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState )
-    {
-        return super.shouldRefresh( world, pos, oldState, newState ) || BlockPeripheral.getPeripheralType( newState ) != PeripheralType.WirelessModem;
+    public boolean shouldRefresh(World world, BlockPos pos, @Nonnull IBlockState oldState, @Nonnull IBlockState newState) {
+        return super.shouldRefresh(world, pos, oldState, newState) ||
+            BlockPeripheral.getPeripheralType(newState) != PeripheralType.WirelessModem;
     }
 
     @Override
-    public PeripheralType getPeripheralType()
-    {
+    public PeripheralType getPeripheralType() {
         return PeripheralType.WirelessModem;
     }
 }

@@ -10,15 +10,15 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraftforge.common.util.CompoundDataFixer;
 import net.minecraftforge.common.util.ModFixs;
 
-public final class Fixes
-{
+public final class Fixes {
+
     public static final int VERSION = 1;
 
-    private Fixes() {}
+    private Fixes() {
+    }
 
-    public static void register( CompoundDataFixer fixer )
-    {
-        ModFixs fixes = fixer.init( ComputerCraft.MOD_ID, VERSION );
-        fixes.registerFix( FixTypes.BLOCK_ENTITY, new TileEntityDataFixer() );
+    public static void register(CompoundDataFixer fixer) {
+        ModFixs fixes = fixer.init(ComputerCraft.MOD_ID, VERSION);
+        fixes.registerFix(FixTypes.BLOCK_ENTITY, new TileEntityDataFixer());
     }
 }

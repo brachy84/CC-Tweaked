@@ -31,344 +31,253 @@ import java.util.function.Function;
 
 import static dan200.computercraft.api.lua.ArgumentHelper.getString;
 
-public class FSAPI implements ILuaAPI
-{
-    private IAPIEnvironment m_env;
+public class FSAPI implements ILuaAPI {
+
+    private final IAPIEnvironment m_env;
     private FileSystem m_fileSystem;
 
-    public FSAPI( IAPIEnvironment env )
-    {
+    public FSAPI(IAPIEnvironment env) {
         m_env = env;
         m_fileSystem = null;
     }
 
     @Override
-    public String[] getNames()
-    {
-        return new String[] { "fs" };
+    public String[] getNames() {
+        return new String[]{"fs"};
     }
 
     @Override
-    public void startup()
-    {
+    public void startup() {
         m_fileSystem = m_env.getFileSystem();
     }
 
     @Override
-    public void shutdown()
-    {
+    public void shutdown() {
         m_fileSystem = null;
     }
 
     @Nonnull
     @Override
-    public String[] getMethodNames()
-    {
-        return new String[] {
-            "list",
-            "combine",
-            "getName",
-            "getSize",
-            "exists",
-            "isDir",
-            "isReadOnly",
-            "makeDir",
-            "move",
-            "copy",
-            "delete",
-            "open",
-            "getDrive",
-            "getFreeSpace",
-            "find",
-            "getDir",
-            "getCapacity",
-            "attributes",
-        };
+    public String[] getMethodNames() {
+        return new String[]{"list", "combine", "getName", "getSize", "exists", "isDir", "isReadOnly", "makeDir", "move", "copy", "delete",
+                            "open", "getDrive", "getFreeSpace", "find", "getDir", "getCapacity", "attributes",};
     }
 
     @Override
-    public Object[] callMethod( @Nonnull ILuaContext context, int method, @Nonnull Object[] args ) throws LuaException
-    {
-        switch( method )
-        {
-            case 0:
-            {
+    public Object[] callMethod(@Nonnull ILuaContext context, int method, @Nonnull Object[] args) throws LuaException {
+        switch (method) {
+            case 0: {
                 // list
-                String path = getString( args, 0 );
-                m_env.addTrackingChange( TrackingField.FS_OPS );
-                try
-                {
-                    return new Object[] { m_fileSystem.list( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                String path = getString(args, 0);
+                m_env.addTrackingChange(TrackingField.FS_OPS);
+                try {
+                    return new Object[]{m_fileSystem.list(path)};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 1:
-            {
+            case 1: {
                 // combine
-                String pathA = getString( args, 0 );
-                String pathB = getString( args, 1 );
-                return new Object[] { m_fileSystem.combine( pathA, pathB ) };
+                String pathA = getString(args, 0);
+                String pathB = getString(args, 1);
+                return new Object[]{m_fileSystem.combine(pathA, pathB)};
             }
-            case 2:
-            {
+            case 2: {
                 // getName
-                String path = getString( args, 0 );
-                return new Object[] { FileSystem.getName( path ) };
+                String path = getString(args, 0);
+                return new Object[]{FileSystem.getName(path)};
             }
-            case 3:
-            {
+            case 3: {
                 // getSize
-                String path = getString( args, 0 );
-                try
-                {
-                    return new Object[] { m_fileSystem.getSize( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                String path = getString(args, 0);
+                try {
+                    return new Object[]{m_fileSystem.getSize(path)};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 4:
-            {
+            case 4: {
                 // exists
-                String path = getString( args, 0 );
-                try
-                {
-                    return new Object[] { m_fileSystem.exists( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    return new Object[] { false };
+                String path = getString(args, 0);
+                try {
+                    return new Object[]{m_fileSystem.exists(path)};
+                } catch (FileSystemException e) {
+                    return new Object[]{false};
                 }
             }
-            case 5:
-            {
+            case 5: {
                 // isDir
-                String path = getString( args, 0 );
-                try
-                {
-                    return new Object[] { m_fileSystem.isDir( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    return new Object[] { false };
+                String path = getString(args, 0);
+                try {
+                    return new Object[]{m_fileSystem.isDir(path)};
+                } catch (FileSystemException e) {
+                    return new Object[]{false};
                 }
             }
-            case 6:
-            {
+            case 6: {
                 // isReadOnly
-                String path = getString( args, 0 );
-                try
-                {
-                    return new Object[] { m_fileSystem.isReadOnly( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    return new Object[] { false };
+                String path = getString(args, 0);
+                try {
+                    return new Object[]{m_fileSystem.isReadOnly(path)};
+                } catch (FileSystemException e) {
+                    return new Object[]{false};
                 }
             }
-            case 7:
-            {
+            case 7: {
                 // makeDir
-                String path = getString( args, 0 );
-                try
-                {
-                    m_env.addTrackingChange( TrackingField.FS_OPS );
-                    m_fileSystem.makeDir( path );
+                String path = getString(args, 0);
+                try {
+                    m_env.addTrackingChange(TrackingField.FS_OPS);
+                    m_fileSystem.makeDir(path);
                     return null;
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 8:
-            {
+            case 8: {
                 // move
-                String path = getString( args, 0 );
-                String dest = getString( args, 1 );
-                try
-                {
-                    m_env.addTrackingChange( TrackingField.FS_OPS );
-                    m_fileSystem.move( path, dest );
+                String path = getString(args, 0);
+                String dest = getString(args, 1);
+                try {
+                    m_env.addTrackingChange(TrackingField.FS_OPS);
+                    m_fileSystem.move(path, dest);
                     return null;
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 9:
-            {
+            case 9: {
                 // copy
-                String path = getString( args, 0 );
-                String dest = getString( args, 1 );
-                try
-                {
-                    m_env.addTrackingChange( TrackingField.FS_OPS );
-                    m_fileSystem.copy( path, dest );
+                String path = getString(args, 0);
+                String dest = getString(args, 1);
+                try {
+                    m_env.addTrackingChange(TrackingField.FS_OPS);
+                    m_fileSystem.copy(path, dest);
                     return null;
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 10:
-            {
+            case 10: {
                 // delete
-                String path = getString( args, 0 );
-                try
-                {
-                    m_env.addTrackingChange( TrackingField.FS_OPS );
-                    m_fileSystem.delete( path );
+                String path = getString(args, 0);
+                try {
+                    m_env.addTrackingChange(TrackingField.FS_OPS);
+                    m_fileSystem.delete(path);
                     return null;
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 11:
-            {
+            case 11: {
                 // open
-                String path = getString( args, 0 );
-                String mode = getString( args, 1 );
-                m_env.addTrackingChange( TrackingField.FS_OPS );
-                try
-                {
-                    switch( mode )
-                    {
-                        case "r":
-                        {
+                String path = getString(args, 0);
+                String mode = getString(args, 1);
+                m_env.addTrackingChange(TrackingField.FS_OPS);
+                try {
+                    switch (mode) {
+                        case "r": {
                             // Open the file for reading, then create a wrapper around the reader
-                            FileSystemWrapper<BufferedReader> reader = m_fileSystem.openForRead( path, EncodedReadableHandle::openUtf8 );
-                            return new Object[] { new EncodedReadableHandle( reader.get(), reader ) };
+                            FileSystemWrapper<BufferedReader> reader = m_fileSystem.openForRead(path, EncodedReadableHandle::openUtf8);
+                            return new Object[]{new EncodedReadableHandle(reader.get(), reader)};
                         }
-                        case "w":
-                        {
+                        case "w": {
                             // Open the file for writing, then create a wrapper around the writer
-                            FileSystemWrapper<BufferedWriter> writer = m_fileSystem.openForWrite( path, false, EncodedWritableHandle::openUtf8 );
-                            return new Object[] { new EncodedWritableHandle( writer.get(), writer ) };
+                            FileSystemWrapper<BufferedWriter> writer = m_fileSystem.openForWrite(path, false,
+                                                                                                 EncodedWritableHandle::openUtf8);
+                            return new Object[]{new EncodedWritableHandle(writer.get(), writer)};
                         }
-                        case "a":
-                        {
+                        case "a": {
                             // Open the file for appending, then create a wrapper around the writer
-                            FileSystemWrapper<BufferedWriter> writer = m_fileSystem.openForWrite( path, true, EncodedWritableHandle::openUtf8 );
-                            return new Object[] { new EncodedWritableHandle( writer.get(), writer ) };
+                            FileSystemWrapper<BufferedWriter> writer = m_fileSystem.openForWrite(path, true,
+                                                                                                 EncodedWritableHandle::openUtf8);
+                            return new Object[]{new EncodedWritableHandle(writer.get(), writer)};
                         }
-                        case "rb":
-                        {
+                        case "rb": {
                             // Open the file for binary reading, then create a wrapper around the reader
-                            FileSystemWrapper<ReadableByteChannel> reader = m_fileSystem.openForRead( path, Function.identity() );
-                            return new Object[] { new BinaryReadableHandle( reader.get(), reader ) };
+                            FileSystemWrapper<ReadableByteChannel> reader = m_fileSystem.openForRead(path, Function.identity());
+                            return new Object[]{new BinaryReadableHandle(reader.get(), reader)};
                         }
-                        case "wb":
-                        {
+                        case "wb": {
                             // Open the file for binary writing, then create a wrapper around the writer
-                            FileSystemWrapper<WritableByteChannel> writer = m_fileSystem.openForWrite( path, false, Function.identity() );
-                            return new Object[] { new BinaryWritableHandle( writer.get(), writer ) };
+                            FileSystemWrapper<WritableByteChannel> writer = m_fileSystem.openForWrite(path, false, Function.identity());
+                            return new Object[]{new BinaryWritableHandle(writer.get(), writer)};
                         }
-                        case "ab":
-                        {
+                        case "ab": {
                             // Open the file for binary appending, then create a wrapper around the reader
-                            FileSystemWrapper<WritableByteChannel> writer = m_fileSystem.openForWrite( path, true, Function.identity() );
-                            return new Object[] { new BinaryWritableHandle( writer.get(), writer ) };
+                            FileSystemWrapper<WritableByteChannel> writer = m_fileSystem.openForWrite(path, true, Function.identity());
+                            return new Object[]{new BinaryWritableHandle(writer.get(), writer)};
                         }
                         default:
-                            throw new LuaException( "Unsupported mode" );
+                            throw new LuaException("Unsupported mode");
                     }
-                }
-                catch( FileSystemException e )
-                {
-                    return new Object[] { null, e.getMessage() };
+                } catch (FileSystemException e) {
+                    return new Object[]{null, e.getMessage()};
                 }
             }
-            case 12:
-            {
+            case 12: {
                 // getDrive
-                String path = getString( args, 0 );
-                try
-                {
-                    if( !m_fileSystem.exists( path ) )
-                    {
+                String path = getString(args, 0);
+                try {
+                    if (!m_fileSystem.exists(path)) {
                         return null;
                     }
-                    return new Object[] { m_fileSystem.getMountLabel( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                    return new Object[]{m_fileSystem.getMountLabel(path)};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
-            case 13:
-            {
+            case 13: {
                 // getFreeSpace
-                String path = getString( args, 0 );
-                try
-                {
-                    long freeSpace = m_fileSystem.getFreeSpace( path );
-                    if( freeSpace >= 0 )
-                    {
-                        return new Object[] { freeSpace };
+                String path = getString(args, 0);
+                try {
+                    long freeSpace = m_fileSystem.getFreeSpace(path);
+                    if (freeSpace >= 0) {
+                        return new Object[]{freeSpace};
                     }
-                    return new Object[] { "unlimited" };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                    return new Object[]{"unlimited"};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
             case 14: // find
             {
-                String path = getString( args, 0 );
-                try
-                {
-                    m_env.addTrackingChange( TrackingField.FS_OPS );
-                    return new Object[] { m_fileSystem.find( path ) };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                String path = getString(args, 0);
+                try {
+                    m_env.addTrackingChange(TrackingField.FS_OPS);
+                    return new Object[]{m_fileSystem.find(path)};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
             case 15: // getDir
             {
-                String path = getString( args, 0 );
-                return new Object[] { FileSystem.getDirectory( path ) };
+                String path = getString(args, 0);
+                return new Object[]{FileSystem.getDirectory(path)};
             }
             case 16: // getCapacity
             {
-                String path = getString( args, 0 );
-                try
-                {
-                    OptionalLong capacity = m_fileSystem.getCapacity( path );
-                    return new Object[] { capacity.isPresent() ? capacity.getAsLong() : null };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                String path = getString(args, 0);
+                try {
+                    OptionalLong capacity = m_fileSystem.getCapacity(path);
+                    return new Object[]{capacity.isPresent() ? capacity.getAsLong() : null};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
             case 17: // attributes
             {
-                String path = getString( args, 0 );
-                try
-                {
-                    BasicFileAttributes attributes = m_fileSystem.getAttributes( path );
+                String path = getString(args, 0);
+                try {
+                    BasicFileAttributes attributes = m_fileSystem.getAttributes(path);
                     Map<String, Object> result = new HashMap<>();
-                    result.put( "modification", getFileTime( attributes.lastModifiedTime() ) );
-                    result.put( "created", getFileTime( attributes.creationTime() ) );
-                    result.put( "size", attributes.isDirectory() ? 0 : attributes.size() );
-                    result.put( "isDir", attributes.isDirectory() );
-                    return new Object[] { result };
-                }
-                catch( FileSystemException e )
-                {
-                    throw new LuaException( e.getMessage() );
+                    result.put("modification", getFileTime(attributes.lastModifiedTime()));
+                    result.put("created", getFileTime(attributes.creationTime()));
+                    result.put("size", attributes.isDirectory() ? 0 : attributes.size());
+                    result.put("isDir", attributes.isDirectory());
+                    return new Object[]{result};
+                } catch (FileSystemException e) {
+                    throw new LuaException(e.getMessage());
                 }
             }
             default:
@@ -377,8 +286,7 @@ public class FSAPI implements ILuaAPI
         }
     }
 
-    private static long getFileTime( FileTime time )
-    {
+    private static long getFileTime(FileTime time) {
         return time == null ? 0 : time.toMillis();
     }
 }

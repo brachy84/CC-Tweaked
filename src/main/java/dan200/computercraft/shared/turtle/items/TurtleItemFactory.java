@@ -16,31 +16,27 @@ import net.minecraft.util.ResourceLocation;
 
 import javax.annotation.Nonnull;
 
-public final class TurtleItemFactory
-{
-    private TurtleItemFactory() {}
+public final class TurtleItemFactory {
 
-    @Nonnull
-    public static ItemStack create( ITurtleTile turtle )
-    {
-        ITurtleAccess access = turtle.getAccess();
-
-        return create(
-            turtle.getComputerID(), turtle.getLabel(), turtle.getColour(), turtle.getFamily(),
-            access.getUpgrade( TurtleSide.Left ), access.getUpgrade( TurtleSide.Right ),
-            access.getFuelLevel(), turtle.getOverlay()
-        );
+    private TurtleItemFactory() {
     }
 
     @Nonnull
-    public static ItemStack create( int id, String label, int colour, ComputerFamily family, ITurtleUpgrade leftUpgrade, ITurtleUpgrade rightUpgrade, int fuelLevel, ResourceLocation overlay )
-    {
-        switch( family )
-        {
+    public static ItemStack create(ITurtleTile turtle) {
+        ITurtleAccess access = turtle.getAccess();
+
+        return create(turtle.getComputerID(), turtle.getLabel(), turtle.getColour(), turtle.getFamily(), access.getUpgrade(TurtleSide.Left),
+                      access.getUpgrade(TurtleSide.Right), access.getFuelLevel(), turtle.getOverlay());
+    }
+
+    @Nonnull
+    public static ItemStack create(int id, String label, int colour, ComputerFamily family, ITurtleUpgrade leftUpgrade,
+                                   ITurtleUpgrade rightUpgrade, int fuelLevel, ResourceLocation overlay) {
+        switch (family) {
             case Normal:
-                return ComputerCraft.Items.turtleExpanded.create( id, label, colour, leftUpgrade, rightUpgrade, fuelLevel, overlay );
+                return ComputerCraft.Items.turtleExpanded.create(id, label, colour, leftUpgrade, rightUpgrade, fuelLevel, overlay);
             case Advanced:
-                return ComputerCraft.Items.turtleAdvanced.create( id, label, colour, leftUpgrade, rightUpgrade, fuelLevel, overlay );
+                return ComputerCraft.Items.turtleAdvanced.create(id, label, colour, leftUpgrade, rightUpgrade, fuelLevel, overlay);
             default:
                 return ItemStack.EMPTY;
         }

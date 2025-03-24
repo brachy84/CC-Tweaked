@@ -42,8 +42,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
-public abstract class TileComputerBase extends TileGeneric implements IComputerTile, IDirectionalTile, ITickable, IPeripheralTile, IWorldNameable
-{
+public abstract class TileComputerBase extends TileGeneric
+    implements IComputerTile, IDirectionalTile, ITickable, IPeripheralTile, IWorldNameable {
+
     private int m_instanceID = -1;
     private int m_computerID = -1;
     protected String label = null;
@@ -52,72 +53,58 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
     private boolean m_fresh = false;
 
     @Override
-    public BlockComputerBase getBlock()
-    {
+    public BlockComputerBase getBlock() {
         Block block = super.getBlock();
         return block instanceof BlockComputerBase ? (BlockComputerBase) block : null;
     }
 
-    protected void unload()
-    {
-        if( m_instanceID >= 0 )
-        {
-            if( !getWorld().isRemote ) ComputerCraft.serverComputerRegistry.remove( m_instanceID );
+    protected void unload() {
+        if (m_instanceID >= 0) {
+            if (!getWorld().isRemote) ComputerCraft.serverComputerRegistry.remove(m_instanceID);
             m_instanceID = -1;
         }
     }
 
     @Override
-    public void destroy()
-    {
+    public void destroy() {
         unload();
-        for( EnumFacing dir : EnumFacing.VALUES )
-        {
-            RedstoneUtil.propagateRedstoneOutput( getWorld(), getPos(), dir );
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            RedstoneUtil.propagateRedstoneOutput(getWorld(), getPos(), dir);
         }
     }
 
     @Override
-    public void onChunkUnload()
-    {
+    public void onChunkUnload() {
         unload();
     }
 
     @Override
-    public void invalidate()
-    {
+    public void invalidate() {
         unload();
         super.invalidate();
     }
 
-    public abstract void openGUI( EntityPlayer player );
+    public abstract void openGUI(EntityPlayer player);
 
-    protected boolean canNameWithTag( EntityPlayer player )
-    {
+    protected boolean canNameWithTag(EntityPlayer player) {
         return false;
     }
 
     @Override
-    public boolean onActivate( EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ )
-    {
-        ItemStack currentItem = player.getHeldItem( hand );
-        if( !currentItem.isEmpty() && currentItem.getItem() == Items.NAME_TAG && canNameWithTag( player ) && currentItem.hasDisplayName() )
-        {
+    public boolean onActivate(EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+        ItemStack currentItem = player.getHeldItem(hand);
+        if (!currentItem.isEmpty() && currentItem.getItem() == Items.NAME_TAG && canNameWithTag(player) && currentItem.hasDisplayName()) {
             // Label to rename computer
-            if( !getWorld().isRemote )
-            {
-                setLabel( currentItem.getDisplayName() );
-                currentItem.shrink( 1 );
+            if (!getWorld().isRemote) {
+                setLabel(currentItem.getDisplayName());
+                currentItem.shrink(1);
             }
             return true;
-        }
-        else if( !player.isSneaking() )
-        {
+        } else if (!player.isSneaking()) {
             // Regular right click to activate computer
-            if( !getWorld().isRemote && isUsable( player, false ) )
-            {
+            if (!getWorld().isRemote && isUsable(player, false)) {
                 createServerComputer().turnOn();
-                openGUI( player );
+                openGUI(player);
             }
             return true;
         }
@@ -125,63 +112,51 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
     }
 
     @Override
-    public boolean getRedstoneConnectivity( EnumFacing side )
-    {
+    public boolean getRedstoneConnectivity(EnumFacing side) {
         return true;
     }
 
     @Override
-    public int getRedstoneOutput( EnumFacing side )
-    {
-        ComputerSide localDir = remapLocalSide( DirectionUtil.toLocal( this, side ) );
-        if( world != null && !world.isRemote )
-        {
+    public int getRedstoneOutput(EnumFacing side) {
+        ComputerSide localDir = remapLocalSide(DirectionUtil.toLocal(this, side));
+        if (world != null && !world.isRemote) {
             ServerComputer computer = getServerComputer();
-            if( computer != null ) return computer.getRedstoneOutput( localDir );
+            if (computer != null) return computer.getRedstoneOutput(localDir);
         }
         return 0;
     }
 
     @Override
-    public boolean getBundledRedstoneConnectivity( @Nonnull EnumFacing side )
-    {
+    public boolean getBundledRedstoneConnectivity(@Nonnull EnumFacing side) {
         return true;
     }
 
     @Override
-    public int getBundledRedstoneOutput( @Nonnull EnumFacing side )
-    {
-        ComputerSide localDir = remapLocalSide( DirectionUtil.toLocal( this, side ) );
-        if( !world.isRemote )
-        {
+    public int getBundledRedstoneOutput(@Nonnull EnumFacing side) {
+        ComputerSide localDir = remapLocalSide(DirectionUtil.toLocal(this, side));
+        if (!world.isRemote) {
             ServerComputer computer = getServerComputer();
-            if( computer != null ) return computer.getBundledRedstoneOutput( localDir );
+            if (computer != null) return computer.getBundledRedstoneOutput(localDir);
         }
         return 0;
     }
 
     @Override
-    public void onNeighbourChange( @Nonnull BlockPos neighbour )
-    {
-        updateInput( neighbour );
+    public void onNeighbourChange(@Nonnull BlockPos neighbour) {
+        updateInput(neighbour);
     }
 
     @Override
-    public void onNeighbourTileEntityChange( @Nonnull BlockPos neighbour )
-    {
-        updateInput( neighbour );
+    public void onNeighbourTileEntityChange(@Nonnull BlockPos neighbour) {
+        updateInput(neighbour);
     }
 
     @Override
-    public void update()
-    {
-        if( !getWorld().isRemote )
-        {
+    public void update() {
+        if (!getWorld().isRemote) {
             ServerComputer computer = createServerComputer();
-            if( computer != null )
-            {
-                if( m_startOn || (m_fresh && m_on) )
-                {
+            if (computer != null) {
+                if (m_startOn || (m_fresh && m_on)) {
                     computer.turnOn();
                     m_startOn = false;
                 }
@@ -192,89 +167,73 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
                 label = computer.getLabel();
                 m_on = computer.isOn();
 
-                if( computer.hasOutputChanged() ) updateOutput();
+                if (computer.hasOutputChanged()) updateOutput();
             }
-        }
-        else
-        {
+        } else {
             ClientComputer computer = createClientComputer();
-            if( computer != null && computer.hasOutputChanged() ) updateBlock();
+            if (computer != null && computer.hasOutputChanged()) updateBlock();
         }
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound writeToNBT( NBTTagCompound nbt )
-    {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
         // Save ID, label and power state
-        if( m_computerID >= 0 )
-        {
-            nbt.setInteger( "computerID", m_computerID );
+        if (m_computerID >= 0) {
+            nbt.setInteger("computerID", m_computerID);
         }
-        if( label != null )
-        {
-            nbt.setString( "label", label );
+        if (label != null) {
+            nbt.setString("label", label);
         }
-        nbt.setBoolean( "on", m_on );
-        return super.writeToNBT( nbt );
+        nbt.setBoolean("on", m_on);
+        return super.writeToNBT(nbt);
     }
 
     @Override
-    public void readFromNBT( NBTTagCompound nbt )
-    {
-        super.readFromNBT( nbt );
+    public void readFromNBT(NBTTagCompound nbt) {
+        super.readFromNBT(nbt);
 
         // Load ID
         int id = -1;
-        if( nbt.hasKey( "computerID" ) )
-        {
+        if (nbt.hasKey("computerID")) {
             // Post-1.6 computers
-            id = nbt.getInteger( "computerID" );
-        }
-        else if( nbt.hasKey( "userDir" ) )
-        {
+            id = nbt.getInteger("computerID");
+        } else if (nbt.hasKey("userDir")) {
             // Pre-1.6 computers
-            String userDir = nbt.getString( "userDir" );
-            try
-            {
-                id = Integer.parseInt( userDir );
-            }
-            catch( NumberFormatException e )
-            {
+            String userDir = nbt.getString("userDir");
+            try {
+                id = Integer.parseInt(userDir);
+            } catch (NumberFormatException e) {
                 // Ignore badly formatted data
             }
         }
         m_computerID = id;
 
         // Load label
-        label = nbt.hasKey( "label" ) ? nbt.getString( "label" ) : null;
+        label = nbt.hasKey("label") ? nbt.getString("label") : null;
 
         // Load power state
-        m_startOn = nbt.getBoolean( "on" );
+        m_startOn = nbt.getBoolean("on");
         m_on = m_startOn;
     }
 
-    protected boolean isPeripheralBlockedOnSide( ComputerSide localSide )
-    {
+    protected boolean isPeripheralBlockedOnSide(ComputerSide localSide) {
         return false;
     }
 
-    protected ComputerSide remapLocalSide( ComputerSide localSide )
-    {
+    protected ComputerSide remapLocalSide(ComputerSide localSide) {
         return localSide;
     }
 
-    private void updateSideInput( ServerComputer computer, EnumFacing dir, BlockPos offset )
-    {
+    private void updateSideInput(ServerComputer computer, EnumFacing dir, BlockPos offset) {
         EnumFacing offsetSide = dir.getOpposite();
-        ComputerSide localDir = remapLocalSide( DirectionUtil.toLocal( this, dir ) );
+        ComputerSide localDir = remapLocalSide(DirectionUtil.toLocal(this, dir));
 
-        computer.setRedstoneInput( localDir, getRedstoneInput( world, offset, dir ) );
-        computer.setBundledRedstoneInput( localDir, BundledRedstone.getOutput( getWorld(), offset, offsetSide ) );
+        computer.setRedstoneInput(localDir, getRedstoneInput(world, offset, dir));
+        computer.setBundledRedstoneInput(localDir, BundledRedstone.getOutput(getWorld(), offset, offsetSide));
 
-        if( !isPeripheralBlockedOnSide( localDir ) )
-        {
-            computer.setPeripheral( localDir, Peripherals.getPeripheral( getWorld(), offset, offsetSide ) );
+        if (!isPeripheralBlockedOnSide(localDir)) {
+            computer.setPeripheral(localDir, Peripherals.getPeripheral(getWorld(), offset, offsetSide));
         }
     }
 
@@ -287,46 +246,38 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
      * @return The effective redstone power
      * @see net.minecraft.block.BlockRedstoneDiode#calculateInputStrength(World, BlockPos, IBlockState)
      */
-    protected static int getRedstoneInput( World world, BlockPos pos, EnumFacing side )
-    {
-        int power = world.getRedstonePower( pos, side );
-        if( power >= 15 ) return power;
+    protected static int getRedstoneInput(World world, BlockPos pos, EnumFacing side) {
+        int power = world.getRedstonePower(pos, side);
+        if (power >= 15) return power;
 
-        IBlockState neighbour = world.getBlockState( pos );
-        return neighbour.getBlock() == Blocks.REDSTONE_WIRE
-            ? Math.max( power, neighbour.getValue( BlockRedstoneWire.POWER ) )
-            : power;
+        IBlockState neighbour = world.getBlockState(pos);
+        return neighbour.getBlock() == Blocks.REDSTONE_WIRE ? Math.max(power, neighbour.getValue(BlockRedstoneWire.POWER)) : power;
     }
 
-    public void updateInput()
-    {
-        if( getWorld() == null || getWorld().isRemote ) return;
+    public void updateInput() {
+        if (getWorld() == null || getWorld().isRemote) return;
 
         // Update redstone and peripherals
         ServerComputer computer = getServerComputer();
-        if( computer == null ) return;
+        if (computer == null) return;
 
         BlockPos pos = computer.getPosition();
-        for( EnumFacing dir : EnumFacing.VALUES )
-        {
-            updateSideInput( computer, dir, pos.offset( dir ) );
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            updateSideInput(computer, dir, pos.offset(dir));
         }
     }
 
-    public void updateInput( BlockPos neighbour )
-    {
-        if( getWorld() == null || getWorld().isRemote ) return;
+    public void updateInput(BlockPos neighbour) {
+        if (getWorld() == null || getWorld().isRemote) return;
 
         ServerComputer computer = getServerComputer();
-        if( computer == null ) return;
+        if (computer == null) return;
 
         BlockPos pos = computer.getPosition();
-        for( EnumFacing dir : EnumFacing.VALUES )
-        {
-            BlockPos offset = pos.offset( dir );
-            if( offset.equals( neighbour ) )
-            {
-                updateSideInput( computer, dir, offset );
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            BlockPos offset = pos.offset(dir);
+            if (offset.equals(neighbour)) {
+                updateSideInput(computer, dir, offset);
                 return;
             }
         }
@@ -335,141 +286,121 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
         updateInput();
     }
 
-    public void updateOutput()
-    {
+    public void updateOutput() {
         // Update redstone
         updateBlock();
-        for( EnumFacing dir : EnumFacing.VALUES )
-        {
-            RedstoneUtil.propagateRedstoneOutput( getWorld(), getPos(), dir );
+        for (EnumFacing dir : EnumFacing.VALUES) {
+            RedstoneUtil.propagateRedstoneOutput(getWorld(), getPos(), dir);
         }
     }
 
-    protected abstract ServerComputer createComputer( int instanceID, int id );
+    protected abstract ServerComputer createComputer(int instanceID, int id);
 
     public abstract ComputerProxy createProxy();
 
     // IComputerTile
 
     @Override
-    public final int getComputerID()
-    {
+    public final int getComputerID() {
         return m_computerID;
     }
 
     @Override
-    public final String getLabel()
-    {
+    public final String getLabel() {
         return label;
     }
 
     @Override
-    public final void setComputerID( int id )
-    {
-        if( getWorld().isRemote || m_computerID == id ) return;
+    public final void setComputerID(int id) {
+        if (getWorld().isRemote || m_computerID == id) return;
 
         m_computerID = id;
         ServerComputer computer = getServerComputer();
-        if( computer != null ) computer.setID( m_computerID );
+        if (computer != null) computer.setID(m_computerID);
         markDirty();
     }
 
     @Override
-    public final void setLabel( String label )
-    {
-        if( getWorld().isRemote || Objects.equals( this.label, label ) ) return;
+    public final void setLabel(String label) {
+        if (getWorld().isRemote || Objects.equals(this.label, label)) return;
 
         this.label = label;
         ServerComputer computer = getServerComputer();
-        if( computer != null ) computer.setLabel( label );
+        if (computer != null) computer.setLabel(label);
         markDirty();
     }
 
     @Override
-    public ComputerFamily getFamily()
-    {
+    public ComputerFamily getFamily() {
         BlockComputerBase block = getBlock();
-        return block != null ? block.getFamily( getWorld(), getPos() ) : ComputerFamily.Normal;
+        return block != null ? block.getFamily(getWorld(), getPos()) : ComputerFamily.Normal;
     }
 
     @Override
     @Deprecated
-    public IComputer getComputer()
-    {
+    public IComputer getComputer() {
         return getWorld().isRemote ? getClientComputer() : getServerComputer();
     }
 
-    public ServerComputer createServerComputer()
-    {
-        if( getWorld().isRemote ) return null;
+    public ServerComputer createServerComputer() {
+        if (getWorld().isRemote) return null;
 
         boolean changed = false;
-        if( m_instanceID < 0 )
-        {
+        if (m_instanceID < 0) {
             m_instanceID = ComputerCraft.serverComputerRegistry.getUnusedInstanceID();
             changed = true;
         }
-        if( !ComputerCraft.serverComputerRegistry.contains( m_instanceID ) )
-        {
-            ServerComputer computer = createComputer( m_instanceID, m_computerID );
-            ComputerCraft.serverComputerRegistry.add( m_instanceID, computer );
+        if (!ComputerCraft.serverComputerRegistry.contains(m_instanceID)) {
+            ServerComputer computer = createComputer(m_instanceID, m_computerID);
+            ComputerCraft.serverComputerRegistry.add(m_instanceID, computer);
             m_fresh = true;
             changed = true;
         }
-        if( changed )
-        {
+        if (changed) {
             updateBlock();
             updateInput();
         }
-        return ComputerCraft.serverComputerRegistry.get( m_instanceID );
+        return ComputerCraft.serverComputerRegistry.get(m_instanceID);
     }
 
-    public ServerComputer getServerComputer()
-    {
-        return getWorld().isRemote ? null : ComputerCraft.serverComputerRegistry.get( m_instanceID );
+    public ServerComputer getServerComputer() {
+        return getWorld().isRemote ? null : ComputerCraft.serverComputerRegistry.get(m_instanceID);
     }
 
-    public ClientComputer createClientComputer()
-    {
-        if( !getWorld().isRemote || m_instanceID < 0 ) return null;
+    public ClientComputer createClientComputer() {
+        if (!getWorld().isRemote || m_instanceID < 0) return null;
 
-        ClientComputer computer = ComputerCraft.clientComputerRegistry.get( m_instanceID );
-        if( computer == null )
-        {
-            ComputerCraft.clientComputerRegistry.add( m_instanceID, computer = new ClientComputer( m_instanceID ) );
+        ClientComputer computer = ComputerCraft.clientComputerRegistry.get(m_instanceID);
+        if (computer == null) {
+            ComputerCraft.clientComputerRegistry.add(m_instanceID, computer = new ClientComputer(m_instanceID));
         }
         return computer;
     }
 
-    public ClientComputer getClientComputer()
-    {
-        return getWorld().isRemote ? ComputerCraft.clientComputerRegistry.get( m_instanceID ) : null;
+    public ClientComputer getClientComputer() {
+        return getWorld().isRemote ? ComputerCraft.clientComputerRegistry.get(m_instanceID) : null;
     }
 
     // Networking stuff
 
     @Override
-    protected void writeDescription( @Nonnull NBTTagCompound nbt )
-    {
-        super.writeDescription( nbt );
-        if( m_instanceID >= 0 ) nbt.setInteger( "instanceID", m_instanceID );
-        if( label != null ) nbt.setString( "label", label );
-        if( m_computerID >= 0 ) nbt.setInteger( "computerID", m_computerID );
+    protected void writeDescription(@Nonnull NBTTagCompound nbt) {
+        super.writeDescription(nbt);
+        if (m_instanceID >= 0) nbt.setInteger("instanceID", m_instanceID);
+        if (label != null) nbt.setString("label", label);
+        if (m_computerID >= 0) nbt.setInteger("computerID", m_computerID);
     }
 
     @Override
-    protected void readDescription( @Nonnull NBTTagCompound nbt )
-    {
-        super.readDescription( nbt );
-        m_instanceID = nbt.getInteger( "instanceID" );
-        label = nbt.hasKey( "label" ) ? nbt.getString( "label" ) : null;
-        m_computerID = nbt.hasKey( "computerID" ) ? nbt.getInteger( "computerID" ) : -1;
+    protected void readDescription(@Nonnull NBTTagCompound nbt) {
+        super.readDescription(nbt);
+        m_instanceID = nbt.getInteger("instanceID");
+        label = nbt.hasKey("label") ? nbt.getString("label") : null;
+        m_computerID = nbt.hasKey("computerID") ? nbt.getInteger("computerID") : -1;
     }
 
-    protected void transferStateFrom( TileComputerBase copy )
-    {
-        if( copy.m_computerID != m_computerID || copy.m_instanceID != m_instanceID )
-        {
+    protected void transferStateFrom(TileComputerBase copy) {
+        if (copy.m_computerID != m_computerID || copy.m_instanceID != m_instanceID) {
             unload();
             m_instanceID = copy.m_instanceID;
             m_computerID = copy.m_computerID;
@@ -483,28 +414,24 @@ public abstract class TileComputerBase extends TileGeneric implements IComputerT
 
     @Nullable
     @Override
-    public IPeripheral getPeripheral( @Nonnull EnumFacing side )
-    {
-        return new ComputerPeripheral( "computer", createProxy() );
+    public IPeripheral getPeripheral(@Nonnull EnumFacing side) {
+        return new ComputerPeripheral("computer", createProxy());
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return hasCustomName() ? label : getBlockType().getTranslationKey();
     }
 
     @Override
-    public boolean hasCustomName()
-    {
-        return !Strings.isNullOrEmpty( label );
+    public boolean hasCustomName() {
+        return !Strings.isNullOrEmpty(label);
     }
 
     @Nonnull
     @Override
-    public ITextComponent getDisplayName()
-    {
-        return hasCustomName() ? new TextComponentString( getName() ) : new TextComponentTranslation( getName() );
+    public ITextComponent getDisplayName() {
+        return hasCustomName() ? new TextComponentString(getName()) : new TextComponentTranslation(getName());
     }
 }

@@ -29,12 +29,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class TurtlePlayer extends FakePlayer
-{
-    public static final GameProfile DEFAULT_PROFILE = new GameProfile(
-        UUID.fromString( "0d0c4ca0-4ff1-11e4-916c-0800200c9a66" ),
-        "[ComputerCraft]"
-    );
+public class TurtlePlayer extends FakePlayer {
+
+    public static final GameProfile DEFAULT_PROFILE = new GameProfile(UUID.fromString("0d0c4ca0-4ff1-11e4-916c-0800200c9a66"),
+                                                                      "[ComputerCraft]");
 
     /**
      * Construct a TurtlePlayer which exists in the world.
@@ -43,26 +41,22 @@ public class TurtlePlayer extends FakePlayer
      * @deprecated This is required by {@link Entity}.
      */
     @Deprecated
-    public TurtlePlayer( World world )
-    {
-        super( (WorldServer) world, DEFAULT_PROFILE );
-        connection = new FakeNetHandler( this );
+    public TurtlePlayer(World world) {
+        super((WorldServer) world, DEFAULT_PROFILE);
+        connection = new FakeNetHandler(this);
     }
 
-    private TurtlePlayer( ITurtleAccess turtle )
-    {
-        super( (WorldServer) turtle.getWorld(), getProfile( turtle.getOwningPlayer() ) );
-        connection = new FakeNetHandler( this );
-        setState( turtle );
+    private TurtlePlayer(ITurtleAccess turtle) {
+        super((WorldServer) turtle.getWorld(), getProfile(turtle.getOwningPlayer()));
+        connection = new FakeNetHandler(this);
+        setState(turtle);
     }
 
-    private static GameProfile getProfile( @Nullable GameProfile profile )
-    {
+    private static GameProfile getProfile(@Nullable GameProfile profile) {
         return profile != null && profile.isComplete() ? profile : DEFAULT_PROFILE;
     }
 
-    private void setState( ITurtleAccess turtle )
-    {
+    private void setState(ITurtleAccess turtle) {
         BlockPos position = turtle.getPosition();
         posX = position.getX() + 0.5;
         posY = position.getY() + 0.5;
@@ -74,52 +68,43 @@ public class TurtlePlayer extends FakePlayer
         inventory.clear();
     }
 
-    public static TurtlePlayer get( ITurtleAccess access )
-    {
-        if( !(access instanceof TurtleBrain) ) return new TurtlePlayer( access );
+    public static TurtlePlayer get(ITurtleAccess access) {
+        if (!(access instanceof TurtleBrain brain)) return new TurtlePlayer(access);
 
-        TurtleBrain brain = (TurtleBrain) access;
         TurtlePlayer player = brain.m_cachedPlayer;
-        if( player == null || player.getGameProfile() != getProfile( access.getOwningPlayer() )
-            || player.getEntityWorld() != access.getWorld() )
-        {
-            player = brain.m_cachedPlayer = new TurtlePlayer( brain );
-        }
-        else
-        {
-            player.setState( access );
+        if (player == null ||
+            player.getGameProfile() != getProfile(access.getOwningPlayer()) ||
+            player.getEntityWorld() != access.getWorld()) {
+            player = brain.m_cachedPlayer = new TurtlePlayer(brain);
+        } else {
+            player.setState(access);
         }
 
         return player;
     }
 
-    public void loadInventory( @Nonnull ItemStack currentStack )
-    {
+    public void loadInventory(@Nonnull ItemStack currentStack) {
         // Load up the fake inventory
         inventory.currentItem = 0;
-        inventory.setInventorySlotContents( 0, currentStack );
+        inventory.setInventorySlotContents(0, currentStack);
     }
 
-    public ItemStack unloadInventory( ITurtleAccess turtle )
-    {
+    public ItemStack unloadInventory(ITurtleAccess turtle) {
         // Get the item we placed with
-        ItemStack results = inventory.getStackInSlot( 0 );
-        inventory.setInventorySlotContents( 0, ItemStack.EMPTY );
+        ItemStack results = inventory.getStackInSlot(0);
+        inventory.setInventorySlotContents(0, ItemStack.EMPTY);
 
         // Store (or drop) anything else we found
         BlockPos dropPosition = turtle.getPosition();
         EnumFacing dropDirection = turtle.getDirection().getOpposite();
-        for( int i = 0; i < inventory.getSizeInventory(); i++ )
-        {
-            ItemStack stack = inventory.getStackInSlot( i );
-            if( !stack.isEmpty() )
-            {
-                ItemStack remainder = InventoryUtil.storeItems( stack, turtle.getItemHandler(), turtle.getSelectedSlot() );
-                if( !remainder.isEmpty() )
-                {
-                    WorldUtil.dropItemStack( remainder, turtle.getWorld(), dropPosition, dropDirection );
+        for (int i = 0; i < inventory.getSizeInventory(); i++) {
+            ItemStack stack = inventory.getStackInSlot(i);
+            if (!stack.isEmpty()) {
+                ItemStack remainder = InventoryUtil.storeItems(stack, turtle.getItemHandler(), turtle.getSelectedSlot());
+                if (!remainder.isEmpty()) {
+                    WorldUtil.dropItemStack(remainder, turtle.getWorld(), dropPosition, dropDirection);
                 }
-                inventory.setInventorySlotContents( i, ItemStack.EMPTY );
+                inventory.setInventorySlotContents(i, ItemStack.EMPTY);
             }
         }
         inventory.markDirty();
@@ -127,87 +112,71 @@ public class TurtlePlayer extends FakePlayer
     }
 
     @Override
-    public Vec3d getPositionVector()
-    {
-        return new Vec3d( posX, posY, posZ );
+    public Vec3d getPositionVector() {
+        return new Vec3d(posX, posY, posZ);
     }
 
     @Override
-    public float getEyeHeight()
-    {
+    public float getEyeHeight() {
         return 0.0f;
     }
 
     @Override
-    public float getDefaultEyeHeight()
-    {
+    public float getDefaultEyeHeight() {
         return 0.0f;
     }
 
     @Override
-    public void sendEnterCombat()
-    {
+    public void sendEnterCombat() {
     }
 
     @Override
-    public void sendEndCombat()
-    {
+    public void sendEndCombat() {
     }
 
     @Nonnull
     @Override
-    public SleepResult trySleep( @Nonnull BlockPos bedLocation )
-    {
+    public SleepResult trySleep(@Nonnull BlockPos bedLocation) {
         return SleepResult.OTHER_PROBLEM;
     }
 
     @Override
-    public void openEditSign( TileEntitySign signTile )
-    {
+    public void openEditSign(TileEntitySign signTile) {
     }
 
     @Override
-    public void displayGui( IInteractionObject guiOwner )
-    {
+    public void displayGui(IInteractionObject guiOwner) {
     }
 
     @Override
-    public void displayGUIChest( IInventory chestInventory )
-    {
+    public void displayGUIChest(IInventory chestInventory) {
     }
 
     @Override
-    public void displayVillagerTradeGui( IMerchant villager )
-    {
+    public void displayVillagerTradeGui(IMerchant villager) {
     }
 
     @Override
-    public void openGuiHorseInventory( AbstractHorse horse, IInventory inventoryIn )
-    {
+    public void openGuiHorseInventory(AbstractHorse horse, IInventory inventoryIn) {
     }
 
     @Override
-    public void openBook( ItemStack stack, @Nonnull EnumHand hand )
-    {
+    public void openBook(ItemStack stack, @Nonnull EnumHand hand) {
     }
 
     @Override
-    public void updateHeldItem()
-    {
+    public void updateHeldItem() {
     }
 
     @Override
-    protected void onItemUseFinish()
-    {
+    protected void onItemUseFinish() {
     }
 
     @Override
-    public void mountEntityAndWakeUp()
-    {
+    public void mountEntityAndWakeUp() {
     }
 
     @Override
-    public void dismountEntity( @Nonnull Entity entity )
-    {
+    public void dismountEntity(@Nonnull Entity entity) {
     }
 }

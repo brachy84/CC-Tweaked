@@ -21,69 +21,62 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class ItemPeripheral extends ItemPeripheralBase
-{
-    public ItemPeripheral( Block block )
-    {
-        super( block );
-        setTranslationKey( "computercraft:peripheral" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
-        setHasSubtypes( true );
+public class ItemPeripheral extends ItemPeripheralBase {
+
+    public ItemPeripheral(Block block) {
+        super(block);
+        setTranslationKey("computercraft:peripheral");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
+        setHasSubtypes(true);
     }
 
     @Nonnull
-    public ItemStack create( PeripheralType type, String label, int quantity )
-    {
+    public ItemStack create(PeripheralType type, String label, int quantity) {
         ItemStack stack;
-        switch( type )
-        {
+        switch (type) {
             case DiskDrive:
-                stack = new ItemStack( this, quantity, 0 );
+                stack = new ItemStack(this, quantity, 0);
                 break;
             case WirelessModem:
-                stack = new ItemStack( this, quantity, 1 );
+                stack = new ItemStack(this, quantity, 1);
                 break;
             case Monitor:
-                stack = new ItemStack( this, quantity, 2 );
+                stack = new ItemStack(this, quantity, 2);
                 break;
             case Printer:
-                stack = new ItemStack( this, quantity, 3 );
+                stack = new ItemStack(this, quantity, 3);
                 break;
             case AdvancedMonitor:
-                stack = new ItemStack( this, quantity, 4 );
+                stack = new ItemStack(this, quantity, 4);
                 break;
             case Speaker:
-                stack = new ItemStack( this, quantity, 5 );
+                stack = new ItemStack(this, quantity, 5);
                 break;
 
             default:
                 // Ignore types we can't handle
                 return ItemStack.EMPTY;
         }
-        if( label != null )
-        {
-            stack.setStackDisplayName( label );
+        if (label != null) {
+            stack.setStackDisplayName(label);
         }
         return stack;
     }
 
     @Override
-    public void getSubItems( @Nonnull CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list )
-    {
-        if( !isInCreativeTab( tabs ) ) return;
-        list.add( PeripheralItemFactory.create( PeripheralType.DiskDrive, null, 1 ) );
-        list.add( PeripheralItemFactory.create( PeripheralType.Printer, null, 1 ) );
-        list.add( PeripheralItemFactory.create( PeripheralType.Monitor, null, 1 ) );
-        list.add( PeripheralItemFactory.create( PeripheralType.AdvancedMonitor, null, 1 ) );
-        list.add( PeripheralItemFactory.create( PeripheralType.WirelessModem, null, 1 ) );
-        list.add( PeripheralItemFactory.create( PeripheralType.Speaker, null, 1 ) );
+    public void getSubItems(@Nonnull CreativeTabs tabs, @Nonnull NonNullList<ItemStack> list) {
+        if (!isInCreativeTab(tabs)) return;
+        list.add(PeripheralItemFactory.create(PeripheralType.DiskDrive, null, 1));
+        list.add(PeripheralItemFactory.create(PeripheralType.Printer, null, 1));
+        list.add(PeripheralItemFactory.create(PeripheralType.Monitor, null, 1));
+        list.add(PeripheralItemFactory.create(PeripheralType.AdvancedMonitor, null, 1));
+        list.add(PeripheralItemFactory.create(PeripheralType.WirelessModem, null, 1));
+        list.add(PeripheralItemFactory.create(PeripheralType.Speaker, null, 1));
     }
 
     @Override
-    public PeripheralType getPeripheralType( int damage )
-    {
-        switch( damage )
-        {
+    public PeripheralType getPeripheralType(int damage) {
+        switch (damage) {
             case 0:
             default:
                 return PeripheralType.DiskDrive;
@@ -102,14 +95,13 @@ public class ItemPeripheral extends ItemPeripheralBase
 
     @Nonnull
     @Override
-    public EnumActionResult onItemUse( EntityPlayer player, World world, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ )
-    {
-        if( getPeripheralType( player.getHeldItem( hand ) ) == PeripheralType.WirelessModem )
-        {
-            EnumActionResult result = MCMPHooks.onItemUse( this, player, world, pos, hand, facing, hitX, hitY, hitZ );
-            if( result != EnumActionResult.PASS ) return result;
+    public EnumActionResult onItemUse(EntityPlayer player, World world, @Nonnull BlockPos pos, @Nonnull EnumHand hand,
+                                      @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (getPeripheralType(player.getHeldItem(hand)) == PeripheralType.WirelessModem) {
+            EnumActionResult result = MCMPHooks.onItemUse(this, player, world, pos, hand, facing, hitX, hitY, hitZ);
+            if (result != EnumActionResult.PASS) return result;
         }
 
-        return super.onItemUse( player, world, pos, hand, facing, hitX, hitY, hitZ );
+        return super.onItemUse(player, world, pos, hand, facing, hitX, hitY, hitZ);
     }
 }

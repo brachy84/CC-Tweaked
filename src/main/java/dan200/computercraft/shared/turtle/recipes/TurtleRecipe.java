@@ -20,36 +20,33 @@ import net.minecraftforge.common.crafting.JsonContext;
 
 import javax.annotation.Nonnull;
 
-public class TurtleRecipe extends ComputerConvertRecipe
-{
+public class TurtleRecipe extends ComputerConvertRecipe {
+
     private final ComputerFamily family;
 
-    public TurtleRecipe( String group, @Nonnull CraftingHelper.ShapedPrimer primer, ComputerFamily family )
-    {
-        super( group, primer, TurtleItemFactory.create( -1, null, -1, family, null, null, 0, null ) );
+    public TurtleRecipe(String group, @Nonnull CraftingHelper.ShapedPrimer primer, ComputerFamily family) {
+        super(group, primer, TurtleItemFactory.create(-1, null, -1, family, null, null, 0, null));
         this.family = family;
     }
 
     @Nonnull
     @Override
-    protected ItemStack convert( @Nonnull IComputerItem item, @Nonnull ItemStack stack )
-    {
-        int computerID = item.getComputerID( stack );
-        String label = item.getLabel( stack );
+    protected ItemStack convert(@Nonnull IComputerItem item, @Nonnull ItemStack stack) {
+        int computerID = item.getComputerID(stack);
+        String label = item.getLabel(stack);
 
-        return TurtleItemFactory.create( computerID, label, -1, family, null, null, 0, null );
+        return TurtleItemFactory.create(computerID, label, -1, family, null, null, 0, null);
     }
 
-    public static class Factory implements IRecipeFactory
-    {
-        @Override
-        public IRecipe parse( JsonContext context, JsonObject json )
-        {
-            String group = JsonUtils.getString( json, "group", "" );
-            ComputerFamily family = RecipeUtil.getFamily( json, "family" );
-            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer( context, json );
+    public static class Factory implements IRecipeFactory {
 
-            return new TurtleRecipe( group, primer, family );
+        @Override
+        public IRecipe parse(JsonContext context, JsonObject json) {
+            String group = JsonUtils.getString(json, "group", "");
+            ComputerFamily family = RecipeUtil.getFamily(json, "family");
+            CraftingHelper.ShapedPrimer primer = RecipeUtil.getPrimer(context, json);
+
+            return new TurtleRecipe(group, primer, family);
         }
     }
 }

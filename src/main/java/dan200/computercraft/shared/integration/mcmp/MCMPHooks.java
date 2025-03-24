@@ -20,31 +20,24 @@ import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nonnull;
 
-public final class MCMPHooks
-{
-    private MCMPHooks()
-    {
+public final class MCMPHooks {
+
+    private MCMPHooks() {
     }
 
-    public static EnumActionResult onItemUse( ItemBlock itemBlock, EntityPlayer player, World world, @Nonnull BlockPos pos, @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ )
-    {
-        if( !Loader.isModLoaded( MCMultiPart.MODID ) ) return EnumActionResult.PASS;
+    public static EnumActionResult onItemUse(ItemBlock itemBlock, EntityPlayer player, World world, @Nonnull BlockPos pos,
+                                             @Nonnull EnumHand hand, @Nonnull EnumFacing facing, float hitX, float hitY, float hitZ) {
+        if (!Loader.isModLoaded(MCMultiPart.MODID)) return EnumActionResult.PASS;
 
-        return ItemBlockMultipart.place(
-            player, world, pos, hand, facing, hitX, hitY, hitZ, itemBlock,
-            itemBlock.getBlock()::getStateForPlacement,
-            MCMPIntegration.multipartMap.get( itemBlock.getBlock() ),
+        return ItemBlockMultipart.place(player, world, pos, hand, facing, hitX, hitY, hitZ, itemBlock,
+                                        itemBlock.getBlock()::getStateForPlacement, MCMPIntegration.multipartMap.get(itemBlock.getBlock()),
 
-            (
-                ItemStack stack, EntityPlayer thisPlayer, World thisWorld, BlockPos thisPos, EnumFacing thisFacing,
-                float thisX, float thisY, float thisZ, IBlockState thisState
-            ) ->
-                thisPlayer.canPlayerEdit( thisPos, thisFacing, stack ) &&
-                    thisWorld.getBlockState( thisPos ).getBlock().isReplaceable( thisWorld, thisPos ) &&
-                    itemBlock.getBlock().canPlaceBlockAt( thisWorld, thisPos ) &&
-                    itemBlock.getBlock().canPlaceBlockOnSide( thisWorld, thisPos, thisFacing ) &&
-                    itemBlock.placeBlockAt( stack, thisPlayer, thisWorld, thisPos, thisFacing, thisX, thisY, thisZ, thisState ),
-            ItemBlockMultipart::placePartAt
-        );
+                                        (ItemStack stack, EntityPlayer thisPlayer, World thisWorld, BlockPos thisPos, EnumFacing thisFacing, float thisX, float thisY, float thisZ, IBlockState thisState) ->
+                                            thisPlayer.canPlayerEdit(thisPos, thisFacing, stack) &&
+                                                thisWorld.getBlockState(thisPos).getBlock().isReplaceable(thisWorld, thisPos) &&
+                                                itemBlock.getBlock().canPlaceBlockAt(thisWorld, thisPos) &&
+                                                itemBlock.getBlock().canPlaceBlockOnSide(thisWorld, thisPos, thisFacing) &&
+                                                itemBlock.placeBlockAt(stack, thisPlayer, thisWorld, thisPos, thisFacing, thisX, thisY,
+                                                                       thisZ, thisState), ItemBlockMultipart::placePartAt);
     }
 }

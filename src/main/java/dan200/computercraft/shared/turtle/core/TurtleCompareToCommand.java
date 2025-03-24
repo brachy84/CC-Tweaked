@@ -13,27 +13,22 @@ import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 
-public class TurtleCompareToCommand implements ITurtleCommand
-{
+public class TurtleCompareToCommand implements ITurtleCommand {
+
     private final int m_slot;
 
-    public TurtleCompareToCommand( int slot )
-    {
+    public TurtleCompareToCommand(int slot) {
         m_slot = slot;
     }
 
     @Nonnull
     @Override
-    public TurtleCommandResult execute( @Nonnull ITurtleAccess turtle )
-    {
-        ItemStack selectedStack = turtle.getInventory().getStackInSlot( turtle.getSelectedSlot() );
-        ItemStack stack = turtle.getInventory().getStackInSlot( m_slot );
-        if( InventoryUtil.areItemsStackable( selectedStack, stack ) )
-        {
+    public TurtleCommandResult execute(@Nonnull ITurtleAccess turtle) {
+        ItemStack selectedStack = turtle.getInventory().getStackInSlot(turtle.getSelectedSlot());
+        ItemStack stack = turtle.getInventory().getStackInSlot(m_slot);
+        if (InventoryUtil.areItemsStackable(selectedStack, stack)) {
             return TurtleCommandResult.success();
-        }
-        else
-        {
+        } else {
             return TurtleCommandResult.failure();
         }
     }

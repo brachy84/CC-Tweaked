@@ -15,42 +15,35 @@ import net.minecraftforge.common.MinecraftForge;
 
 import javax.annotation.Nonnull;
 
-public class TurtleTurnCommand implements ITurtleCommand
-{
+public class TurtleTurnCommand implements ITurtleCommand {
+
     private final TurnDirection m_direction;
 
-    public TurtleTurnCommand( TurnDirection direction )
-    {
+    public TurtleTurnCommand(TurnDirection direction) {
         m_direction = direction;
     }
 
     @Nonnull
     @Override
-    public TurtleCommandResult execute( @Nonnull ITurtleAccess turtle )
-    {
-        TurtleActionEvent event = new TurtleActionEvent( turtle, TurtleAction.TURN );
-        if( MinecraftForge.EVENT_BUS.post( event ) )
-        {
-            return TurtleCommandResult.failure( event.getFailureMessage() );
+    public TurtleCommandResult execute(@Nonnull ITurtleAccess turtle) {
+        TurtleActionEvent event = new TurtleActionEvent(turtle, TurtleAction.TURN);
+        if (MinecraftForge.EVENT_BUS.post(event)) {
+            return TurtleCommandResult.failure(event.getFailureMessage());
         }
 
-        switch( m_direction )
-        {
-            case Left:
-            {
-                turtle.setDirection( turtle.getDirection().rotateYCCW() );
-                turtle.playAnimation( TurtleAnimation.TurnLeft );
+        switch (m_direction) {
+            case Left: {
+                turtle.setDirection(turtle.getDirection().rotateYCCW());
+                turtle.playAnimation(TurtleAnimation.TurnLeft);
                 return TurtleCommandResult.success();
             }
-            case Right:
-            {
-                turtle.setDirection( turtle.getDirection().rotateY() );
-                turtle.playAnimation( TurtleAnimation.TurnRight );
+            case Right: {
+                turtle.setDirection(turtle.getDirection().rotateY());
+                turtle.playAnimation(TurtleAnimation.TurnRight);
                 return TurtleCommandResult.success();
             }
-            default:
-            {
-                return TurtleCommandResult.failure( "Unknown direction" );
+            default: {
+                return TurtleCommandResult.failure("Unknown direction");
             }
         }
     }

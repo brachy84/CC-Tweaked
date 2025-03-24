@@ -22,45 +22,35 @@ import java.util.Set;
 
 /**
  * A thread-safe version of {@link World#scheduleUpdate(BlockPos, Block, int)}.
- *
  * We use this when modems and other peripherals change a block in a different thread.
  */
-@Mod.EventBusSubscriber( modid = ComputerCraft.MOD_ID )
-public final class TickScheduler
-{
-    private TickScheduler()
-    {
+@Mod.EventBusSubscriber(modid = ComputerCraft.MOD_ID)
+public final class TickScheduler {
+
+    private TickScheduler() {
     }
 
-    private static final Set<TileEntity> toTick = Collections.newSetFromMap(
-        new MapMaker()
-            .weakKeys()
-            .makeMap()
-    );
+    private static final Set<TileEntity> toTick = Collections.newSetFromMap(new MapMaker().weakKeys().makeMap());
 
-    public static void schedule( TileGeneric tile )
-    {
+    public static void schedule(TileGeneric tile) {
         World world = tile.getWorld();
-        if( world != null && !world.isRemote ) toTick.add( tile );
+        if (world != null && !world.isRemote) toTick.add(tile);
     }
 
     @SubscribeEvent
-    public static void tick( TickEvent.ServerTickEvent event )
-    {
-        if( event.phase != TickEvent.Phase.START ) return;
+    public static void tick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START) return;
 
         Iterator<TileEntity> iterator = toTick.iterator();
-        while( iterator.hasNext() )
-        {
+        while (iterator.hasNext()) {
             TileEntity tile = iterator.next();
             iterator.remove();
 
             World world = tile.getWorld();
             BlockPos pos = tile.getPos();
 
-            if( world != null && pos != null && world.isBlockLoaded( pos ) && world.getTileEntity( pos ) == tile )
-            {
-                world.scheduleUpdate( pos, tile.getBlockType(), 0 );
+            if (world != null && pos != null && world.isBlockLoaded(pos) && world.getTileEntity(pos) == tile) {
+                world.scheduleUpdate(pos, tile.getBlockType(), 0);
             }
         }
     }

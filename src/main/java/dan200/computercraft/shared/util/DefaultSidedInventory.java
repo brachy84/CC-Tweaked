@@ -11,17 +11,15 @@ import net.minecraft.util.EnumFacing;
 
 import javax.annotation.Nonnull;
 
-public interface DefaultSidedInventory extends DefaultInventory, ISidedInventory
-{
+public interface DefaultSidedInventory extends DefaultInventory, ISidedInventory {
+
     @Override
-    default boolean canInsertItem( int slot, @Nonnull ItemStack stack, @Nonnull EnumFacing side )
-    {
-        return isItemValidForSlot( slot, stack );
+    default boolean canInsertItem(int slot, @Nonnull ItemStack stack, @Nonnull EnumFacing side) {
+        return isItemValidForSlot(slot, stack);
     }
 
     @Override
-    default boolean canExtractItem( int slot, @Nonnull ItemStack stack, @Nonnull EnumFacing side )
-    {
+    default boolean canExtractItem(int slot, @Nonnull ItemStack stack, @Nonnull EnumFacing side) {
         return true;
     }
 }

@@ -14,27 +14,23 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class TurtleSword extends TurtleTool
-{
-    public TurtleSword( ResourceLocation id, int legacyId, String adjective, Item item )
-    {
-        super( id, legacyId, adjective, item );
+public class TurtleSword extends TurtleTool {
+
+    public TurtleSword(ResourceLocation id, int legacyId, String adjective, Item item) {
+        super(id, legacyId, adjective, item);
     }
 
-    public TurtleSword( ResourceLocation id, int legacyId, Item item )
-    {
-        super( id, legacyId, item );
+    public TurtleSword(ResourceLocation id, int legacyId, Item item) {
+        super(id, legacyId, item);
     }
 
-    public TurtleSword( ResourceLocation id, ItemStack craftItem, ItemStack toolItem )
-    {
-        super( id, craftItem, toolItem );
+    public TurtleSword(ResourceLocation id, ItemStack craftItem, ItemStack toolItem) {
+        super(id, craftItem, toolItem);
     }
 
     @Override
-    protected boolean canBreakBlock( IBlockState state, World world, BlockPos pos, TurtlePlayer player )
-    {
-        if( !super.canBreakBlock( state, world, pos, player ) ) return false;
+    protected boolean canBreakBlock(IBlockState state, World world, BlockPos pos, TurtlePlayer player) {
+        if (!super.canBreakBlock(state, world, pos, player)) return false;
 
         Material material = state.getMaterial();
         return material == Material.PLANTS ||
@@ -45,8 +41,7 @@ public class TurtleSword extends TurtleTool
     }
 
     @Override
-    protected float getDamageMultiplier()
-    {
+    protected float getDamageMultiplier() {
         return 9.0f;
     }
 }

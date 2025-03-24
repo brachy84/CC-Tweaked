@@ -26,100 +26,86 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class BlockAdvancedModem extends BlockGeneric
-{
+public class BlockAdvancedModem extends BlockGeneric {
+
     public static final PropertyDirection FACING = BlockDirectional.FACING;
-    private static final PropertyBool ON = PropertyBool.create( "on" );
+    private static final PropertyBool ON = PropertyBool.create("on");
 
-    public BlockAdvancedModem()
-    {
-        super( Material.ROCK );
-        setHardness( 2.0f );
-        setTranslationKey( "computercraft:advanced_modem" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
-        setDefaultState( blockState.getBaseState()
-            .withProperty( FACING, EnumFacing.NORTH )
-            .withProperty( ON, false )
-        );
+    public BlockAdvancedModem() {
+        super(Material.ROCK);
+        setHardness(2.0f);
+        setTranslationKey("computercraft:advanced_modem");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
+        setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH).withProperty(ON, false));
     }
 
     @Nonnull
     @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer( this, FACING, ON );
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, FACING, ON);
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public IBlockState getStateFromMeta( int meta )
-    {
-        return getDefaultState().withProperty( FACING, EnumFacing.byIndex( meta ) );
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta));
     }
 
     @Override
-    public int getMetaFromState( IBlockState state )
-    {
-        return state.getValue( FACING ).getIndex();
-    }
-
-    @Nonnull
-    @Override
-    @Deprecated
-    public IBlockState getActualState( @Nonnull IBlockState state, IBlockAccess world, BlockPos pos )
-    {
-        TileEntity tile = world.getTileEntity( pos );
-        return state.withProperty( ON, tile instanceof TileAdvancedModem && ((TileAdvancedModem) tile).isOn() );
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(FACING).getIndex();
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public IBlockState getStateForPlacement( World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer )
-    {
-        return getDefaultState().withProperty( FACING, facing.getOpposite() );
+    public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        return state.withProperty(ON, tile instanceof TileAdvancedModem && ((TileAdvancedModem) tile).isOn());
+    }
+
+    @Nonnull
+    @Override
+    @Deprecated
+    public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta,
+                                            EntityLivingBase placer) {
+        return getDefaultState().withProperty(FACING, facing.getOpposite());
     }
 
     @Override
-    protected TileGeneric createTile( IBlockState state )
-    {
+    protected TileGeneric createTile(IBlockState state) {
         return new TileAdvancedModem();
     }
 
     @Override
-    protected TileGeneric createTile( int damage )
-    {
+    protected TileGeneric createTile(int damage) {
         return new TileAdvancedModem();
     }
 
     @Override
     @Deprecated
-    public final boolean isOpaqueCube( IBlockState state )
-    {
+    public final boolean isOpaqueCube(IBlockState state) {
         return false;
     }
 
     @Override
     @Deprecated
-    public final boolean isFullCube( IBlockState state )
-    {
+    public final boolean isFullCube(IBlockState state) {
         return false;
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public BlockFaceShape getBlockFaceShape( IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side )
-    {
+    public BlockFaceShape getBlockFaceShape(IBlockAccess world, IBlockState state, BlockPos pos, EnumFacing side) {
         return BlockFaceShape.UNDEFINED;
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public AxisAlignedBB getBoundingBox( IBlockState state, IBlockAccess source, BlockPos pos )
-    {
-        return ModemBounds.getBounds( state.getValue( FACING ) );
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
+        return ModemBounds.getBounds(state.getValue(FACING));
     }
 }

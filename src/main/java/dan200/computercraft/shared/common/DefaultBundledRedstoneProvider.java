@@ -13,23 +13,18 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 
-public class DefaultBundledRedstoneProvider implements IBundledRedstoneProvider
-{
+public class DefaultBundledRedstoneProvider implements IBundledRedstoneProvider {
+
     @Override
-    public int getBundledRedstoneOutput( @Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side )
-    {
-        return getDefaultBundledRedstoneOutput( world, pos, side );
+    public int getBundledRedstoneOutput(@Nonnull World world, @Nonnull BlockPos pos, @Nonnull EnumFacing side) {
+        return getDefaultBundledRedstoneOutput(world, pos, side);
     }
 
-    public static int getDefaultBundledRedstoneOutput( World world, BlockPos pos, EnumFacing side )
-    {
-        Block block = world.getBlockState( pos ).getBlock();
-        if( block instanceof BlockGeneric )
-        {
-            BlockGeneric generic = (BlockGeneric) block;
-            if( generic.getBundledRedstoneConnectivity( world, pos, side ) )
-            {
-                return generic.getBundledRedstoneOutput( world, pos, side );
+    public static int getDefaultBundledRedstoneOutput(World world, BlockPos pos, EnumFacing side) {
+        Block block = world.getBlockState(pos).getBlock();
+        if (block instanceof BlockGeneric generic) {
+            if (generic.getBundledRedstoneConnectivity(world, pos, side)) {
+                return generic.getBundledRedstoneOutput(world, pos, side);
             }
         }
         return -1;

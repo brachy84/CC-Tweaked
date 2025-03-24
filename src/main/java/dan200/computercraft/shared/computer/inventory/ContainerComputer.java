@@ -15,40 +15,35 @@ import net.minecraft.inventory.Container;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ContainerComputer extends Container implements IContainerComputer
-{
-    private final TileComputer computer;
-    private final InputState input = new InputState( this );
+public class ContainerComputer extends Container implements IContainerComputer {
 
-    public ContainerComputer( TileComputer computer )
-    {
+    private final TileComputer computer;
+    private final InputState input = new InputState(this);
+
+    public ContainerComputer(TileComputer computer) {
         this.computer = computer;
     }
 
     @Override
-    public boolean canInteractWith( @Nonnull EntityPlayer player )
-    {
-        return computer.isUsableByPlayer( player );
+    public boolean canInteractWith(@Nonnull EntityPlayer player) {
+        return computer.isUsableByPlayer(player);
     }
 
     @Nullable
     @Override
-    public IComputer getComputer()
-    {
+    public IComputer getComputer() {
         return computer.getServerComputer();
     }
 
     @Nonnull
     @Override
-    public InputState getInput()
-    {
+    public InputState getInput() {
         return input;
     }
 
     @Override
-    public void onContainerClosed( EntityPlayer player )
-    {
-        super.onContainerClosed( player );
+    public void onContainerClosed(EntityPlayer player) {
+        super.onContainerClosed(player);
         input.close();
     }
 }

@@ -10,37 +10,32 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import javax.annotation.Nonnull;
 
-public class ComputerTerminalClientMessage extends ComputerClientMessage
-{
+public class ComputerTerminalClientMessage extends ComputerClientMessage {
+
     private TerminalState state;
 
-    public ComputerTerminalClientMessage( int instanceId, TerminalState state )
-    {
-        super( instanceId );
+    public ComputerTerminalClientMessage(int instanceId, TerminalState state) {
+        super(instanceId);
         this.state = state;
     }
 
-    public ComputerTerminalClientMessage()
-    {
+    public ComputerTerminalClientMessage() {
     }
 
     @Override
-    public void toBytes( @Nonnull PacketBuffer buf )
-    {
-        super.toBytes( buf );
-        state.write( buf );
+    public void toBytes(@Nonnull PacketBuffer buf) {
+        super.toBytes(buf);
+        state.write(buf);
     }
 
     @Override
-    public void fromBytes( @Nonnull PacketBuffer buf )
-    {
-        super.fromBytes( buf );
-        state = new TerminalState( buf );
+    public void fromBytes(@Nonnull PacketBuffer buf) {
+        super.fromBytes(buf);
+        state = new TerminalState(buf);
     }
 
     @Override
-    public void handle( MessageContext context )
-    {
-        getComputer().read( state );
+    public void handle(MessageContext context) {
+        getComputer().read(state);
     }
 }

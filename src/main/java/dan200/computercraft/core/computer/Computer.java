@@ -18,9 +18,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Represents a computer which may exist in-world or elsewhere.
- *
  * Note, this class has several (read: far, far too many) responsibilities, so can get a little unwieldy at times.
- *
  * <ul>
  * <li>Updates the {@link Environment}.</li>
  * <li>Keeps track of whether the computer is on and blinking.</li>
@@ -29,8 +27,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * <li>Passes main thread tasks to the {@link MainThreadExecutor}.</li>
  * </ul>
  */
-public class Computer
-{
+public class Computer {
+
     private static final int START_DELAY = 50;
 
     // Various properties of the computer
@@ -45,75 +43,63 @@ public class Computer
 
     // Additional state about the computer and its environment.
     private boolean m_blinking = false;
-    private final Environment internalEnvironment = new Environment( this );
-    private AtomicBoolean externalOutputChanged = new AtomicBoolean();
+    private final Environment internalEnvironment = new Environment(this);
+    private final AtomicBoolean externalOutputChanged = new AtomicBoolean();
 
     private boolean startRequested;
     private int m_ticksSinceStart = -1;
 
-    public Computer( IComputerEnvironment environment, Terminal terminal, int id )
-    {
+    public Computer(IComputerEnvironment environment, Terminal terminal, int id) {
         m_id = id;
         m_environment = environment;
         m_terminal = terminal;
 
-        executor = new ComputerExecutor( this );
-        serverExecutor = new MainThreadExecutor( this );
+        executor = new ComputerExecutor(this);
+        serverExecutor = new MainThreadExecutor(this);
     }
 
-    IComputerEnvironment getComputerEnvironment()
-    {
+    IComputerEnvironment getComputerEnvironment() {
         return m_environment;
     }
 
-    FileSystem getFileSystem()
-    {
+    FileSystem getFileSystem() {
         return executor.getFileSystem();
     }
 
-    Terminal getTerminal()
-    {
+    Terminal getTerminal() {
         return m_terminal;
     }
 
-    public Environment getEnvironment()
-    {
+    public Environment getEnvironment() {
         return internalEnvironment;
     }
 
-    public IAPIEnvironment getAPIEnvironment()
-    {
+    public IAPIEnvironment getAPIEnvironment() {
         return internalEnvironment;
     }
 
-    public boolean isOn()
-    {
+    public boolean isOn() {
         return executor.isOn();
     }
 
-    public void turnOn()
-    {
+    public void turnOn() {
         startRequested = true;
     }
 
-    public void shutdown()
-    {
-        executor.queueStop( false, false );
+    public void shutdown() {
+        executor.queueStop(false, false);
     }
 
-    public void reboot()
-    {
-        executor.queueStop( true, false );
+    public void reboot() {
+        executor.queueStop(true, false);
     }
 
-    public void unload()
-    {
-        executor.queueStop( false, true );
+    public void unload() {
+        executor.queueStop(false, true);
     }
 
-    public void queueEvent( String event, Object[] args )
-    {
-        executor.queueEvent( event, args );
+    public void queueEvent(String event, Object[] args) {
+        executor.queueEvent(event, args);
     }
 
     /**
@@ -122,59 +108,47 @@ public class Computer
      * @param runnable The task to run
      * @return If the task was successfully queued (namely, whether there is space on it).
      */
-    public boolean queueMainThread( Runnable runnable )
-    {
-        return serverExecutor.enqueue( runnable );
+    public boolean queueMainThread(Runnable runnable) {
+        return serverExecutor.enqueue(runnable);
     }
 
-    public IWorkMonitor getMainThreadMonitor()
-    {
+    public IWorkMonitor getMainThreadMonitor() {
         return serverExecutor;
     }
 
-    public int getID()
-    {
+    public int getID() {
         return m_id;
     }
 
-    public int assignID()
-    {
-        if( m_id < 0 )
-        {
+    public int assignID() {
+        if (m_id < 0) {
             m_id = m_environment.assignNewID();
         }
         return m_id;
     }
 
-    public void setID( int id )
-    {
+    public void setID(int id) {
         m_id = id;
     }
 
-    public String getLabel()
-    {
+    public String getLabel() {
         return m_label;
     }
 
-    public void setLabel( String label )
-    {
-        if( !Objects.equal( label, m_label ) )
-        {
+    public void setLabel(String label) {
+        if (!Objects.equal(label, m_label)) {
             m_label = label;
-            externalOutputChanged.set( true );
+            externalOutputChanged.set(true);
         }
     }
 
-    public void tick()
-    {
+    public void tick() {
         // We keep track of the number of ticks since the last start, only
-        if( m_ticksSinceStart >= 0 && m_ticksSinceStart <= START_DELAY ) m_ticksSinceStart++;
+        if (m_ticksSinceStart >= 0 && m_ticksSinceStart <= START_DELAY) m_ticksSinceStart++;
 
-        if( startRequested && (m_ticksSinceStart < 0 || m_ticksSinceStart > START_DELAY) )
-        {
+        if (startRequested && (m_ticksSinceStart < 0 || m_ticksSinceStart > START_DELAY)) {
             startRequested = false;
-            if( !executor.isOn() )
-            {
+            if (!executor.isOn()) {
                 m_ticksSinceStart = 0;
                 executor.queueStart();
             }
@@ -186,69 +160,60 @@ public class Computer
         internalEnvironment.tick();
 
         // Propagate the environment's output to the world.
-        if( internalEnvironment.updateOutput() ) externalOutputChanged.set( true );
+        if (internalEnvironment.updateOutput()) externalOutputChanged.set(true);
 
         // Set output changed if the terminal has changed from blinking to not
         boolean blinking = m_terminal.getCursorBlink() &&
-            m_terminal.getCursorX() >= 0 && m_terminal.getCursorX() < m_terminal.getWidth() &&
-            m_terminal.getCursorY() >= 0 && m_terminal.getCursorY() < m_terminal.getHeight();
-        if( blinking != m_blinking )
-        {
+            m_terminal.getCursorX() >= 0 &&
+            m_terminal.getCursorX() < m_terminal.getWidth() &&
+            m_terminal.getCursorY() >= 0 &&
+            m_terminal.getCursorY() < m_terminal.getHeight();
+        if (blinking != m_blinking) {
             m_blinking = blinking;
-            externalOutputChanged.set( true );
+            externalOutputChanged.set(true);
         }
     }
 
-    void markChanged()
-    {
-        externalOutputChanged.set( true );
+    void markChanged() {
+        externalOutputChanged.set(true);
     }
 
-    public boolean pollAndResetChanged()
-    {
-        return externalOutputChanged.getAndSet( false );
+    public boolean pollAndResetChanged() {
+        return externalOutputChanged.getAndSet(false);
     }
 
-    public boolean isBlinking()
-    {
+    public boolean isBlinking() {
         return isOn() && m_blinking;
     }
 
-    public void addApi( ILuaAPI api )
-    {
-        executor.addApi( api );
+    public void addApi(ILuaAPI api) {
+        executor.addApi(api);
     }
 
     @Deprecated
-    public IPeripheral getPeripheral( int side )
-    {
-        return internalEnvironment.getPeripheral( ComputerSide.valueOf( side ) );
+    public IPeripheral getPeripheral(int side) {
+        return internalEnvironment.getPeripheral(ComputerSide.valueOf(side));
     }
 
     @Deprecated
-    public void setPeripheral( int side, IPeripheral peripheral )
-    {
-        internalEnvironment.setPeripheral( ComputerSide.valueOf( side ), peripheral );
+    public void setPeripheral(int side, IPeripheral peripheral) {
+        internalEnvironment.setPeripheral(ComputerSide.valueOf(side), peripheral);
     }
 
     @Deprecated
-    public void addAPI( dan200.computercraft.core.apis.ILuaAPI api )
-    {
-        addApi( api );
+    public void addAPI(dan200.computercraft.core.apis.ILuaAPI api) {
+        addApi(api);
     }
 
     @Deprecated
-    public void advance( double dt )
-    {
+    public void advance(double dt) {
         tick();
     }
 
     @Deprecated
-    public IWritableMount getRootMount()
-    {
+    public IWritableMount getRootMount() {
         return executor.getRootMount();
     }
 
-    @Deprecated
-    public static final String[] s_sideNames = ComputerSide.NAMES;
+    @Deprecated public static final String[] s_sideNames = ComputerSide.NAMES;
 }

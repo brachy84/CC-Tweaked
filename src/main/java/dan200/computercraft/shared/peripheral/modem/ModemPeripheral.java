@@ -22,88 +22,75 @@ import java.util.Set;
 
 import static dan200.computercraft.api.lua.ArgumentHelper.getInt;
 
-public abstract class ModemPeripheral implements IPeripheral, IPacketSender, IPacketReceiver
-{
+public abstract class ModemPeripheral implements IPeripheral, IPacketSender, IPacketReceiver {
+
     private IPacketNetwork m_network;
-    private final Set<IComputerAccess> m_computers = new HashSet<>( 1 );
+    private final Set<IComputerAccess> m_computers = new HashSet<>(1);
     private final ModemState m_state;
 
-    protected ModemPeripheral( ModemState state )
-    {
+    protected ModemPeripheral(ModemState state) {
         m_state = state;
     }
 
-    public ModemState getModemState()
-    {
+    public ModemState getModemState() {
         return m_state;
     }
 
     @Deprecated
-    public boolean pollChanged()
-    {
+    public boolean pollChanged() {
         // Only for backwards compatibility
         return m_state.pollChanged();
     }
 
     @Deprecated
-    public boolean isActive()
-    {
+    public boolean isActive() {
         // Only for backwards compatibility
         return m_state.isOpen();
     }
 
-    private synchronized void setNetwork( IPacketNetwork network )
-    {
-        if( m_network == network ) return;
+    private synchronized void setNetwork(IPacketNetwork network) {
+        if (m_network == network) return;
 
         // Leave old network
-        if( m_network != null ) m_network.removeReceiver( this );
+        if (m_network != null) m_network.removeReceiver(this);
 
         // Set new network
         m_network = network;
 
         // Join new network
-        if( m_network != null ) m_network.addReceiver( this );
+        if (m_network != null) m_network.addReceiver(this);
     }
 
-    protected void switchNetwork()
-    {
-        setNetwork( getNetwork() );
+    protected void switchNetwork() {
+        setNetwork(getNetwork());
     }
 
-    public void destroy()
-    {
-        setNetwork( null );
+    public void destroy() {
+        setNetwork(null);
     }
 
     @Override
-    public void receiveSameDimension( @Nonnull Packet packet, double distance )
-    {
-        if( packet.getSender() == this || !m_state.isOpen( packet.getChannel() ) ) return;
+    public void receiveSameDimension(@Nonnull Packet packet, double distance) {
+        if (packet.getSender() == this || !m_state.isOpen(packet.getChannel())) return;
 
-        synchronized( m_computers )
-        {
-            for( IComputerAccess computer : m_computers )
-            {
-                computer.queueEvent( "modem_message", new Object[] {
-                    computer.getAttachmentName(), packet.getChannel(), packet.getReplyChannel(), packet.getPayload(), distance,
-                } );
+        synchronized (m_computers) {
+            for (IComputerAccess computer : m_computers) {
+                computer.queueEvent("modem_message",
+                                    new Object[]{computer.getAttachmentName(), packet.getChannel(), packet.getReplyChannel(),
+                                                 packet.getPayload(), distance,});
             }
         }
     }
 
     @Override
-    public void receiveDifferentDimension( @Nonnull Packet packet )
-    {
-        if( packet.getSender() == this || !m_state.isOpen( packet.getChannel() ) ) return;
+    public void receiveDifferentDimension(@Nonnull Packet packet) {
+        if (packet.getSender() == this || !m_state.isOpen(packet.getChannel())) return;
 
-        synchronized( m_computers )
-        {
-            for( IComputerAccess computer : m_computers )
-            {
-                computer.queueEvent( "modem_message", new Object[] {
-                    computer.getAttachmentName(), packet.getChannel(), packet.getReplyChannel(), packet.getPayload(),
-                } );
+        synchronized (m_computers) {
+            for (IComputerAccess computer : m_computers) {
+                computer.queueEvent("modem_message",
+                                    new Object[]{computer.getAttachmentName(), packet.getChannel(), packet.getReplyChannel(),
+                                                 packet.getPayload(),});
             }
         }
     }
@@ -114,91 +101,70 @@ public abstract class ModemPeripheral implements IPeripheral, IPacketSender, IPa
 
     @Nonnull
     @Override
-    public String getType()
-    {
+    public String getType() {
         return "modem";
     }
 
     @Nonnull
     @Override
-    public String[] getMethodNames()
-    {
-        return new String[] {
-            "open",
-            "isOpen",
-            "close",
-            "closeAll",
-            "transmit",
-            "isWireless",
-        };
+    public String[] getMethodNames() {
+        return new String[]{"open", "isOpen", "close", "closeAll", "transmit", "isWireless",};
     }
 
-    private static int parseChannel( Object[] arguments, int index ) throws LuaException
-    {
-        int channel = getInt( arguments, index );
-        if( channel < 0 || channel > 65535 )
-        {
-            throw new LuaException( "Expected number in range 0-65535" );
+    private static int parseChannel(Object[] arguments, int index) throws LuaException {
+        int channel = getInt(arguments, index);
+        if (channel < 0 || channel > 65535) {
+            throw new LuaException("Expected number in range 0-65535");
         }
         return channel;
     }
 
     @Override
-    public Object[] callMethod( @Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments ) throws LuaException, InterruptedException
-    {
-        switch( method )
-        {
-            case 0:
-            {
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull Object[] arguments)
+        throws LuaException, InterruptedException {
+        switch (method) {
+            case 0: {
                 // open
-                int channel = parseChannel( arguments, 0 );
-                m_state.open( channel );
+                int channel = parseChannel(arguments, 0);
+                m_state.open(channel);
                 return null;
             }
-            case 1:
-            {
+            case 1: {
                 // isOpen
-                int channel = parseChannel( arguments, 0 );
-                return new Object[] { m_state.isOpen( channel ) };
+                int channel = parseChannel(arguments, 0);
+                return new Object[]{m_state.isOpen(channel)};
             }
-            case 2:
-            {
+            case 2: {
                 // close
-                int channel = parseChannel( arguments, 0 );
-                m_state.close( channel );
+                int channel = parseChannel(arguments, 0);
+                m_state.close(channel);
                 return null;
             }
             case 3: // closeAll
                 m_state.closeAll();
                 return null;
-            case 4:
-            {
+            case 4: {
                 // transmit
-                int channel = parseChannel( arguments, 0 );
-                int replyChannel = parseChannel( arguments, 1 );
+                int channel = parseChannel(arguments, 0);
+                int replyChannel = parseChannel(arguments, 1);
                 Object payload = arguments.length > 2 ? arguments[2] : null;
                 World world = getWorld();
                 Vec3d position = getPosition();
                 IPacketNetwork network = m_network;
-                if( world != null && position != null && network != null )
-                {
-                    Packet packet = new Packet( channel, replyChannel, payload, this );
-                    if( isInterdimensional() )
-                    {
-                        network.transmitInterdimensional( packet );
-                    }
-                    else
-                    {
-                        network.transmitSameDimension( packet, getRange() );
+                if (world != null && position != null && network != null) {
+                    Packet packet = new Packet(channel, replyChannel, payload, this);
+                    if (isInterdimensional()) {
+                        network.transmitInterdimensional(packet);
+                    } else {
+                        network.transmitSameDimension(packet, getRange());
                     }
                 }
                 return null;
             }
-            case 5:
-            {
+            case 5: {
                 // isWireless
                 IPacketNetwork network = m_network;
-                return new Object[] { network != null && network.isWireless() };
+                return new Object[]{network != null && network.isWireless()};
             }
             default:
                 return null;
@@ -206,41 +172,32 @@ public abstract class ModemPeripheral implements IPeripheral, IPacketSender, IPa
     }
 
     @Override
-    public synchronized void attach( @Nonnull IComputerAccess computer )
-    {
-        synchronized( m_computers )
-        {
-            m_computers.add( computer );
+    public synchronized void attach(@Nonnull IComputerAccess computer) {
+        synchronized (m_computers) {
+            m_computers.add(computer);
         }
 
-        setNetwork( getNetwork() );
+        setNetwork(getNetwork());
     }
 
     @Override
-    public synchronized void detach( @Nonnull IComputerAccess computer )
-    {
+    public synchronized void detach(@Nonnull IComputerAccess computer) {
         boolean empty;
-        synchronized( m_computers )
-        {
-            m_computers.remove( computer );
+        synchronized (m_computers) {
+            m_computers.remove(computer);
             empty = m_computers.isEmpty();
         }
 
-        if( empty ) setNetwork( null );
+        if (empty) setNetwork(null);
     }
 
     @Nonnull
     @Override
-    public String getSenderID()
-    {
-        synchronized( m_computers )
-        {
-            if( m_computers.size() != 1 )
-            {
+    public String getSenderID() {
+        synchronized (m_computers) {
+            if (m_computers.size() != 1) {
                 return "unknown";
-            }
-            else
-            {
+            } else {
                 IComputerAccess computer = m_computers.iterator().next();
                 return computer.getID() + "_" + computer.getAttachmentName();
             }

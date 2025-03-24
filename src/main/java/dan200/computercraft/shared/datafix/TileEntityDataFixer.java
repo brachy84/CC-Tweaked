@@ -16,22 +16,19 @@ import static dan200.computercraft.shared.datafix.Fixes.VERSION;
 /**
  * Fixes up the botched tile entity IDs from the 1.11 port.
  */
-public class TileEntityDataFixer implements IFixableData
-{
+public class TileEntityDataFixer implements IFixableData {
+
     @Override
-    public int getFixVersion()
-    {
+    public int getFixVersion() {
         return VERSION;
     }
 
     @Nonnull
     @Override
-    public NBTTagCompound fixTagCompound( @Nonnull NBTTagCompound tag )
-    {
-        String id = tag.getString( "id" );
-        if( id.startsWith( MOD_ID + " : " ) )
-        {
-            tag.setString( "id", id.replaceFirst( MOD_ID + " : ", MOD_ID + ":" ) );
+    public NBTTagCompound fixTagCompound(@Nonnull NBTTagCompound tag) {
+        String id = tag.getString("id");
+        if (id.startsWith(MOD_ID + " : ")) {
+            tag.setString("id", id.replaceFirst(MOD_ID + " : ", MOD_ID + ":"));
         }
         return tag;
     }

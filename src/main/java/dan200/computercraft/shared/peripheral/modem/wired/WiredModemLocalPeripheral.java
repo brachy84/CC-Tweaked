@@ -23,12 +23,10 @@ import java.util.Map;
 
 /**
  * Represents a local peripheral exposed on the wired network.
- *
- * This is responsible for getting the peripheral in world, tracking id and type and determining whether
- * it has changed.
+ * This is responsible for getting the peripheral in world, tracking id and type and determining whether it has changed.
  */
-public final class WiredModemLocalPeripheral
-{
+public final class WiredModemLocalPeripheral {
+
     private static final String NBT_PERIPHERAL_TYPE = "peripheralType";
     private static final String NBT_PERIPHERAL_ID = "peripheralID";
 
@@ -45,32 +43,25 @@ public final class WiredModemLocalPeripheral
      * @param direction The direction so search in
      * @return Whether the peripheral changed.
      */
-    public boolean attach( @Nonnull World world, @Nonnull BlockPos origin, @Nonnull EnumFacing direction )
-    {
+    public boolean attach(@Nonnull World world, @Nonnull BlockPos origin, @Nonnull EnumFacing direction) {
         IPeripheral oldPeripheral = peripheral;
-        IPeripheral peripheral = this.peripheral = getPeripheralFrom( world, origin, direction );
+        IPeripheral peripheral = this.peripheral = getPeripheralFrom(world, origin, direction);
 
-        if( peripheral == null )
-        {
+        if (peripheral == null) {
             return oldPeripheral != null;
-        }
-        else
-        {
+        } else {
             String type = peripheral.getType();
             int id = this.id;
 
-            if( id > 0 && this.type == null )
-            {
+            if (id > 0 && this.type == null) {
                 // If we had an ID but no type, then just set the type.
                 this.type = type;
-            }
-            else if( id < 0 || !type.equals( this.type ) )
-            {
+            } else if (id < 0 || !type.equals(this.type)) {
                 this.type = type;
-                this.id = IDAssigner.getNextIDFromFile( "computer/lastid_" + type + ".txt" );
+                this.id = IDAssigner.getNextIDFromFile("computer/lastid_" + type + ".txt");
             }
 
-            return oldPeripheral == null || !oldPeripheral.equals( peripheral );
+            return oldPeripheral == null || !oldPeripheral.equals(peripheral);
         }
     }
 
@@ -79,65 +70,52 @@ public final class WiredModemLocalPeripheral
      *
      * @return Whether the peripheral changed
      */
-    public boolean detach()
-    {
-        if( peripheral == null ) return false;
+    public boolean detach() {
+        if (peripheral == null) return false;
         peripheral = null;
         return true;
     }
 
     @Nullable
-    public String getConnectedName()
-    {
+    public String getConnectedName() {
         return peripheral != null ? type + "_" + id : null;
     }
 
     @Nullable
-    public IPeripheral getPeripheral()
-    {
+    public IPeripheral getPeripheral() {
         return peripheral;
     }
 
-    public boolean hasPeripheral()
-    {
+    public boolean hasPeripheral() {
         return peripheral != null;
     }
 
-    public void extendMap( @Nonnull Map<String, IPeripheral> peripherals )
-    {
-        if( peripheral != null ) peripherals.put( type + "_" + id, peripheral );
+    public void extendMap(@Nonnull Map<String, IPeripheral> peripherals) {
+        if (peripheral != null) peripherals.put(type + "_" + id, peripheral);
     }
 
-    public Map<String, IPeripheral> toMap()
-    {
-        return peripheral == null
-            ? Collections.emptyMap()
-            : Collections.singletonMap( type + "_" + id, peripheral );
+    public Map<String, IPeripheral> toMap() {
+        return peripheral == null ? Collections.emptyMap() : Collections.singletonMap(type + "_" + id, peripheral);
     }
 
-    public void writeNBT( @Nonnull NBTTagCompound tag, @Nonnull String suffix )
-    {
-        if( id >= 0 ) tag.setInteger( NBT_PERIPHERAL_ID + suffix, id );
-        if( type != null ) tag.setString( NBT_PERIPHERAL_TYPE + suffix, type );
+    public void writeNBT(@Nonnull NBTTagCompound tag, @Nonnull String suffix) {
+        if (id >= 0) tag.setInteger(NBT_PERIPHERAL_ID + suffix, id);
+        if (type != null) tag.setString(NBT_PERIPHERAL_TYPE + suffix, type);
     }
 
-    public void readNBT( @Nonnull NBTTagCompound tag, @Nonnull String suffix )
-    {
-        id = tag.hasKey( NBT_PERIPHERAL_ID + suffix, Constants.NBT.TAG_ANY_NUMERIC )
-            ? tag.getInteger( NBT_PERIPHERAL_ID + suffix ) : -1;
+    public void readNBT(@Nonnull NBTTagCompound tag, @Nonnull String suffix) {
+        id = tag.hasKey(NBT_PERIPHERAL_ID + suffix, Constants.NBT.TAG_ANY_NUMERIC) ? tag.getInteger(NBT_PERIPHERAL_ID + suffix) : -1;
 
-        type = tag.hasKey( NBT_PERIPHERAL_TYPE + suffix, Constants.NBT.TAG_STRING )
-            ? tag.getString( NBT_PERIPHERAL_TYPE + suffix ) : null;
+        type = tag.hasKey(NBT_PERIPHERAL_TYPE + suffix, Constants.NBT.TAG_STRING) ? tag.getString(NBT_PERIPHERAL_TYPE + suffix) : null;
     }
 
-    private static IPeripheral getPeripheralFrom( World world, BlockPos pos, EnumFacing direction )
-    {
-        BlockPos offset = pos.offset( direction );
+    private static IPeripheral getPeripheralFrom(World world, BlockPos pos, EnumFacing direction) {
+        BlockPos offset = pos.offset(direction);
 
-        Block block = world.getBlockState( offset ).getBlock();
-        if( block == ComputerCraft.Blocks.wiredModemFull || block == ComputerCraft.Blocks.cable ) return null;
+        Block block = world.getBlockState(offset).getBlock();
+        if (block == ComputerCraft.Blocks.wiredModemFull || block == ComputerCraft.Blocks.cable) return null;
 
-        IPeripheral peripheral = Peripherals.getPeripheral( world, offset, direction.getOpposite() );
+        IPeripheral peripheral = Peripherals.getPeripheral(world, offset, direction.getOpposite());
         return peripheral instanceof WiredModemPeripheral ? null : peripheral;
     }
 }

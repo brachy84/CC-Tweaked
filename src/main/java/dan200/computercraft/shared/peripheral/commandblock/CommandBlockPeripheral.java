@@ -15,12 +15,11 @@ import javax.annotation.Nonnull;
 
 import static dan200.computercraft.api.lua.ArgumentHelper.getString;
 
-public class CommandBlockPeripheral implements IPeripheral
-{
+public class CommandBlockPeripheral implements IPeripheral {
+
     private final TileEntityCommandBlock m_commandBlock;
 
-    public CommandBlockPeripheral( TileEntityCommandBlock commandBlock )
-    {
+    public CommandBlockPeripheral(TileEntityCommandBlock commandBlock) {
         m_commandBlock = commandBlock;
     }
 
@@ -28,64 +27,48 @@ public class CommandBlockPeripheral implements IPeripheral
 
     @Nonnull
     @Override
-    public String getType()
-    {
+    public String getType() {
         return "command";
     }
 
     @Nonnull
     @Override
-    public String[] getMethodNames()
-    {
-        return new String[] {
-            "getCommand",
-            "setCommand",
-            "runCommand",
-        };
+    public String[] getMethodNames() {
+        return new String[]{"getCommand", "setCommand", "runCommand",};
     }
 
     @Override
-    public Object[] callMethod( @Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method, @Nonnull final Object[] arguments ) throws LuaException, InterruptedException
-    {
-        switch( method )
-        {
+    public Object[] callMethod(@Nonnull IComputerAccess computer, @Nonnull ILuaContext context, int method,
+                               @Nonnull final Object[] arguments) throws LuaException, InterruptedException {
+        switch (method) {
             case 0: // getCommand
-                return context.executeMainThreadTask( () -> new Object[] {
-                    m_commandBlock.getCommandBlockLogic().getCommand(),
-                } );
-            case 1:
-            {
+                return context.executeMainThreadTask(() -> new Object[]{m_commandBlock.getCommandBlockLogic().getCommand(),});
+            case 1: {
                 // setCommand
-                final String command = getString( arguments, 0 );
-                context.issueMainThreadTask( () ->
-                {
-                    m_commandBlock.getCommandBlockLogic().setCommand( command );
+                final String command = getString(arguments, 0);
+                context.issueMainThreadTask(() -> {
+                    m_commandBlock.getCommandBlockLogic().setCommand(command);
                     m_commandBlock.getCommandBlockLogic().updateCommand();
                     return null;
-                } );
+                });
                 return null;
             }
             case 2: // runCommand
-                return context.executeMainThreadTask( () ->
-                {
-                    m_commandBlock.getCommandBlockLogic().trigger( m_commandBlock.getWorld() );
+                return context.executeMainThreadTask(() -> {
+                    m_commandBlock.getCommandBlockLogic().trigger(m_commandBlock.getWorld());
                     int result = m_commandBlock.getCommandBlockLogic().getSuccessCount();
-                    if( result > 0 )
-                    {
-                        return new Object[] { true };
+                    if (result > 0) {
+                        return new Object[]{true};
+                    } else {
+                        return new Object[]{false, "Command failed"};
                     }
-                    else
-                    {
-                        return new Object[] { false, "Command failed" };
-                    }
-                } );
+                });
         }
         return null;
     }
 
     @Override
-    public boolean equals( IPeripheral other )
-    {
+    public boolean equals(IPeripheral other) {
         return other != null && other.getClass() == getClass();
     }
 }

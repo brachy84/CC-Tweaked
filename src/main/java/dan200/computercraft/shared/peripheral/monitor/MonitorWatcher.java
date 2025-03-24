@@ -26,77 +26,71 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-@Mod.EventBusSubscriber( modid = ComputerCraft.MOD_ID )
-public final class MonitorWatcher
-{
+@Mod.EventBusSubscriber(modid = ComputerCraft.MOD_ID)
+public final class MonitorWatcher {
+
     private static final Queue<TileMonitor> watching = new ArrayDeque<>();
 
-    private MonitorWatcher()
-    {
+    private MonitorWatcher() {
     }
 
-    static void enqueue( TileMonitor monitor )
-    {
-        if( monitor.enqueued ) return;
+    static void enqueue(TileMonitor monitor) {
+        if (monitor.enqueued) return;
 
         monitor.enqueued = true;
         monitor.cached = null;
-        watching.add( monitor );
+        watching.add(monitor);
     }
 
     @SubscribeEvent
-    public static void onWatch( ChunkWatchEvent.Watch event )
-    {
+    public static void onWatch(ChunkWatchEvent.Watch event) {
         Chunk chunk = event.getChunkInstance();
-        if( chunk == null ) return;
+        if (chunk == null) return;
 
-        for( TileEntity te : chunk.getTileEntityMap().values() )
-        {
+        for (TileEntity te : chunk.getTileEntityMap().values()) {
             // Find all origin monitors who are not already on the queue.
-            if( !(te instanceof TileMonitor) ) continue;
+            if (!(te instanceof TileMonitor monitor)) continue;
 
-            TileMonitor monitor = (TileMonitor) te;
-            ServerMonitor serverMonitor = getMonitor( monitor );
-            if( serverMonitor == null || monitor.enqueued ) continue;
+            ServerMonitor serverMonitor = getMonitor(monitor);
+            if (serverMonitor == null || monitor.enqueued) continue;
 
             // We use the cached terminal state if available - this is guaranteed to
             TerminalState state = monitor.cached;
-            if( state == null ) state = monitor.cached = serverMonitor.write();
-            NetworkHandler.sendToPlayer( event.getPlayer(), new MonitorClientMessage( monitor.getPos(), state ) );
+            if (state == null) state = monitor.cached = serverMonitor.write();
+            NetworkHandler.sendToPlayer(event.getPlayer(), new MonitorClientMessage(monitor.getPos(), state));
         }
     }
 
     @SubscribeEvent
-    public static void onTick( TickEvent.ServerTickEvent event )
-    {
-        if( event.phase != TickEvent.Phase.END ) return;
+    public static void onTick(TickEvent.ServerTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
 
         long limit = ComputerCraft.monitorBandwidth;
         boolean obeyLimit = limit > 0;
 
         TileMonitor tile;
-        while( (!obeyLimit || limit > 0) && (tile = watching.poll()) != null )
-        {
+        while ((!obeyLimit || limit > 0) && (tile = watching.poll()) != null) {
             tile.enqueued = false;
-            ServerMonitor monitor = getMonitor( tile );
-            if( monitor == null ) continue;
+            ServerMonitor monitor = getMonitor(tile);
+            if (monitor == null) continue;
 
             BlockPos pos = tile.getPos();
             World world = tile.getWorld();
-            WorldServer serverWorld = world instanceof WorldServer ? (WorldServer) world : DimensionManager.getWorld( world.provider.getDimension() );
-            PlayerChunkMapEntry entry = serverWorld.getPlayerChunkMap().getEntry( pos.getX() >> 4, pos.getZ() >> 4 );
-            if( entry == null || entry.getWatchingPlayers().isEmpty() ) continue;
+            WorldServer serverWorld =
+                world instanceof WorldServer ? (WorldServer) world : DimensionManager.getWorld(world.provider.getDimension());
+            PlayerChunkMapEntry entry = serverWorld.getPlayerChunkMap().getEntry(pos.getX() >> 4, pos.getZ() >> 4);
+            if (entry == null || entry.getWatchingPlayers().isEmpty()) continue;
 
-            NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint( world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 0 );
+            NetworkRegistry.TargetPoint point = new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(),
+                                                                                pos.getZ(), 0);
             TerminalState state = tile.cached = monitor.write();
-            NetworkHandler.sendToAllTracking( new MonitorClientMessage( pos, state ), point );
+            NetworkHandler.sendToAllTracking(new MonitorClientMessage(pos, state), point);
 
             limit -= state.size();
         }
     }
 
-    private static ServerMonitor getMonitor( TileMonitor monitor )
-    {
+    private static ServerMonitor getMonitor(TileMonitor monitor) {
         return !monitor.isInvalid() && monitor.getXIndex() == 0 && monitor.getYIndex() == 0 ? monitor.getCachedServerMonitor() : null;
     }
 }

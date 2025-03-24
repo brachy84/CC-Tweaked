@@ -11,11 +11,10 @@ package dan200.computercraft.shared.peripheral.modem;
  * @deprecated Use {@link dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemPeripheral} instead.
  */
 @Deprecated
-public abstract class WirelessModemPeripheral extends dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemPeripheral
-{
+public abstract class WirelessModemPeripheral extends dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemPeripheral {
+
     @Deprecated
-    public WirelessModemPeripheral( boolean advanced )
-    {
-        super( new ModemState(), advanced );
+    public WirelessModemPeripheral(boolean advanced) {
+        super(new ModemState(), advanced);
     }
 }

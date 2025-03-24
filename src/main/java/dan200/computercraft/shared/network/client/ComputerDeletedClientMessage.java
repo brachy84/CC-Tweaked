@@ -8,20 +8,17 @@ package dan200.computercraft.shared.network.client;
 import dan200.computercraft.ComputerCraft;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class ComputerDeletedClientMessage extends ComputerClientMessage
-{
-    public ComputerDeletedClientMessage( int instanceId )
-    {
-        super( instanceId );
+public class ComputerDeletedClientMessage extends ComputerClientMessage {
+
+    public ComputerDeletedClientMessage(int instanceId) {
+        super(instanceId);
     }
 
-    public ComputerDeletedClientMessage()
-    {
+    public ComputerDeletedClientMessage() {
     }
 
     @Override
-    public void handle( MessageContext context )
-    {
-        ComputerCraft.clientComputerRegistry.remove( getInstanceId() );
+    public void handle(MessageContext context) {
+        ComputerCraft.clientComputerRegistry.remove(getInstanceId());
     }
 }

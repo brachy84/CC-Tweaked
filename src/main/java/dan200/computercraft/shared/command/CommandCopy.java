@@ -20,8 +20,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nonnull;
 
-public final class CommandCopy extends CommandBase implements IClientCommand
-{
+public final class CommandCopy extends CommandBase implements IClientCommand {
+
     public static final CommandCopy INSTANCE = new CommandCopy();
 
     /**
@@ -29,50 +29,42 @@ public final class CommandCopy extends CommandBase implements IClientCommand
      */
     private static final String NAME = "~computercraft_copy";
 
-    private CommandCopy()
-    {
+    private CommandCopy() {
     }
 
     @Override
-    public boolean allowUsageWithoutPrefix( ICommandSender sender, String message )
-    {
+    public boolean allowUsageWithoutPrefix(ICommandSender sender, String message) {
         return false;
     }
 
     @Nonnull
     @Override
-    public String getName()
-    {
+    public String getName() {
         return NAME;
     }
 
     @Nonnull
     @Override
-    public String getUsage( @Nonnull ICommandSender sender )
-    {
+    public String getUsage(@Nonnull ICommandSender sender) {
         return "/" + NAME + " <text>";
     }
 
     @Override
-    public int getRequiredPermissionLevel()
-    {
+    public int getRequiredPermissionLevel() {
         return 0;
     }
 
     @Override
-    @SideOnly( Side.CLIENT )
-    public void execute( @Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args )
-    {
-        String message = String.join( " ", args );
-        if( !message.isEmpty() ) GuiScreen.setClipboardString( message );
+    @SideOnly(Side.CLIENT)
+    public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) {
+        String message = String.join(" ", args);
+        if (!message.isEmpty()) GuiScreen.setClipboardString(message);
     }
 
-    public static ITextComponent createCopyText( String text )
-    {
-        TextComponentString name = new TextComponentString( text );
-        name.getStyle()
-            .setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + NAME + " " + text ) )
-            .setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation( "gui.computercraft.tooltip.copy" ) ) );
+    public static ITextComponent createCopyText(String text) {
+        TextComponentString name = new TextComponentString(text);
+        name.getStyle().setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/" + NAME + " " + text)).setHoverEvent(
+            new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentTranslation("gui.computercraft.tooltip.copy")));
         return name;
     }
 }

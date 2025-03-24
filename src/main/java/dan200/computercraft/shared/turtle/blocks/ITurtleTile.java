@@ -13,19 +13,19 @@ import dan200.computercraft.shared.computer.blocks.IComputerTile;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.Vec3d;
 
-public interface ITurtleTile extends IComputerTile, IDirectionalTile
-{
+public interface ITurtleTile extends IComputerTile, IDirectionalTile {
+
     int getColour();
 
     ResourceLocation getOverlay();
 
-    ITurtleUpgrade getUpgrade( TurtleSide side );
+    ITurtleUpgrade getUpgrade(TurtleSide side);
 
     ITurtleAccess getAccess();
 
-    Vec3d getRenderOffset( float f );
+    Vec3d getRenderOffset(float f);
 
-    float getRenderYaw( float f );
+    float getRenderYaw(float f);
 
-    float getToolRenderAngle( TurtleSide side, float f );
+    float getToolRenderAngle(TurtleSide side, float f);
 }

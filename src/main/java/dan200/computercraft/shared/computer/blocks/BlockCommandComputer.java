@@ -22,94 +22,80 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nonnull;
 
-public class BlockCommandComputer extends BlockComputerBase
-{
+public class BlockCommandComputer extends BlockComputerBase {
     // Statics
 
-    public static final class Properties
-    {
+    public static final class Properties {
+
         public static final PropertyDirection FACING = BlockHorizontal.FACING;
-        public static final PropertyEnum<ComputerState> STATE = PropertyEnum.create( "state", ComputerState.class );
+        public static final PropertyEnum<ComputerState> STATE = PropertyEnum.create("state", ComputerState.class);
     }
 
     // Members
 
-    public BlockCommandComputer()
-    {
-        super( Material.IRON );
+    public BlockCommandComputer() {
+        super(Material.IRON);
         setBlockUnbreakable();
-        setResistance( 6000000.0F );
-        setTranslationKey( "computercraft:command_computer" );
-        setCreativeTab( ComputerCraft.mainCreativeTab );
-        setDefaultState( blockState.getBaseState()
-            .withProperty( Properties.FACING, EnumFacing.NORTH )
-            .withProperty( Properties.STATE, ComputerState.Off )
-        );
+        setResistance(6000000.0F);
+        setTranslationKey("computercraft:command_computer");
+        setCreativeTab(ComputerCraft.mainCreativeTab);
+        setDefaultState(
+            blockState.getBaseState().withProperty(Properties.FACING, EnumFacing.NORTH).withProperty(Properties.STATE, ComputerState.Off));
     }
 
     @Nonnull
     @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer( this, Properties.FACING, Properties.STATE );
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, Properties.FACING, Properties.STATE);
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public IBlockState getStateFromMeta( int meta )
-    {
-        EnumFacing dir = EnumFacing.byIndex( meta & 0x7 );
-        if( dir.getAxis() == EnumFacing.Axis.Y )
-        {
+    public IBlockState getStateFromMeta(int meta) {
+        EnumFacing dir = EnumFacing.byIndex(meta & 0x7);
+        if (dir.getAxis() == EnumFacing.Axis.Y) {
             dir = EnumFacing.NORTH;
         }
-        return getDefaultState().withProperty( Properties.FACING, dir );
+        return getDefaultState().withProperty(Properties.FACING, dir);
     }
 
     @Override
-    public int getMetaFromState( IBlockState state )
-    {
-        return state.getValue( Properties.FACING ).getIndex();
+    public int getMetaFromState(IBlockState state) {
+        return state.getValue(Properties.FACING).getIndex();
     }
 
     @Nonnull
     @Override
     @Deprecated
-    public IBlockState getActualState( @Nonnull IBlockState state, IBlockAccess world, BlockPos pos )
-    {
-        TileEntity tile = world.getTileEntity( pos );
-        return state.withProperty( Properties.STATE, tile instanceof TileComputer ? ((TileComputer) tile).getState() : ComputerState.Off );
+    public IBlockState getActualState(@Nonnull IBlockState state, IBlockAccess world, BlockPos pos) {
+        TileEntity tile = world.getTileEntity(pos);
+        return state.withProperty(Properties.STATE, tile instanceof TileComputer ? ((TileComputer) tile).getState() : ComputerState.Off);
     }
 
     @Override
-    protected IBlockState getDefaultBlockState( ComputerFamily family, EnumFacing placedSide )
-    {
-        return getDefaultState().withProperty( Properties.FACING, placedSide );
+    protected IBlockState getDefaultBlockState(ComputerFamily family, EnumFacing placedSide) {
+        return getDefaultState().withProperty(Properties.FACING, placedSide);
     }
 
     @Override
-    public ComputerFamily getFamily( int damage )
-    {
+    public ComputerFamily getFamily(int damage) {
         return ComputerFamily.Command;
     }
 
     @Override
-    public ComputerFamily getFamily( IBlockState state )
-    {
+    public ComputerFamily getFamily(IBlockState state) {
         return ComputerFamily.Command;
     }
 
     @Override
-    protected TileComputer createTile( ComputerFamily family )
-    {
+    protected TileComputer createTile(ComputerFamily family) {
         return new TileCommandComputer();
     }
 
     @Nonnull
     @Override
-    protected ItemStack getItem( TileComputerBase tile )
-    {
-        return tile instanceof TileCommandComputer ? ComputerItemFactory.create( (TileComputer) tile ) : ItemStack.EMPTY;
+    protected ItemStack getItem(TileComputerBase tile) {
+        return tile instanceof TileCommandComputer ? ComputerItemFactory.create((TileComputer) tile) : ItemStack.EMPTY;
     }
 }
