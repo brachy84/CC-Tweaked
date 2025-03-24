@@ -1,0 +1,12 @@
+// Add any additional repositories for your dependencies here
+
+repositories {
+	maven {
+        name "SquidDev"
+        url "https://squiddev.cc/maven"
+    }
+    ivy {
+        name "Charset"
+        artifactPattern "https://asie.pl/files/mods/Charset/LibOnly/[module]-[revision](-[classifier]).[ext]"
+    }
+}
